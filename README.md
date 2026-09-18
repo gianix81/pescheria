@@ -17,7 +17,7 @@ esplicitamente se acquista — e quanti colli — oppure no.
 
 | Componente | Versione minima | Note |
 |---|---|---|
-| PHP | 8.3 | estensioni: `pdo_mysql`, `mbstring`, `openssl`, `fileinfo`, `gd`, `zip` |
+| PHP | 8.3 | estensioni: `pdo_mysql`, `mbstring`, `openssl`, `fileinfo`, `gd`, `zip`, `dom`, `xml` — dichiarate in `composer.json`. Il `composer.lock` è risolto contro PHP 8.3 (`config.platform.php`), quindi vale anche su 8.4 |
 | Composer | 2.x | |
 | MySQL | 8.0 | InnoDB; servono `SELECT ... FOR UPDATE` e transazioni |
 | Node.js | 20 | solo per compilare gli asset |

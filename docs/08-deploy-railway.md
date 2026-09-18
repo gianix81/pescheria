@@ -64,7 +64,9 @@ Nixpacks legge i requisiti dal repository, non li indovina:
 | Sintomo nel build log | Causa | Rimedio |
 |---|---|---|
 | `requires ext-gd * -> it is missing` (o `ext-zip`) | le estensioni arrivavano solo come dipendenza transitiva di PhpSpreadsheet | sono ora dichiarate in `composer.json`: Nixpacks le installa |
-| `Vite requires Node.js version 20.19+` | Nixpacks sceglieva un Node più vecchio | `engines.node` in `package.json` fissa `>=22.12` |
+| `Vite requires Node.js version 20.19+` | veniva scelto un Node più vecchio | `engines.node` in `package.json` fissa `>=22.12` |
+| `Your lock file does not contain a compatible set of packages` con decine di `symfony/... requires php >=8.4.1` | il `composer.lock` era stato risolto su PHP 8.4, mentre la piattaforma installa il **minimo** del vincolo (`^8.3` → 8.3) | `config.platform.php` in `composer.json` è fissato a `8.3.0`: il lock viene risolto contro la versione minima dichiarata e funziona sia su 8.3 sia su 8.4 |
+| `vite: not found` durante `npm run build` | il build gira dopo `npm prune --omit=dev` | gli strumenti di build stanno fra le `dependencies`, non fra le `devDependencies` |
 | pagina bianca o 404 dopo un build riuscito | document root sbagliata | variabile `NIXPACKS_PHP_ROOT_DIR=/app/public` |
 | `No application encryption key` | manca `APP_KEY` | vedi §8.2 |
 
