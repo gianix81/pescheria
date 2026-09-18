@@ -173,6 +173,14 @@ transcodifica, il file viene inviato com'è: nessun percorso resta bloccato.
 
 ### Primo accesso in produzione
 
+Due strade, a seconda che tu possa aprire una shell.
+
+**Dal browser** (nessuna shell): imposta `SETUP_TOKEN` fra le variabili d'ambiente e apri
+`https://<dominio>/setup/<token>`. Crei il primo Super Admin e la pagina si disattiva da sola.
+Esiste solo finché non c'è un Super Admin attivo.
+
+**Dalla console:**
+
 Il seeder popola anagrafiche e utenti dimostrativi; in produzione crea invece il tuo Super Admin
 dalla console, senza dipendere da esso:
 

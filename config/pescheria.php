@@ -84,6 +84,14 @@ return [
     */
     'cron_secret' => env('CRON_SECRET', ''),
 
+    /*
+    | Token della pagina di primo accesso /setup/<token>, per creare il primo
+    | Super Admin dal browser quando aprire una shell non è pratico.
+    | Vuoto = pagina inesistente. Si disattiva comunque da sola appena esiste
+    | un Super Admin attivo.
+    */
+    'setup_token' => env('SETUP_TOKEN', ''),
+
     'export' => [
         'csv_delimiter' => ';',
         'csv_bom' => true,

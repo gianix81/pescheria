@@ -38,6 +38,21 @@ Gira prima che la nuova versione vada in linea, quindi lo schema è sempre allin
 Per caricare i dati iniziali una sola volta (utenti, punti vendita, prodotti), apri la shell del
 servizio ed esegui `php artisan db:seed --force`.
 
+### Primo accesso dal browser, senza shell
+
+Se aprire una shell sul servizio non è pratico, imposta fra le variabili:
+
+```
+SETUP_TOKEN=<stringa casuale, es. openssl rand -hex 24>
+```
+
+poi apri `https://<dominio>/setup/<quella-stringa>` e compila il modulo: crea il primo Super
+Admin e ti riporta alla pagina di accesso.
+
+La pagina esiste **solo** se il token è impostato, corrisponde, e non c'è ancora un Super Admin
+attivo: appena l'account è creato risponde 404 da sola, senza bisogno di ricordarsi di chiuderla.
+Torna disponibile se l'ultimo Super Admin viene disattivato, come via di rientro.
+
 ### Se l'accesso non funziona
 
 Nella shell del servizio:

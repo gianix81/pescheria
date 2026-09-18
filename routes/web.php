@@ -7,6 +7,7 @@ use App\Http\Controllers\CronController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\SetupController;
 use App\Livewire;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +24,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/cron/esegui', [CronController::class, 'run'])
     ->middleware('throttle:cron')
     ->name('cron.run');
+
+// Primo accesso: crea il Super Admin iniziale dal browser. Esiste solo se
+// SETUP_TOKEN è impostato e non c'è ancora un Super Admin attivo.
+Route::middleware('throttle:setup')->group(function () {
+    Route::get('/setup/{token}', [SetupController::class, 'show'])->name('setup.show');
+    Route::post('/setup/{token}', [SetupController::class, 'store'])->name('setup.store');
+});
 
 // ------------------------------------------------------------------ ospiti
 Route::middleware('guest')->group(function () {
