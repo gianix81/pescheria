@@ -230,6 +230,15 @@ class Opportunity extends Model
         ];
     }
 
+    /**
+     * È già passata almeno una volta dalla pubblicazione ed è stata rimandata
+     * in verifica dopo una modifica del Buyer.
+     */
+    public function isRipubblicazione(): bool
+    {
+        return $this->published_at !== null;
+    }
+
     public function hasMedia(): bool
     {
         return $this->media()->exists();

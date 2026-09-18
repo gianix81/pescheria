@@ -92,8 +92,16 @@
 
         @if ($stato === \App\Enums\OpportunityStatus::IN_VERIFICA)
             <div class="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
-                <p class="text-sm font-semibold text-slate-800">Avvisa i Tecnici su WhatsApp</p>
-                <p class="help">La notifica in-app è già partita: questo serve a farli intervenire subito.</p>
+                <p class="text-sm font-semibold text-slate-800">
+                    {{ $opportunity->isRipubblicazione() ? 'Chiedi al Tecnico di ripubblicarla' : 'Avvisa i Tecnici su WhatsApp' }}
+                </p>
+                <p class="help">
+                    @if ($opportunity->isRipubblicazione())
+                        L'opportunità è ferma: i punti vendita non la vedono finché un Tecnico non conferma.
+                    @else
+                        La notifica in-app è già partita: questo serve a farli intervenire subito.
+                    @endif
+                </p>
 
                 <div class="mt-3 space-y-3">
                     @foreach ($tecnici as $t)
@@ -103,7 +111,9 @@
                                 <span class="block text-xs text-slate-500">{{ $t->phone ?: 'nessun numero in anagrafica' }}</span>
                             </span>
                             <x-condividi-whatsapp
-                                :testo="\App\Support\WhatsApp::perVerifica($opportunity)"
+                                :testo="$opportunity->isRipubblicazione()
+                                    ? \App\Support\WhatsApp::perRipubblicazione($opportunity)
+                                    : \App\Support\WhatsApp::perVerifica($opportunity)"
                                 :numero="$t->phone"
                                 :etichetta="$t->phone ? 'Scrivi a '.$t->first_name : 'Scegli la chat'" />
                         </div>
@@ -116,11 +126,17 @@
             </div>
         @elseif ($stato->isPubblicata() && $stato !== \App\Enums\OpportunityStatus::SCADUTA)
             <div class="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4">
-                <p class="text-sm font-semibold text-emerald-900">Annuncia l'apertura nel gruppo dei reparti</p>
+                @php $aggiornamento = $opportunity->reviews->count() > 1; @endphp
+
+                <p class="text-sm font-semibold text-emerald-900">
+                    {{ $aggiornamento ? 'Comunica l\'aggiornamento al gruppo dei reparti' : 'Annuncia l\'apertura nel gruppo dei reparti' }}
+                </p>
                 <x-condividi-whatsapp class="mt-2"
                     variante="principale"
-                    :testo="\App\Support\WhatsApp::perApertura($opportunity)"
-                    etichetta="Condividi nel gruppo WhatsApp"
+                    :testo="$aggiornamento
+                        ? \App\Support\WhatsApp::perAggiornamento($opportunity)
+                        : \App\Support\WhatsApp::perApertura($opportunity)"
+                    :etichetta="$aggiornamento ? 'Comunica la modifica nel gruppo' : 'Condividi nel gruppo WhatsApp'"
                     descrizione="Scegli il gruppo dei reparti pescheria e invia. Il messaggio porta il collegamento alla scheda: l'ordine resta valido solo dall'app." />
             </div>
         @endif

@@ -30,6 +30,8 @@ la pena compilarlo per tutti dalla gestione utenti.
 | Opportunità approvata e aperta | Tecnico | notifica automatica ai capi reparto destinatari | «Condividi nel gruppo WhatsApp» |
 | Punto vendita conferma l'ordine | Capo Reparto | notifica automatica a Buyer e Tecnici | «Comunica al gruppo», nella ricevuta |
 | Qualcuno non ha ancora risposto | Buyer o Tecnico | sollecito in-app | un pulsante **per ciascun punto vendita mancante**, che apre la chat del suo capo reparto |
+| Buyer modifica e ripubblica | Buyer | notifica ai Tecnici e ai punti vendita | pulsante per ciascun Tecnico, con il testo «Modificata, da confermare» |
+| Tecnico conferma la modifica | Tecnico | notifica ai punti vendita | «Comunica la modifica nel gruppo», con il testo che invita a ricontrollare |
 
 Ogni messaggio porta il collegamento alla scheda, che richiede autenticazione. WhatsApp resta un
 canale di avviso: **l'ordine è valido solo dall'app**, e i messaggi non contengono pulsanti che

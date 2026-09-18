@@ -118,11 +118,24 @@ Stati modificabili: `BOZZA`, `DA_CORREGGERE`, `PROGRAMMATA`, `APERTA`, `SCADUTA`
 Restano bloccati `IN_VERIFICA` — §6 la vuole ferma fino all'esito del Tecnico — e gli stati
 terminali `CHIUSA`, `ANNULLATA`, `ARCHIVIATA`.
 
-Modificare un'opportunità già vista dai punti vendita non è però un'operazione neutra, quindi:
+**La modifica non va in linea da sola.** Su indicazione del committente, salvando un'opportunità
+già pubblicata questa torna in `IN_VERIFICA`: la ripubblicazione passa sempre dal Tecnico, come la
+prima pubblicazione. Il ciclo è:
+
+```
+APERTA ──Buyer «Salva e ripubblica»──▶ IN_VERIFICA ──Tecnico conferma──▶ APERTA
+```
+
+Conseguenza da conoscere: **finché è in verifica i punti vendita non la vedono**. Per questo
+ricevono subito una notifica che spiega perché è sparita, e i Tecnici una che chiede di
+ripubblicarla. Le risposte già raccolte restano intatte e tornano visibili con l'opportunità.
+
+Se la scadenza è nel frattempo passata, la conferma del Tecnico la porta direttamente in
+`SCADUTA` invece che in `APERTA`: non si riapre un termine già scaduto per effetto di una modifica.
 
 | Situazione | Comportamento |
 |---|---|
-| Qualsiasi modifica | notifica ai destinatari e voce nell'audit log: mai in silenzio |
+| Qualsiasi modifica | torna in verifica, notifica a destinatari e Tecnici, voce nell'audit log |
 | Riduzione dei colli sotto quelli già confermati | rifiutata, con il numero già impegnato nel messaggio |
 | Rimozione di un punto vendita che ha già risposto | rifiutata, con i codici interessati |
 | Modifica dei kg per collo | i kg delle risposte già raccolte vengono riallineati, con voce di audit dedicata |

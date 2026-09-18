@@ -118,6 +118,35 @@ final class WhatsApp
         ]));
     }
 
+    /** Richiesta di ripubblicazione: l'opportunità era già aperta ed è cambiata. */
+    public static function perRipubblicazione(Opportunity $opportunity): string
+    {
+        return implode("\n", [
+            '✏️ Modificata, da confermare: '.$opportunity->title,
+            $opportunity->reference.' · '.$opportunity->article_code,
+            'Era già aperta: resta ferma finché non la confermi.',
+            '',
+            'Verifica qui: '.route('opportunita.show', $opportunity),
+        ]);
+    }
+
+    /** Annuncio al gruppo dopo una modifica confermata dal Tecnico. */
+    public static function perAggiornamento(Opportunity $opportunity): string
+    {
+        return implode("\n", array_filter([
+            '✏️ Aggiornata: '.$opportunity->title,
+            $opportunity->article_code.($opportunity->plu ? ' · PLU '.$opportunity->plu : ''),
+            Format::money($opportunity->sale_price_gross).'/kg al pubblico · '
+                .Format::decimal($opportunity->kg_per_package, 1).' kg per collo',
+            $opportunity->isLimited() ? $opportunity->remainingPackages().' colli disponibili' : 'colli illimitati',
+            '📅 Consegna '.Format::date($opportunity->delivery_date),
+            '⏱ Rispondere entro il '.Format::dateTime($opportunity->closes_at),
+            '',
+            'Qualcosa è cambiato: ricontrollate prima di confermare.',
+            'Scheda: '.route('cr.opportunita.show', $opportunity),
+        ]));
+    }
+
     /** Conferma del punto vendita, da condividere nel gruppo. */
     public static function perRisposta(Response $response): string
     {

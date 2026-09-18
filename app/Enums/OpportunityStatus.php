@@ -50,11 +50,13 @@ enum OpportunityStatus: string
     {
         return match ($this) {
             self::BOZZA => [self::IN_VERIFICA, self::ANNULLATA],
-            self::IN_VERIFICA => [self::DA_CORREGGERE, self::PROGRAMMATA, self::APERTA, self::ANNULLATA],
+            self::IN_VERIFICA => [self::DA_CORREGGERE, self::PROGRAMMATA, self::APERTA, self::SCADUTA, self::ANNULLATA],
             self::DA_CORREGGERE => [self::IN_VERIFICA, self::ANNULLATA],
-            self::PROGRAMMATA => [self::APERTA, self::ANNULLATA, self::CHIUSA],
-            self::APERTA => [self::SCADUTA, self::CHIUSA, self::ANNULLATA],
-            self::SCADUTA => [self::CHIUSA, self::ARCHIVIATA, self::ANNULLATA],
+            // Una modifica del Buyer rimanda in verifica: la ripubblicazione
+            // passa sempre dal Tecnico.
+            self::PROGRAMMATA => [self::IN_VERIFICA, self::APERTA, self::ANNULLATA, self::CHIUSA],
+            self::APERTA => [self::IN_VERIFICA, self::SCADUTA, self::CHIUSA, self::ANNULLATA],
+            self::SCADUTA => [self::IN_VERIFICA, self::CHIUSA, self::ARCHIVIATA, self::ANNULLATA],
             self::CHIUSA => [self::ARCHIVIATA],
             self::ANNULLATA => [self::ARCHIVIATA],
             self::ARCHIVIATA => [],

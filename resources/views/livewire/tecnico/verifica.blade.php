@@ -2,6 +2,17 @@
 
     {{-- Pannello principale: anteprima completa --}}
     <div class="space-y-4 lg:col-span-2">
+        @if ($opportunity->isRipubblicazione())
+            <div class="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900" role="status">
+                <p class="font-semibold"><span aria-hidden="true">✏️</span> Ripubblicazione</p>
+                <p class="mt-1">
+                    Questa opportunità era già aperta ed è stata modificata dal Buyer: in questo momento i punti
+                    vendita non la vedono. Ha già raccolto {{ $opportunity->responses()->count() }} risposte, che
+                    restano valide. Confermala per rimetterla in linea.
+                </p>
+            </div>
+        @endif
+
         <div class="card p-5">
             <div class="flex flex-wrap items-center justify-between gap-2">
                 <div>

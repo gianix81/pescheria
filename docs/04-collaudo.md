@@ -59,6 +59,11 @@ opportunità nei diversi stati. Credenziali nella [README](../README.md).
 - [ ] Togliere un punto vendita che ha già risposto viene rifiutato, indicandone il codice.
 - [ ] Cambiando i kg per collo, i kg delle risposte già inviate risultano riallineati.
 - [ ] Un'opportunità in verifica non è modificabile; annullate e chiuse nemmeno.
+- [ ] Salvando, l'opportunità torna in verifica e i capi reparto non la vedono più.
+- [ ] I Tecnici ricevono la notifica «Da ripubblicare» e sulla scheda compare il pulsante WhatsApp per ciascuno.
+- [ ] La schermata di verifica segnala che è una ripubblicazione e quante risposte ha già raccolto.
+- [ ] Confermata dal Tecnico, torna aperta, i punti vendita sono avvisati e le risposte raccolte sono ancora lì.
+- [ ] Se nel frattempo la scadenza è passata, la conferma la porta in Scaduta e non riapre i termini.
 
 ### B-ter — Avvisi su WhatsApp
 - [ ] Inviata in verifica: compare un pulsante per ciascun Tecnico; con il numero in anagrafica apre la sua chat, senza numero apre l'elenco.

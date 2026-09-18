@@ -335,7 +335,7 @@ class OpportunitaForm extends Component
                 $this->authorize('updatePublished', $this->opportunity);
 
                 $this->opportunity = $service->updatePublished($this->opportunity, $this->dati(), auth()->user());
-                $messaggio = 'Modifiche salvate: i punti vendita destinatari sono stati avvisati.';
+                $messaggio = 'Modifiche salvate. L\'opportunità è tornata in verifica: sarà di nuovo disponibile quando il Tecnico conferma.';
             } else {
                 $this->opportunity = $service->updateDraft($this->opportunity, $this->dati(), auth()->user());
                 $messaggio = 'Bozza salvata ('.$this->opportunity->reference.').';

@@ -81,8 +81,12 @@ class OpportunityWorkflowService
     }
 
     /**
-     * Modifica di un'opportunità già pubblicata (il Buyer può intervenire in qualsiasi momento).
-     * Notifica sempre i destinatari: nessuna modifica silenziosa.
+     * Modifica di un'opportunità già pubblicata.
+     *
+     * Il Buyer può intervenire in qualsiasi momento, ma la modifica non va in
+     * linea da sola: l'opportunità torna IN_VERIFICA e tocca al Tecnico
+     * rimetterla a disposizione dei punti vendita. Le risposte già raccolte
+     * restano dove sono.
      */
     public function updatePublished(Opportunity $opportunity, array $data, User $user): Opportunity
     {
@@ -122,11 +126,24 @@ class OpportunityWorkflowService
                 'dopo' => $opportunity->only(array_keys($data)),
             ], $user);
 
+            // Torna in verifica: la ripubblicazione passa sempre dal Tecnico.
+            $this->transition($opportunity, OpportunityStatus::IN_VERIFICA, $user, [
+                'submitted_at' => now(),
+            ]);
+
             $this->notifications->notifyStores(
                 $opportunity,
                 NotificationType::OPPORTUNITA_MODIFICATA,
-                'Opportunità aggiornata: '.$opportunity->title,
-                'I dati dell\'opportunità '.$opportunity->reference.' sono cambiati. Verifica prima di confermare.',
+                'In aggiornamento: '.$opportunity->title,
+                'Il Buyer ha modificato '.$opportunity->reference.'. Sarà di nuovo disponibile appena il Tecnico conferma.',
+            );
+
+            $this->notifications->notifyRole(
+                Role::TECNICO,
+                $opportunity,
+                NotificationType::OPPORTUNITA_IN_VERIFICA,
+                'Da ripubblicare: '.$opportunity->title,
+                $opportunity->reference.' è stata modificata dopo la pubblicazione e attende la tua conferma.',
             );
 
             return $opportunity->fresh(['stores', 'media']);
@@ -161,10 +178,14 @@ class OpportunityWorkflowService
 
         $this->assertPublishable($opportunity);
 
-        // Apertura immediata se la finestra è già iniziata, altrimenti resta programmata.
-        $target = $opportunity->opens_at->lessThanOrEqualTo(now())
-            ? OpportunityStatus::APERTA
-            : OpportunityStatus::PROGRAMMATA;
+        // Già pubblicata in passato: è una ripubblicazione dopo una modifica.
+        $ripubblicazione = $opportunity->published_at !== null;
+
+        $target = match (true) {
+            $opportunity->closes_at->lessThanOrEqualTo(now()) => OpportunityStatus::SCADUTA,
+            $opportunity->opens_at->greaterThan(now()) => OpportunityStatus::PROGRAMMATA,
+            default => OpportunityStatus::APERTA,
+        };
 
         DB::transaction(function () use ($opportunity, $tecnico, $notes, $checklist, $target) {
             OpportunityReview::create([
@@ -175,12 +196,12 @@ class OpportunityWorkflowService
                 'checklist' => $checklist,
             ]);
 
-            $this->transition($opportunity, $target, $tecnico, [
+            $this->transition($opportunity, $target, $tecnico, array_filter([
                 'reviewed_by' => $tecnico->id,
                 'approved_at' => now(),
                 'review_notes' => $notes,
-                'published_at' => $target === OpportunityStatus::APERTA ? now() : null,
-            ]);
+                'published_at' => $target === OpportunityStatus::APERTA ? now() : $opportunity->published_at,
+            ], fn ($v) => $v !== null));
         });
 
         $this->notifications->notifyUser(
@@ -192,7 +213,7 @@ class OpportunityWorkflowService
         );
 
         if ($target === OpportunityStatus::APERTA) {
-            $this->announceOpening($opportunity);
+            $this->announceOpening($opportunity, $ripubblicazione);
         }
 
         return $opportunity;
@@ -501,7 +522,7 @@ class OpportunityWorkflowService
         ], $user);
     }
 
-    private function announceOpening(Opportunity $opportunity): void
+    private function announceOpening(Opportunity $opportunity, bool $ripubblicazione = false): void
     {
         // Prepara la riga di risposta per ogni destinatario: "non compilata" è uno stato esplicito.
         foreach ($opportunity->stores()->pluck('stores.id') as $storeId) {
