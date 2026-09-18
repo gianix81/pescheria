@@ -17,18 +17,31 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('login') }}" class="mt-6 space-y-4">
+    @if (config('pescheria.demo.enabled'))
+        <div class="mt-4 rounded-lg border border-amber-300 bg-amber-50 px-3 py-3 text-sm text-amber-900">
+            <p class="font-semibold"><span aria-hidden="true">⚠</span> Ambiente dimostrativo</p>
+            <p class="mt-1">I dati si azzerano a ogni riavvio. Accedi con uno di questi profili:</p>
+            <ul class="mt-2 space-y-1 font-mono text-xs">
+                <li><button type="button" class="underline" x-on:click="$refs.email.value = 'buyer@pescheria.local'; $refs.password.value = 'Pescheria2026!'">buyer@pescheria.local</button></li>
+                <li><button type="button" class="underline" x-on:click="$refs.email.value = 'tecnico@pescheria.local'; $refs.password.value = 'Pescheria2026!'">tecnico@pescheria.local</button></li>
+                <li><button type="button" class="underline" x-on:click="$refs.email.value = 'cr1@pescheria.local'; $refs.password.value = 'Pescheria2026!'">cr1@pescheria.local</button> (Capo Reparto)</li>
+            </ul>
+            <p class="mt-2 text-xs">Password per tutti: <strong>Pescheria2026!</strong> — tocca un indirizzo per compilare il modulo.</p>
+        </div>
+    @endif
+
+    <form method="POST" action="{{ route('login') }}" class="mt-6 space-y-4" x-data>
         @csrf
 
         <div>
             <label for="email" class="label">Email</label>
             <input id="email" name="email" type="email" autocomplete="username" required autofocus
-                   value="{{ old('email') }}" class="input @error('email') input-error @enderror">
+                   x-ref="email" value="{{ old('email') }}" class="input @error('email') input-error @enderror">
         </div>
 
         <div>
             <label for="password" class="label">Password</label>
-            <input id="password" name="password" type="password" autocomplete="current-password" required class="input">
+            <input id="password" name="password" type="password" autocomplete="current-password" required x-ref="password" class="input">
         </div>
 
         <div class="flex items-center justify-between">

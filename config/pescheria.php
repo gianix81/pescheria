@@ -63,6 +63,22 @@ return [
     ],
 
     /*
+    |--------------------------------------------------------------------------
+    | Modalità dimostrativa
+    |--------------------------------------------------------------------------
+    | Permette di pubblicare l'applicazione senza alcun servizio esterno: il
+    | database è un file SQLite temporaneo, ricreato e ripopolato a ogni avvio.
+    |
+    | NON è una modalità di produzione. I dati si azzerano, non sopravvivono
+    | al riavvio e la garanzia sulla disponibilità limitata non vale, perché
+    | dipende dal lock di riga di MySQL. Serve a mostrare l'applicazione.
+    */
+    'demo' => [
+        'enabled' => filter_var(env('DEMO_MODE', false), FILTER_VALIDATE_BOOL),
+        'database' => env('DEMO_DATABASE', '/tmp/demo/pescheria.sqlite'),
+    ],
+
+    /*
     | Segreto dell'endpoint /cron/esegui, usato solo dove non esiste un cron di
     | sistema (per esempio su Vercel). Vuoto = endpoint disattivato.
     */

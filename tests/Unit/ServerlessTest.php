@@ -23,6 +23,7 @@ class ServerlessTest extends TestCase
         $chiavi = array_merge(array_keys(Serverless::RICHIESTE), [
             'APP_STORAGE_PATH', 'VIEW_COMPILED_PATH', 'LOG_CHANNEL',
             'LOG_STACK', 'SESSION_DRIVER', 'CACHE_STORE', 'QUEUE_CONNECTION',
+            'DEMO_MODE', 'DEMO_DATABASE', 'DB_CONNECTION', 'VERCEL_DEPLOYMENT_ID',
         ]);
 
         foreach ($chiavi as $chiave) {
@@ -123,6 +124,67 @@ class ServerlessTest extends TestCase
         }
 
         $this->assertSame([], Serverless::variabiliMancanti());
+    }
+
+    #[Test]
+    public function in_demo_nessuna_variabile_e_obbligatoria(): void
+    {
+        $this->assertNotSame([], Serverless::variabiliMancanti());
+
+        putenv('DEMO_MODE=true');
+        $_ENV['DEMO_MODE'] = 'true';
+
+        $this->assertTrue(Serverless::inDemo());
+        $this->assertSame([], Serverless::variabiliMancanti());
+    }
+
+    #[Test]
+    public function la_demo_configura_database_sessione_e_chiave(): void
+    {
+        $database = sys_get_temp_dir().'/pescheria-demo-'.uniqid().'/demo.sqlite';
+
+        $impostate = Serverless::preparaDemo($database);
+
+        $this->assertSame('sqlite', $impostate['DB_CONNECTION']);
+        $this->assertSame($database, $impostate['DB_DATABASE']);
+        // Le istanze serverless non condividono niente: la sessione deve stare nel cookie.
+        $this->assertSame('cookie', $impostate['SESSION_DRIVER']);
+        $this->assertStringStartsWith('base64:', $impostate['APP_KEY']);
+        $this->assertDirectoryExists(dirname($database));
+    }
+
+    #[Test]
+    public function la_chiave_dimostrativa_e_valida_e_stabile_nello_stesso_deploy(): void
+    {
+        putenv('VERCEL_DEPLOYMENT_ID=dpl_abc123');
+        $_ENV['VERCEL_DEPLOYMENT_ID'] = 'dpl_abc123';
+
+        $prima = Serverless::preparaDemo(sys_get_temp_dir().'/pescheria-demo-'.uniqid().'/a.sqlite')['APP_KEY'];
+
+        // Simula un'altra istanza dello stesso rilascio.
+        foreach (['APP_KEY', 'DB_CONNECTION', 'DB_DATABASE', 'DEMO_DATABASE', 'SESSION_DRIVER', 'CACHE_STORE', 'QUEUE_CONNECTION'] as $chiave) {
+            putenv($chiave);
+            unset($_ENV[$chiave], $_SERVER[$chiave]);
+        }
+
+        $dopo = Serverless::preparaDemo(sys_get_temp_dir().'/pescheria-demo-'.uniqid().'/b.sqlite')['APP_KEY'];
+
+        $this->assertSame($prima, $dopo, 'Chiavi diverse fra istanze: le sessioni non sopravviverebbero.');
+
+        // Deve avere la lunghezza richiesta da AES-256-CBC.
+        $this->assertSame(32, strlen(base64_decode(substr($prima, 7))));
+    }
+
+    #[Test]
+    public function la_demo_non_sovrascrive_un_database_gia_configurato(): void
+    {
+        putenv('DB_CONNECTION=mysql');
+        $_ENV['DB_CONNECTION'] = 'mysql';
+
+        $impostate = Serverless::preparaDemo(sys_get_temp_dir().'/pescheria-demo-'.uniqid().'/c.sqlite');
+
+        $this->assertArrayNotHasKey('DB_CONNECTION', $impostate);
+        $this->assertSame('mysql', getenv('DB_CONNECTION'));
     }
 
     #[Test]

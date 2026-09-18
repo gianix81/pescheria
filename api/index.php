@@ -58,6 +58,11 @@ if (! Serverless::dipendenzeInstallate($radice)) {
 // 2. Valori che su serverless hanno un solo significato sensato.
 Serverless::preparaAmbiente();
 
+// 2-bis. Modalità dimostrativa: nessun servizio esterno richiesto.
+if (Serverless::inDemo()) {
+    Serverless::preparaDemo(getenv('DEMO_DATABASE') ?: '/tmp/demo/pescheria.sqlite');
+}
+
 // 3. Variabili che solo chi configura il progetto può fornire.
 //    Il controllo si applica solo dove NON esiste un file .env: su un server
 //    tradizionale i valori arrivano da lì e Laravel li legge da solo.

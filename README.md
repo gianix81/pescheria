@@ -201,9 +201,15 @@ Mailpit (anteprima email): <http://localhost:8025>.
 
 ## 6. Deploy su Vercel
 
-Configurazione presente (`vercel.json`, `api/index.php`): richiede un MySQL gestito, un bucket S3
-e un cron esterno. Limiti e passi in [docs/06-deploy-vercel.md](docs/06-deploy-vercel.md),
-variabili in [.env.vercel.example](.env.vercel.example).
+Configurazione presente (`vercel.json`, `api/index.php`). Per un uso reale servono un MySQL
+gestito, un bucket S3 e un cron esterno: limiti e passi in
+[docs/06-deploy-vercel.md](docs/06-deploy-vercel.md), variabili in
+[.env.vercel.example](.env.vercel.example).
+
+Per una **dimostrazione** basta invece la sola variabile `DEMO_MODE=true`: l'applicazione gira su
+un SQLite temporaneo, senza servizi esterni. I dati si azzerano a ogni riavvio e la garanzia sulla
+disponibilità limitata non vale, quindi non è adatta a raccogliere ordini veri; un banner lo
+ricorda su ogni pagina.
 
 ## 7. Deploy su hosting PHP tradizionale
 

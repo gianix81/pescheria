@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\EnsurePasswordChanged;
 use App\Http\Middleware\EnsureUserHasRole;
+use App\Http\Middleware\PreparaDatabaseDemo;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -16,6 +17,11 @@ $app = Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'role' => EnsureUserHasRole::class,
+        ]);
+
+        $middleware->web(prepend: [
+            // Attivo solo in modalità dimostrativa: prepara il database usa e getta.
+            PreparaDatabaseDemo::class,
         ]);
 
         $middleware->web(append: [

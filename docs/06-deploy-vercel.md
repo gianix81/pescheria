@@ -15,7 +15,33 @@ Il plugin Vite di Laravel compila invece in `public/build`. Il `vercel.json` ora
 - compila gli asset e li copia in `dist/`, che resta la cartella statica servita da CDN;
 - instrada tutto ciò che non è un file statico verso `api/index.php`.
 
-## 6.2 Cosa serve prima di deployare
+## 6.1-bis Modalità dimostrativa: online senza alcun servizio esterno
+
+Se vuoi **vedere e mostrare l'applicazione subito**, senza aprire un MySQL gestito né un bucket,
+imposta una sola variabile:
+
+```
+DEMO_MODE=true
+```
+
+Da lì l'applicazione si configura da sola: database SQLite temporaneo in `/tmp`, migrato e
+popolato al primo accesso con i dati del seeder, sessioni nel cookie (le istanze serverless non
+condividono nulla fra loro) e chiave di cifratura derivata dall'identificativo del rilascio.
+La pagina di accesso mostra i profili con cui entrare.
+
+**Cosa NON è.** Ogni istanza ha il proprio file: i dati si azzerano a ogni riavvio, non sono
+condivisi fra istanze e possono sparire da un momento all'altro. Soprattutto, **la garanzia sulla
+disponibilità limitata non vale**, perché dipende dal lock di riga di MySQL. Un banner ambra lo
+ricorda su ogni pagina. Va bene per una presentazione o per un collaudo dell'interfaccia; non per
+raccogliere ordini veri.
+
+L'URL è pubblico e le credenziali sono note: se non vuoi che sia raggiungibile da chiunque, attiva
+la Deployment Protection di Vercel.
+
+Per passare alla produzione basta togliere `DEMO_MODE` e impostare le variabili del §6.3: il
+codice non cambia.
+
+## 6.2 Cosa serve prima di deployare (uso reale)
 
 | Servizio | Perché | Note |
 |---|---|---|

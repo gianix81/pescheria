@@ -20,6 +20,70 @@ final class Serverless
         'DB_USERNAME' => 'utente del database',
     ];
 
+    /** La modalità dimostrativa è attiva? */
+    public static function inDemo(): bool
+    {
+        return filter_var(self::valore('DEMO_MODE') ?? false, FILTER_VALIDATE_BOOL);
+    }
+
+    /**
+     * Configura l'ambiente dimostrativo: database SQLite temporaneo, sessioni
+     * nel cookie (le istanze serverless non condividono niente fra loro) e una
+     * chiave di cifratura derivata dal deploy, così resta la stessa per tutte
+     * le istanze dello stesso rilascio.
+     *
+     * @return array<string, string>
+     */
+    public static function preparaDemo(string $database = '/tmp/demo/pescheria.sqlite'): array
+    {
+        $cartella = dirname($database);
+
+        if (! is_dir($cartella)) {
+            @mkdir($cartella, 0755, true);
+        }
+
+        $predefiniti = [
+            'DB_CONNECTION' => 'sqlite',
+            'DB_DATABASE' => $database,
+            'DEMO_DATABASE' => $database,
+            // Sessione nel cookie: senza stato condiviso è l'unica che regge
+            // il passaggio da un'istanza all'altra.
+            'SESSION_DRIVER' => 'cookie',
+            'CACHE_STORE' => 'array',
+            'QUEUE_CONNECTION' => 'sync',
+            'APP_KEY' => self::chiaveDimostrativa(),
+        ];
+
+        $impostate = [];
+
+        foreach ($predefiniti as $chiave => $valore) {
+            if (self::valore($chiave) !== null) {
+                continue;
+            }
+
+            putenv("{$chiave}={$valore}");
+            $_ENV[$chiave] = $valore;
+            $_SERVER[$chiave] = $valore;
+            $impostate[$chiave] = $valore;
+        }
+
+        return $impostate;
+    }
+
+    /**
+     * Chiave derivata dall'identificativo del rilascio: stabile fra le istanze
+     * dello stesso deploy, diversa a ogni nuovo deploy. Accettabile solo in
+     * demo, dove i dati sono usa e getta.
+     */
+    private static function chiaveDimostrativa(): string
+    {
+        $seme = self::valore('VERCEL_DEPLOYMENT_ID')
+            ?? self::valore('VERCEL_GIT_COMMIT_SHA')
+            ?? 'dimostrazione-locale';
+
+        return 'base64:'.base64_encode(hash('sha256', 'pescheria|'.$seme, true));
+    }
+
     /**
      * Imposta i valori che su serverless hanno un solo significato sensato,
      * senza mai sovrascrivere quelli già definiti dall'utente.
@@ -63,6 +127,10 @@ final class Serverless
     /** @return array<string, string> nome => spiegazione, per le variabili mancanti */
     public static function variabiliMancanti(): array
     {
+        if (self::inDemo()) {
+            return [];      // in demo l'applicazione si configura da sola
+        }
+
         return array_filter(
             self::RICHIESTE,
             fn (string $chiave) => self::valore($chiave) === null,

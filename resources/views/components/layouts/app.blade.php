@@ -89,6 +89,17 @@
             </div>
         </header>
 
+        @if (config('pescheria.demo.enabled'))
+            <div class="flex items-start gap-2 border-b border-amber-300 bg-amber-100 px-4 py-2.5 text-sm text-amber-900 sm:px-6" role="status">
+                <span aria-hidden="true">⚠</span>
+                <p>
+                    <strong>Ambiente dimostrativo.</strong>
+                    I dati sono temporanei e si azzerano a ogni riavvio. Non usarlo per ordini reali:
+                    il controllo sulla disponibilità limitata qui non è garantito.
+                </p>
+            </div>
+        @endif
+
         <main id="contenuto" class="flex-1 px-4 py-6 sm:px-6 lg:px-8">
             @if (session('status'))
                 <div class="mb-4 flex items-start gap-2 rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-900" role="status">
