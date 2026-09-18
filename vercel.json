@@ -1,0 +1,22 @@
+{
+    "$schema": "https://openapi.vercel.sh/vercel.json",
+    "functions": {
+        "api/index.php": {
+            "runtime": "vercel-php@0.8.0",
+            "memory": 1024,
+            "maxDuration": 60
+        }
+    },
+    "buildCommand": "npm run build && rm -rf dist && mkdir -p dist && cp -R public/build dist/build && cp public/favicon.ico dist/ 2>/dev/null || true",
+    "outputDirectory": "dist",
+    "routes": [
+        { "handle": "filesystem" },
+        { "src": "/(.*)", "dest": "/api/index.php" }
+    ],
+    "crons": [
+        {
+            "path": "/cron/esegui",
+            "schedule": "0 4 * * *"
+        }
+    ]
+}

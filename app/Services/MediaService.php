@@ -29,9 +29,14 @@ class MediaService
         $disk = config('pescheria.media.disk');
         $extension = $this->safeExtension($file, $mime);
         $name = Str::uuid()->toString().'.'.$extension;
-        $path = "opportunita/{$opportunity->id}/{$name}";
+        $directory = "opportunita/{$opportunity->id}";
+        $path = "{$directory}/{$name}";
 
-        Storage::disk($disk)->putFileAs("opportunita/{$opportunity->id}", $file, $name, 'private');
+        // storeAs() funziona sia con un file caricato sul server sia con un file
+        // temporaneo già su S3 (upload diretto dal browser): in quel caso Livewire
+        // esegue una copia S3→S3 senza farlo passare dall'applicazione. È ciò che
+        // permette video da 100 MB anche dove la richiesta HTTP è limitata.
+        $file->storeAs($directory, $name, ['disk' => $disk]);
 
         $media = $opportunity->media()->create([
             'type' => $type,

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\CronController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MediaController;
@@ -16,6 +17,12 @@ use Illuminate\Support\Facades\Route;
 | L'autorizzazione è sempre doppia: middleware di ruolo sul gruppo di rotte
 | e policy sul singolo modello. Nascondere i pulsanti non basta.
 */
+
+// Esecuzione dei comandi pianificati dove non c'è un cron di sistema.
+// Protetto da CRON_SECRET; senza segreto valido risponde 404.
+Route::get('/cron/esegui', [CronController::class, 'run'])
+    ->middleware('throttle:cron')
+    ->name('cron.run');
 
 // ------------------------------------------------------------------ ospiti
 Route::middleware('guest')->group(function () {

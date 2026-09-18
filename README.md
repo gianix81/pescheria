@@ -190,7 +190,13 @@ docker compose exec app php artisan migrate --seed
 
 Mailpit (anteprima email): <http://localhost:8025>.
 
-## 6. Deploy in produzione
+## 6. Deploy su Vercel
+
+Configurazione presente (`vercel.json`, `api/index.php`): richiede un MySQL gestito, un bucket S3
+e un cron esterno. Limiti e passi in [docs/06-deploy-vercel.md](docs/06-deploy-vercel.md),
+variabili in [.env.vercel.example](.env.vercel.example).
+
+## 7. Deploy su hosting PHP tradizionale
 
 ```bash
 composer install --no-dev --optimize-autoloader
@@ -210,7 +216,7 @@ Checklist minima:
 - `/up` è l'endpoint di health check;
 - log applicativi senza dati sensibili (l'audit non registra password né token).
 
-## 7. Struttura del progetto
+## 8. Struttura del progetto
 
 ```
 app/
@@ -228,7 +234,7 @@ docs/                   analisi, architettura, schema dati, schermate, collaudo
 tests/                  Unit/ e Feature/ (98 test)
 ```
 
-## 8. Fuori scope dell'MVP (dichiarato)
+## 9. Fuori scope dell'MVP (dichiarato)
 
 - Invio automatico dell'ordine a ERP o fornitori: l'export è il punto di consegna.
 - API JSON pubbliche: il dominio è già isolato nei servizi, un futuro `/api/v1` non richiede

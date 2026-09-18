@@ -1,0 +1,12 @@
+# Fuori dal bundle serverless: riduce il cold start e non serve in produzione.
+/tests
+/docs
+/node_modules
+/storage/logs
+/storage/framework/cache
+/storage/framework/sessions
+/storage/framework/views
+/docker
+/bin
+*.md
+!README.md

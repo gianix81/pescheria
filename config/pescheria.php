@@ -44,6 +44,12 @@ return [
         ],
     ],
 
+    /*
+    | Segreto dell'endpoint /cron/esegui, usato solo dove non esiste un cron di
+    | sistema (per esempio su Vercel). Vuoto = endpoint disattivato.
+    */
+    'cron_secret' => env('CRON_SECRET', ''),
+
     'export' => [
         'csv_delimiter' => ';',
         'csv_bom' => true,
