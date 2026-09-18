@@ -212,6 +212,12 @@ l'applicazione parte da sola su un SQLite temporaneo (`DEMO_MODE=false` lo imped
 disponibilità limitata non vale, quindi non è adatta a raccogliere ordini veri; un banner lo
 ricorda su ogni pagina.
 
+## 6-bis. Deploy su Railway (consigliato fra i PaaS)
+
+Container persistente: nessun limite sulle richieste, worker di coda e scheduler reali, database
+MySQL come plugin. Variabili pronte in [.env.railway.example](.env.railway.example), procedura in
+[docs/08-deploy-railway.md](docs/08-deploy-railway.md).
+
 ## 7. Deploy su hosting PHP tradizionale
 
 ```bash

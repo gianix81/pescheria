@@ -19,6 +19,10 @@ $app = Application::configure(basePath: dirname(__DIR__))
             'role' => EnsureUserHasRole::class,
         ]);
 
+        // Dietro il proxy di una piattaforma (Railway, Fly, load balancer) senza
+        // questo Laravel genererebbe URL http e cookie non sicuri.
+        $middleware->trustProxies(at: '*');
+
         $middleware->web(prepend: [
             // Attivo solo in modalità dimostrativa: prepara il database usa e getta.
             PreparaDatabaseDemo::class,
