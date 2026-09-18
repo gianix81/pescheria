@@ -23,7 +23,8 @@ class ServerlessTest extends TestCase
         $chiavi = array_merge(array_keys(Serverless::RICHIESTE), [
             'APP_STORAGE_PATH', 'VIEW_COMPILED_PATH', 'LOG_CHANNEL',
             'LOG_STACK', 'SESSION_DRIVER', 'CACHE_STORE', 'QUEUE_CONNECTION',
-            'DEMO_MODE', 'DEMO_DATABASE', 'DB_CONNECTION', 'VERCEL_DEPLOYMENT_ID',
+            'DEMO_MODE', 'DEMO_DATABASE', 'DB_CONNECTION', 'DB_URL', 'DB_SOCKET',
+            'VERCEL_DEPLOYMENT_ID',
         ]);
 
         foreach ($chiavi as $chiave) {
@@ -92,13 +93,22 @@ class ServerlessTest extends TestCase
         $this->assertSame('daily', getenv('LOG_CHANNEL'));
     }
 
+    /** Simula una configurazione reale iniziata: basta questo a escludere la demo. */
+    private function conDatabaseDichiarato(): void
+    {
+        putenv('DB_HOST=db.example.com');
+        $_ENV['DB_HOST'] = 'db.example.com';
+    }
+
     #[Test]
     public function elenca_le_variabili_che_mancano(): void
     {
+        $this->conDatabaseDichiarato();
+
         $mancanti = Serverless::variabiliMancanti();
 
         $this->assertSame(
-            ['APP_KEY', 'DB_HOST', 'DB_DATABASE', 'DB_USERNAME'],
+            ['APP_KEY', 'DB_DATABASE', 'DB_USERNAME'],
             array_keys($mancanti),
         );
 
@@ -109,10 +119,53 @@ class ServerlessTest extends TestCase
     #[Test]
     public function una_variabile_presente_ma_vuota_conta_come_mancante(): void
     {
+        $this->conDatabaseDichiarato();
+
         putenv('APP_KEY=');
         $_ENV['APP_KEY'] = '';
 
         $this->assertArrayHasKey('APP_KEY', Serverless::variabiliMancanti());
+    }
+
+    #[Test]
+    public function senza_alcun_database_la_demo_si_attiva_da_sola(): void
+    {
+        // Nessuna variabile DB_*: non ci sono dati reali da mettere a rischio,
+        // quindi è meglio un'applicazione funzionante di una pagina di errore.
+        $this->assertFalse(Serverless::databaseConfigurato());
+        $this->assertTrue(Serverless::inDemo());
+        $this->assertSame([], Serverless::variabiliMancanti());
+    }
+
+    #[Test]
+    public function un_database_anche_solo_accennato_impedisce_la_demo_automatica(): void
+    {
+        // Chi ha iniziato a configurare un database vero deve vedere cosa manca,
+        // non ritrovarsi gli ordini su un SQLite temporaneo.
+        foreach (['DB_HOST', 'DB_DATABASE', 'DB_URL', 'DB_SOCKET'] as $indizio) {
+            putenv($indizio.'=qualcosa');
+            $_ENV[$indizio] = 'qualcosa';
+
+            $this->assertTrue(Serverless::databaseConfigurato(), $indizio);
+            $this->assertFalse(Serverless::inDemo(), $indizio);
+
+            putenv($indizio);
+            unset($_ENV[$indizio], $_SERVER[$indizio]);
+        }
+    }
+
+    #[Test]
+    public function demo_mode_esplicito_ha_sempre_la_precedenza(): void
+    {
+        $this->conDatabaseDichiarato();
+
+        putenv('DEMO_MODE=true');
+        $_ENV['DEMO_MODE'] = 'true';
+        $this->assertTrue(Serverless::inDemo(), 'DEMO_MODE=true deve vincere anche con un database configurato.');
+
+        putenv('DEMO_MODE=false');
+        $_ENV['DEMO_MODE'] = 'false';
+        $this->assertFalse(Serverless::inDemo(), 'DEMO_MODE=false deve disattivare la demo automatica.');
     }
 
     #[Test]
@@ -129,6 +182,7 @@ class ServerlessTest extends TestCase
     #[Test]
     public function in_demo_nessuna_variabile_e_obbligatoria(): void
     {
+        $this->conDatabaseDichiarato();
         $this->assertNotSame([], Serverless::variabiliMancanti());
 
         putenv('DEMO_MODE=true');

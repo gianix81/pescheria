@@ -20,10 +20,43 @@ final class Serverless
         'DB_USERNAME' => 'utente del database',
     ];
 
-    /** La modalità dimostrativa è attiva? */
+    /** Variabili che indicano l'intenzione di usare un database vero. */
+    private const INDIZI_DATABASE = ['DB_HOST', 'DB_DATABASE', 'DB_URL', 'DB_SOCKET'];
+
+    /**
+     * La modalità dimostrativa è attiva?
+     *
+     * Oltre a DEMO_MODE=true, si attiva da sola quando l'ambiente non contiene
+     * NESSUN indizio di un database configurato: in quel caso non esistono dati
+     * reali da mettere a rischio, e mostrare l'applicazione funzionante è più
+     * utile di una pagina di errore.
+     *
+     * Basta però una sola variabile DB_* perché la demo non si attivi: se chi
+     * configura ha iniziato a impostare un database vero e ha dimenticato
+     * qualcosa, deve vedere l'elenco di ciò che manca, non ritrovarsi gli
+     * ordini scritti su un SQLite temporaneo.
+     */
     public static function inDemo(): bool
     {
-        return filter_var(self::valore('DEMO_MODE') ?? false, FILTER_VALIDATE_BOOL);
+        $esplicita = self::valore('DEMO_MODE');
+
+        if ($esplicita !== null) {
+            return filter_var($esplicita, FILTER_VALIDATE_BOOL);
+        }
+
+        return ! self::databaseConfigurato();
+    }
+
+    /** Almeno una variabile di connessione al database è valorizzata? */
+    public static function databaseConfigurato(): bool
+    {
+        foreach (self::INDIZI_DATABASE as $chiave) {
+            if (self::valore($chiave) !== null) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

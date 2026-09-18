@@ -17,14 +17,22 @@ Il plugin Vite di Laravel compila invece in `public/build`. Il `vercel.json` ora
 
 ## 6.1-bis Modalità dimostrativa: online senza alcun servizio esterno
 
-Se vuoi **vedere e mostrare l'applicazione subito**, senza aprire un MySQL gestito né un bucket,
-imposta una sola variabile:
+Se non è configurato **alcun** database, l'applicazione entra da sola in modalità dimostrativa:
+senza dati reali da mettere a rischio, un'applicazione funzionante è più utile di una pagina di
+errore. Non serve impostare nulla.
+
+Basta però una sola variabile `DB_HOST`, `DB_DATABASE`, `DB_URL` o `DB_SOCKET` perché la demo
+**non** si attivi: chi ha iniziato a configurare un database vero deve vedere l'elenco di ciò che
+manca, non ritrovarsi gli ordini scritti su un file temporaneo.
+
+Si può comunque forzare il comportamento in entrambe le direzioni:
 
 ```
-DEMO_MODE=true
+DEMO_MODE=true     # demo anche con un database configurato
+DEMO_MODE=false    # mai demo: senza database si vede l'elenco delle variabili mancanti
 ```
 
-Da lì l'applicazione si configura da sola: database SQLite temporaneo in `/tmp`, migrato e
+In demo l'applicazione si configura da sola: database SQLite temporaneo in `/tmp`, migrato e
 popolato al primo accesso con i dati del seeder, sessioni nel cookie (le istanze serverless non
 condividono nulla fra loro) e chiave di cifratura derivata dall'identificativo del rilascio.
 La pagina di accesso mostra i profili con cui entrare.

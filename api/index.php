@@ -59,8 +59,16 @@ if (! Serverless::dipendenzeInstallate($radice)) {
 Serverless::preparaAmbiente();
 
 // 2-bis. Modalità dimostrativa: nessun servizio esterno richiesto.
+//        Si attiva con DEMO_MODE=true oppure, da sola, quando non è configurato
+//        alcun database: senza dati reali è meglio un'applicazione funzionante
+//        di una pagina di errore.
 if (Serverless::inDemo()) {
     Serverless::preparaDemo(getenv('DEMO_DATABASE') ?: '/tmp/demo/pescheria.sqlite');
+
+    // Rende la demo visibile anche a config/pescheria.php (banner, avvisi).
+    putenv('DEMO_MODE=true');
+    $_ENV['DEMO_MODE'] = 'true';
+    $_SERVER['DEMO_MODE'] = 'true';
 }
 
 // 3. Variabili che solo chi configura il progetto può fornire.
