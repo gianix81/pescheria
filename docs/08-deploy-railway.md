@@ -57,6 +57,17 @@ Senza nessuna delle due i video caricati spariscono al deploy successivo.
 Va comunque ricordato che foto e video sono già compressi nel browser prima dell'invio
 ([§7](07-compressione-media.md)): un video da 300 MB parte sotto i 20 MB.
 
+## 8.5-bis Se il build fallisce
+
+Nixpacks legge i requisiti dal repository, non li indovina:
+
+| Sintomo nel build log | Causa | Rimedio |
+|---|---|---|
+| `requires ext-gd * -> it is missing` (o `ext-zip`) | le estensioni arrivavano solo come dipendenza transitiva di PhpSpreadsheet | sono ora dichiarate in `composer.json`: Nixpacks le installa |
+| `Vite requires Node.js version 20.19+` | Nixpacks sceglieva un Node più vecchio | `engines.node` in `package.json` fissa `>=22.12` |
+| pagina bianca o 404 dopo un build riuscito | document root sbagliata | variabile `NIXPACKS_PHP_ROOT_DIR=/app/public` |
+| `No application encryption key` | manca `APP_KEY` | vedi §8.2 |
+
 ## 8.6 Verifica dopo il primo deploy
 
 - [ ] `https://<dominio>/up` risponde `200`.
