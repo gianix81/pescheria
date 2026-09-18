@@ -60,6 +60,14 @@ opportunità nei diversi stati. Credenziali nella [README](../README.md).
 - [ ] Cambiando i kg per collo, i kg delle risposte già inviate risultano riallineati.
 - [ ] Un'opportunità in verifica non è modificabile; annullate e chiuse nemmeno.
 
+### B-ter — Avvisi su WhatsApp
+- [ ] Inviata in verifica: sulla scheda compare «Scrivi ai Tecnici su WhatsApp» e il testo contiene riferimento, articolo e collegamento.
+- [ ] Approvata: compare «Condividi nel gruppo WhatsApp» e il collegamento porta alla scheda del Capo Reparto.
+- [ ] Un capo reparto che conferma vede «Comunica al gruppo» con quantità, kg e totale aggiornato.
+- [ ] Aprendo il collegamento, WhatsApp mostra il messaggio già scritto e chiede solo il destinatario.
+- [ ] «Copia testo» copia il messaggio negli appunti.
+- [ ] Alla conferma di un punto vendita, Buyer e Tecnico ricevono la notifica in-app.
+
 ### C — Verifica (Tecnico)
 - [ ] La checklist resta visibile durante lo scorrimento (pannello sticky).
 - [ ] «Richiedi correzioni» senza motivazione → bloccato.

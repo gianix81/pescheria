@@ -116,6 +116,13 @@
                     </div>
                 @endif
 
+                @if ($risposta?->isSubmitted())
+                    <x-condividi-whatsapp class="mt-3"
+                        :testo="\App\Support\WhatsApp::perRisposta($risposta)"
+                        etichetta="Comunica al gruppo"
+                        descrizione="Il tuo ordine è già registrato: questo serve solo ad avvisare i colleghi nel gruppo." />
+                @endif
+
                 @error('invio')
                     <p class="error mt-3" role="alert"><span aria-hidden="true">⚠</span>{{ $message }}</p>
                 @enderror

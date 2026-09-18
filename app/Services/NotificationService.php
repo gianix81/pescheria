@@ -11,6 +11,7 @@ use App\Jobs\DeliverNotification;
 use App\Models\Notification;
 use App\Models\NotificationDelivery;
 use App\Models\Opportunity;
+use App\Models\Response;
 use App\Models\Store;
 use App\Models\User;
 use App\Support\Format;
@@ -154,6 +155,29 @@ class NotificationService
         }
 
         return $sent;
+    }
+
+    /**
+     * Un punto vendita ha inviato la propria risposta: lo sanno subito il Buyer
+     * che ha creato l'opportunità e i Tecnici che la sorvegliano.
+     */
+    public function notifyResponseSubmitted(Response $response): void
+    {
+        $opportunity = $response->opportunity;
+        $store = $response->store;
+
+        $titolo = $response->packages > 0
+            ? $store->code.' ordina '.$response->packages.' colli'
+            : $store->code.' non acquista';
+
+        $stat = $opportunity->completionStats();
+        $corpo = $opportunity->title.' — risposte '.$stat['inviate'].'/'.$stat['destinatari']
+            .', totale '.$opportunity->totalPackagesOrdered().' colli.';
+
+        $chiave = 'risposta-'.$response->id.'-'.$response->updated_at?->timestamp;
+
+        $this->notifyUser($opportunity->creator, $opportunity, NotificationType::RISPOSTA_INVIATA, $titolo, $corpo, null, $chiave, $store);
+        $this->notifyRole(Role::TECNICO, $opportunity, NotificationType::RISPOSTA_INVIATA, $titolo, $corpo, $chiave);
     }
 
     /** Riepilogo finale a Buyer e Tecnici alla chiusura/scadenza. */

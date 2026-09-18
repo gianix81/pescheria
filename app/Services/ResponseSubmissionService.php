@@ -116,6 +116,8 @@ class ResponseSubmissionService
                 'colli' => $packages,
             ], $user);
 
+            $this->notifications->notifyResponseSubmitted($response->load('opportunity', 'store'));
+
             return $response;
         });
     }
@@ -160,6 +162,8 @@ class ResponseSubmissionService
                 'opportunita' => $opportunity->reference,
                 'punto_vendita' => $store->code,
             ], $user);
+
+            $this->notifications->notifyResponseSubmitted($response->load('opportunity', 'store'));
 
             return $response;
         });

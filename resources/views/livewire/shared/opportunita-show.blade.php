@@ -86,6 +86,28 @@
             <button type="button" wire:click="sollecita" class="btn-secondary">Sollecita mancanti</button>
             <a href="{{ route('export.index', ['opportunity_id' => $opportunity->id]) }}" class="btn-ghost">⤓ Export</a>
         </div>
+
+        {{-- ------------------------------------------------- Avvisi su WhatsApp --}}
+        @php $stato = $opportunity->status; @endphp
+
+        @if ($stato === \App\Enums\OpportunityStatus::IN_VERIFICA)
+            <div class="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
+                <p class="text-sm font-semibold text-slate-800">Avvisa i Tecnici</p>
+                <x-condividi-whatsapp class="mt-2"
+                    :testo="\App\Support\WhatsApp::perVerifica($opportunity)"
+                    etichetta="Scrivi ai Tecnici su WhatsApp"
+                    descrizione="Il messaggio è già pronto: scegli il destinatario e invia. La notifica in-app è comunque già partita." />
+            </div>
+        @elseif ($stato->isPubblicata() && $stato !== \App\Enums\OpportunityStatus::SCADUTA)
+            <div class="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+                <p class="text-sm font-semibold text-emerald-900">Annuncia l'apertura nel gruppo dei reparti</p>
+                <x-condividi-whatsapp class="mt-2"
+                    variante="principale"
+                    :testo="\App\Support\WhatsApp::perApertura($opportunity)"
+                    etichetta="Condividi nel gruppo WhatsApp"
+                    descrizione="Scegli il gruppo dei reparti pescheria e invia. Il messaggio porta il collegamento alla scheda: l'ordine resta valido solo dall'app." />
+            </div>
+        @endif
     </div>
 
     {{-- Stato compilazioni --}}

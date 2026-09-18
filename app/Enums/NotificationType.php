@@ -12,6 +12,7 @@ enum NotificationType: string
     case OPPORTUNITA_CHIUSA = 'OPPORTUNITA_CHIUSA';
     case OPPORTUNITA_ANNULLATA = 'OPPORTUNITA_ANNULLATA';
     case SOLLECITO_RISPOSTA = 'SOLLECITO_RISPOSTA';
+    case RISPOSTA_INVIATA = 'RISPOSTA_INVIATA';
     case RISPOSTA_RIAPERTA = 'RISPOSTA_RIAPERTA';
     case RIEPILOGO_FINALE = 'RIEPILOGO_FINALE';
 
@@ -26,6 +27,7 @@ enum NotificationType: string
             self::OPPORTUNITA_CHIUSA => 'Opportunità chiusa',
             self::OPPORTUNITA_ANNULLATA => 'Opportunità annullata',
             self::SOLLECITO_RISPOSTA => 'Sollecito risposta',
+            self::RISPOSTA_INVIATA => 'Risposta di un punto vendita',
             self::RISPOSTA_RIAPERTA => 'Risposta riaperta',
             self::RIEPILOGO_FINALE => 'Riepilogo finale',
         };
