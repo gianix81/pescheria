@@ -13,13 +13,17 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 /**
- * Home del Capo Reparto: prima ciò che richiede azione.
+ * Pagina d'ingresso del Capo Reparto: l'elenco della merce disponibile.
+ *
+ * Non è una dashboard e non deve diventarlo: chi apre l'applicazione da un
+ * reparto vuole vedere subito che cosa c'è da ordinare, non dei contatori.
+ * I conteggi vivono quindi nelle schede di filtro, non in riquadri dedicati.
  * Tutte le query passano da Opportunity::visibleTo(), quindi il perimetro del
  * punto vendita è applicato lato server e non dipende dall'interfaccia.
  */
 #[Layout('components.layouts.app')]
 #[Title('Opportunità')]
-class Dashboard extends Component
+class Opportunita extends Component
 {
     use WithPagination;
 
@@ -128,7 +132,7 @@ class Dashboard extends Component
             ->get()
             ->keyBy('opportunity_id');
 
-        return view('livewire.cr.dashboard', [
+        return view('livewire.cr.opportunita', [
             'opportunita' => $opportunita,
             'risposte' => $risposte,
             'ordinato' => $ordinato,

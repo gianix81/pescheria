@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\ResponseStatus;
-use App\Livewire\Cr\Dashboard;
+use App\Livewire\Cr\Opportunita;
 use App\Livewire\Cr\Scheda;
 use App\Models\Response;
 use App\Services\ResponseSubmissionService;
@@ -159,7 +159,7 @@ class FlussoCapoRepartoTest extends TestCase
         app(ResponseSubmissionService::class)->submitPurchase($inviata, $store, $cr, 1);
 
         Livewire::actingAs($cr)
-            ->test(Dashboard::class)
+            ->test(Opportunita::class)
             ->assertSee('Da rispondere ora')
             ->assertDontSee('Gia inviata')
             ->call('aggiornaVista', 'inviate')

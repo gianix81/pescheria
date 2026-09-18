@@ -20,7 +20,7 @@ class PermessiRuoliTest extends TestCase
 
         $this->actingAs($this->buyer())->get('/')->assertRedirect(route('buyer.dashboard'));
         $this->actingAs($this->tecnico())->get('/')->assertRedirect(route('tecnico.dashboard'));
-        $this->actingAs($cr)->get('/')->assertRedirect(route('cr.dashboard'));
+        $this->actingAs($cr)->get('/')->assertRedirect(route('cr.opportunita.index'));
     }
 
     #[Test]
@@ -49,7 +49,7 @@ class PermessiRuoliTest extends TestCase
     {
         [$store, $cr] = $this->storeWithCr();
 
-        $this->actingAs($cr)->get(route('cr.dashboard'))->assertOk();
+        $this->actingAs($cr)->get(route('cr.opportunita.index'))->assertOk();
         $this->actingAs($cr)->get(route('opportunita.index'))->assertForbidden();
         $this->actingAs($cr)->get(route('export.index'))->assertForbidden();
         $this->actingAs($cr)->get(route('export.csv'))->assertForbidden();
@@ -112,7 +112,7 @@ class PermessiRuoliTest extends TestCase
     {
         $this->get(route('buyer.dashboard'))->assertRedirect(route('login'));
         $this->get(route('tecnico.dashboard'))->assertRedirect(route('login'));
-        $this->get(route('cr.dashboard'))->assertRedirect(route('login'));
+        $this->get(route('cr.opportunita.index'))->assertRedirect(route('login'));
     }
 
     #[Test]

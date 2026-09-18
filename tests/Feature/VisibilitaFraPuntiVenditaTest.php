@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Livewire\Cr\Dashboard;
+use App\Livewire\Cr\Opportunita;
 use App\Livewire\Cr\Scheda;
 use App\Models\Response;
 use App\Services\ResponseSubmissionService;
@@ -103,7 +103,7 @@ class VisibilitaFraPuntiVenditaTest extends TestCase
         app(ResponseSubmissionService::class)->submitPurchase($opportunita, $altro, $crAltro, 6);
 
         Livewire::actingAs($io)
-            ->test(Dashboard::class)
+            ->test(Opportunita::class)
             ->assertSee('Già ordinati')
             ->assertSee('6 colli');
     }

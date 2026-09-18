@@ -144,6 +144,19 @@ Se la scadenza è nel frattempo passata, la conferma del Tecnico la porta dirett
 Il vincolo forte resta quello del §7: il Buyer non tocca le quantità decise dai Capi Reparto. Le
 correzioni su una singola risposta passano per la funzione dedicata, tracciata separatamente.
 
+## 1.4-quinquies Pagina d'ingresso del Capo Reparto
+
+Su indicazione del committente il Capo Reparto **non** ha una dashboard: chi apre l'applicazione
+da un reparto vuole vedere subito la merce disponibile, non dei contatori.
+
+La pagina d'ingresso è quindi l'elenco delle opportunità. I conteggi non sono spariti, si sono
+spostati dove non rubano spazio: dentro le schede di filtro («Da rispondere 3»). Resta una sola
+riga di avviso, e solo quando c'è davvero qualcosa in scadenza.
+
+Ogni card mostra ciò che serve per decidere senza aprirla: anteprima grande di foto o video,
+titolo, codice articolo, PLU, origine, prezzo di vendita, peso del collo, disponibilità residua,
+data di consegna, countdown, la propria risposta se già inviata e quanto hanno ordinato gli altri.
+
 ## 1.5 Regole di business non negoziabili implementate
 
 1. `prezzo_vendita_netto = prezzo_vendita_lordo / (1 + aliquota_iva)`

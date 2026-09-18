@@ -36,7 +36,7 @@ enum Role: string
             self::ADMIN => 'tecnico.anagrafiche.utenti',
             self::BUYER => 'buyer.dashboard',
             self::TECNICO => 'tecnico.dashboard',
-            self::CAPO_REPARTO => 'cr.dashboard',
+            self::CAPO_REPARTO => 'cr.opportunita.index',
         };
     }
 

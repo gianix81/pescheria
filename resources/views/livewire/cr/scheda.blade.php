@@ -18,7 +18,7 @@
     @endif
 
     <nav class="mb-3 text-sm text-slate-500" aria-label="Percorso">
-        <a href="{{ route('cr.dashboard') }}" class="underline underline-offset-2">Opportunità</a>
+        <a href="{{ route('cr.opportunita.index') }}" class="underline underline-offset-2">Opportunità</a>
         <span aria-hidden="true">/</span>
         <span class="text-slate-700">{{ $opportunity->reference }}</span>
     </nav>

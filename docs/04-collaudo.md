@@ -82,6 +82,11 @@ opportunità nei diversi stati. Credenziali nella [README](../README.md).
 - [ ] All'apertura i CR destinatari ricevono la notifica in-app; gli altri no.
 
 ### D — Risposta (Capo Reparto, da smartphone)
+- [ ] Dopo il login si atterra sull'elenco delle opportunità, non su una dashboard.
+- [ ] Ogni card mostra articolo, PLU, prezzo, peso collo, disponibilità, consegna e countdown senza aprirla.
+- [ ] I conteggi compaiono nelle schede di filtro, non in riquadri dedicati.
+- [ ] Un'opportunità esaurita lo dichiara già nell'elenco.
+- [ ] Un'opportunità in scadenza entro 3 ore è evidenziata.
 - [ ] Nella scheda compare la classifica degli altri punti vendita, con i totali di colli e kg.
 - [ ] Il proprio punto vendita è evidenziato con il contrassegno «Tu».
 - [ ] Con disponibilità limitata la barra mostra la percentuale già impegnata.

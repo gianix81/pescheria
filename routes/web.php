@@ -101,7 +101,9 @@ Route::middleware('auth')->group(function () {
 
     // ---------------------------------------------------------- Capo Reparto
     Route::middleware('role:CAPO_REPARTO')->prefix('cr')->name('cr.')->group(function () {
-        Route::get('/dashboard', Livewire\Cr\Dashboard::class)->name('dashboard');
+        // La pagina d'ingresso è l'elenco delle opportunità, non una dashboard.
+        Route::get('/opportunita', Livewire\Cr\Opportunita::class)->name('opportunita.index');
+        Route::redirect('/dashboard', '/cr/opportunita')->name('dashboard');
         Route::get('/opportunita/{opportunity}', Livewire\Cr\Scheda::class)->name('opportunita.show');
     });
 });

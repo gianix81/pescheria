@@ -75,10 +75,10 @@ final class Navigation
     private static function capoReparto(User $user): array
     {
         return [
-            self::item('Opportunità attive', 'cr.dashboard', '▦'),
-            self::item('Da completare', 'cr.dashboard', '⚑', ['vista' => 'da_completare']),
-            self::item('Inviate', 'cr.dashboard', '✓', ['vista' => 'inviate']),
-            self::item('Storico', 'cr.dashboard', '🕘', ['vista' => 'storico']),
+            self::item('Da rispondere', 'cr.opportunita.index', '⚑', ['vista' => 'da_completare']),
+            self::item('Bozze', 'cr.opportunita.index', '✎', ['vista' => 'bozze']),
+            self::item('Inviate', 'cr.opportunita.index', '✓', ['vista' => 'inviate']),
+            self::item('Storico', 'cr.opportunita.index', '🕘', ['vista' => 'storico']),
         ];
     }
 

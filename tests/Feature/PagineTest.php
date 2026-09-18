@@ -69,9 +69,9 @@ class PagineTest extends TestCase
         $opportunita = $this->openOpportunity([$store]);
 
         foreach ([
-            route('cr.dashboard'),
-            route('cr.dashboard', ['vista' => 'inviate']),
-            route('cr.dashboard', ['vista' => 'storico']),
+            route('cr.opportunita.index'),
+            route('cr.opportunita.index', ['vista' => 'inviate']),
+            route('cr.opportunita.index', ['vista' => 'storico']),
             route('cr.opportunita.show', $opportunita),
             route('notifiche.index'),
         ] as $url) {
