@@ -119,9 +119,19 @@ class Dashboard extends Component
 
         $opportunita->setCollection($filtrate);
 
+        // Quanto hanno già ordinato gli altri punti vendita: visibile a tutti
+        // per creare emulazione fra i reparti.
+        $ordinato = Response::whereIn('opportunity_id', $opportunita->getCollection()->pluck('id'))
+            ->where('status', ResponseStatus::INVIATA_ACQUISTO)
+            ->selectRaw('opportunity_id, COALESCE(SUM(packages), 0) as colli, COUNT(*) as punti_vendita')
+            ->groupBy('opportunity_id')
+            ->get()
+            ->keyBy('opportunity_id');
+
         return view('livewire.cr.dashboard', [
             'opportunita' => $opportunita,
             'risposte' => $risposte,
+            'ordinato' => $ordinato,
             'conteggi' => $this->conteggi(),
             'categorie' => Opportunity::visibleTo($utente)->distinct()->pluck('category')->filter()->values(),
             'prossimaScadenza' => Opportunity::visibleTo($utente)

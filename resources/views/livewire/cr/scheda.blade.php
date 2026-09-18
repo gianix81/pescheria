@@ -203,6 +203,66 @@
                     </p>
                 @endif
             </div>
+
+            {{-- ------------------------------------------- Ordini degli altri PdV --}}
+            <div class="card p-5">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <h3 class="text-base font-bold text-slate-900">Ordini degli altri punti vendita</h3>
+                    <p class="text-sm text-slate-600">
+                        <strong class="text-slate-900">{{ $colliTotali }}</strong> colli
+                        ({{ \App\Support\Format::decimal($kgTotali, 2) }} kg)
+                        da {{ $puntiVenditaConOrdine }} punti vendita
+                    </p>
+                </div>
+
+                @if ($opportunity->isLimited())
+                    @php $percentuale = $opportunity->total_packages > 0 ? min(100, round($colliTotali / $opportunity->total_packages * 100)) : 0; @endphp
+                    <div class="mt-3">
+                        <div class="h-2 w-full overflow-hidden rounded bg-slate-200">
+                            <div class="h-full {{ $percentuale >= 90 ? 'bg-rose-600' : 'bg-laguna-500' }}" style="width: {{ $percentuale }}%"></div>
+                        </div>
+                        <p class="help">{{ $percentuale }}% della disponibilità già impegnato — restano {{ $residui }} colli.</p>
+                    </div>
+                @endif
+
+                <ul class="mt-4 divide-y divide-slate-100">
+                    @foreach ($classifica as $indice => $riga)
+                        <li @class([
+                                'flex items-center justify-between gap-3 py-2.5 text-sm',
+                                'rounded-lg bg-mare-50 px-2' => $riga['proprio'],
+                            ])>
+                            <span class="flex min-w-0 items-center gap-2">
+                                <span class="w-5 shrink-0 text-right text-xs font-semibold text-slate-400">{{ $indice + 1 }}</span>
+                                <span class="min-w-0">
+                                    <span class="block truncate font-semibold text-slate-900">
+                                        {{ $riga['store']->code }}
+                                        @if ($riga['proprio'])
+                                            <span class="ml-1 rounded bg-mare-700 px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">Tu</span>
+                                        @endif
+                                    </span>
+                                    <span class="block truncate text-xs text-slate-500">{{ $riga['store']->name }}</span>
+                                </span>
+                            </span>
+
+                            <span class="flex shrink-0 items-center gap-3">
+                                @if ($riga['colli'] > 0)
+                                    <span class="text-right">
+                                        <span class="block font-bold text-slate-900">{{ $riga['colli'] }} colli</span>
+                                        <span class="block text-xs text-slate-500">{{ \App\Support\Format::decimal($riga['kg'], 1) }} kg</span>
+                                    </span>
+                                @else
+                                    <x-badge-risposta :stato="$riga['stato']" />
+                                @endif
+                            </span>
+                        </li>
+                    @endforeach
+                </ul>
+
+                <p class="help mt-3">
+                    Le quantità degli altri punti vendita sono visibili a tutti i destinatari.
+                    Puoi modificare soltanto la tua risposta.
+                </p>
+            </div>
         </div>
     </div>
 

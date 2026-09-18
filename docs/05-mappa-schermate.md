@@ -38,8 +38,8 @@
 
 | Rotta | Componente | Contenuto |
 |---|---|---|
-| `/cr/dashboard` | `Cr\Dashboard` | card «Da completare» con prossima scadenza, viste separate **Da rispondere / Bozze / Inviate / Storico**, card con anteprima media, prezzo, kg per collo, disponibilità, consegna, countdown e badge |
-| `/cr/opportunita/{id}` | `Cr\Scheda` | due colonne su desktop (galleria + dati), colonna unica e barra azioni sticky su mobile; box decisione «Acquista / Non acquista», pulsanti rapidi 1–6, stepper, «Altra quantità», riepilogo `N colli × X kg = Y kg`, conferma modale, ricevuta |
+| `/cr/dashboard` | `Cr\Dashboard` | card «Da completare» con prossima scadenza, viste separate **Da rispondere / Bozze / Inviate / Storico**, card con anteprima media, prezzo, kg per collo, disponibilità, consegna, countdown, badge e **quanto hanno già ordinato gli altri punti vendita** |
+| `/cr/opportunita/{id}` | `Cr\Scheda` | due colonne su desktop (galleria + dati), colonna unica e barra azioni sticky su mobile; box decisione «Acquista / Non acquista», pulsanti rapidi 1–6, stepper, «Altra quantità», riepilogo `N colli × X kg = Y kg`, conferma modale, ricevuta; **classifica degli ordini degli altri punti vendita** con totali e, se la disponibilità è limitata, barra di quanto è già impegnato |
 
 ## Comportamenti trasversali
 

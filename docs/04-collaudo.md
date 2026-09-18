@@ -49,6 +49,11 @@ opportunità nei diversi stati. Credenziali nella [README](../README.md).
 - [ ] All'apertura i CR destinatari ricevono la notifica in-app; gli altri no.
 
 ### D — Risposta (Capo Reparto, da smartphone)
+- [ ] Nella scheda compare la classifica degli altri punti vendita, con i totali di colli e kg.
+- [ ] Il proprio punto vendita è evidenziato con il contrassegno «Tu».
+- [ ] Con disponibilità limitata la barra mostra la percentuale già impegnata.
+- [ ] Non compare da nessuna parte il nome della persona che ha ordinato per un altro PdV.
+- [ ] Un punto vendita non destinatario non vede l'opportunità né i suoi totali.
 - [ ] Dalla notifica alla conferma della quantità in meno di cinque tocchi.
 - [ ] Il video parte solo su azione dell'utente, senza audio automatico, con controlli nativi.
 - [ ] Pulsante `0` → conferma «Non acquista» (con motivazione se richiesta).

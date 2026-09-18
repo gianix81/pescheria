@@ -23,8 +23,9 @@ Limiti strutturali:
 - **Buyer** – crea, duplica, pubblica, chiude, esporta. Non risponde per conto dei PdV.
 - **Tecnico** – verifica prima della pubblicazione, monitora le compilazioni, sollecita, riapre,
   amministra le anagrafiche. Non digita quantità al posto del CR.
-- **Capo Reparto (CR)** – vede solo le opportunità pubblicate e destinate al proprio punto vendita,
-  risponde `Acquista` (colli > 0) o `Non acquista` (0 colli, esplicito).
+- **Capo Reparto (CR)** – vede le opportunità pubblicate e destinate al proprio punto vendita,
+  risponde `Acquista` (colli > 0) o `Non acquista` (0 colli, esplicito). Dentro un'opportunità
+  vede anche quanto hanno ordinato gli altri punti vendita destinatari (vedi §1.6).
 
 ## 1.3 Flusso TO-BE
 
@@ -59,6 +60,31 @@ Tutte le assunzioni di seguito sono isolate nel codice in modo da poter evolvere
 | A10 | L'export non è ancora inviato all'ERP | `ExportService` | job di push verso ERP |
 | A11 | Storage locale in sviluppo, S3 in produzione | disco `media` in `config/filesystems.php` | variabile `.env` |
 | A12 | Scansione antivirus: punto di estensione documentato, non implementata | `ScanUploadedMedia` job | integrazione ClamAV/servizio |
+
+## 1.4-bis Visibilità fra punti vendita (regola rivista)
+
+La prima stesura prevedeva che un CR non vedesse quantità e decisioni degli altri punti vendita.
+Su indicazione del committente la regola è stata **rovesciata**: dentro un'opportunità tutti i
+destinatari vedono quanto ordinano gli altri, per creare emulazione fra i reparti.
+
+Cosa cambia e cosa no:
+
+| | Prima | Ora |
+|---|---|---|
+| Quantità ordinate dagli altri PdV | nascoste | **visibili a tutti i destinatari** |
+| Totale ordinato sull'opportunità | nascosto | **visibile**, anche nelle card di elenco |
+| Opportunità non destinate al proprio PdV | invisibili | invisibili (invariato) |
+| Modifica della risposta altrui | vietata | vietata (invariato) |
+| Nome della persona che ha ordinato | — | **non esposto** agli altri PdV: si mostra il codice del punto vendita. Buyer e Tecnico continuano a vederlo |
+
+Il perimetro resta quello dell'opportunità: un punto vendita non destinatario non vede nulla,
+nemmeno i totali. La separazione fra *vedere* e *poter agire* è applicata dalla policy
+(`ResponsePolicy::view` contro `ResponsePolicy::update`) e coperta da
+`VisibilitaFraPuntiVenditaTest`.
+
+Effetto collaterale da tenere presente: con disponibilità limitata la classifica visibile accelera
+la corsa all'ultimo collo, ed è probabile che le quantità visibili influenzino le scelte di chi
+ordina dopo. È l'effetto voluto, ma va considerato leggendo i dati storici.
 
 ## 1.5 Regole di business non negoziabili implementate
 

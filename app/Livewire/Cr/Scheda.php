@@ -6,8 +6,10 @@ use App\Enums\ResponseStatus;
 use App\Exceptions\DomainException;
 use App\Models\Opportunity;
 use App\Models\Response;
+use App\Models\Store;
 use App\Services\ResponseSubmissionService;
 use App\Support\Format;
+use Illuminate\Support\Collection;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -153,12 +155,47 @@ class Scheda extends Component
         }
     }
 
+    /**
+     * Ordini degli altri punti vendita destinatari.
+     *
+     * Visibili a tutti per creare emulazione fra i reparti (scelta di prodotto).
+     * Si espongono punto vendita e quantità, non il nome di chi ha ordinato:
+     * la competizione è fra negozi, non fra persone.
+     *
+     * @return Collection<int, array{store: Store, stato: ResponseStatus, colli: int, kg: float, proprio: bool}>
+     */
+    public function classifica()
+    {
+        $risposte = $this->opportunity->responses()->get()->keyBy('store_id');
+        $mioStore = auth()->user()->store_id;
+
+        return $this->opportunity->stores
+            ->map(function ($store) use ($risposte, $mioStore) {
+                $risposta = $risposte[$store->id] ?? null;
+
+                return [
+                    'store' => $store,
+                    'stato' => $risposta?->status ?? ResponseStatus::NON_COMPILATA,
+                    'colli' => (int) ($risposta?->packages ?? 0),
+                    'kg' => (float) ($risposta?->kg ?? 0),
+                    'proprio' => $store->id === $mioStore,
+                ];
+            })
+            ->sortByDesc('colli')
+            ->values();
+    }
+
     public function render()
     {
         $risposta = $this->risposta();
+        $classifica = $this->classifica();
 
         return view('livewire.cr.scheda', [
             'risposta' => $risposta,
+            'classifica' => $classifica,
+            'colliTotali' => $classifica->sum('colli'),
+            'kgTotali' => $classifica->sum('kg'),
+            'puntiVenditaConOrdine' => $classifica->where('colli', '>', 0)->count(),
             'kgPrevisti' => round(((int) $this->colli) * (float) $this->opportunity->kg_per_package, 3),
             'apribile' => $this->opportunity->isAcceptingResponses() || ($risposta?->hasActiveReopening() ?? false),
             'residui' => $this->opportunity->remainingPackages(),

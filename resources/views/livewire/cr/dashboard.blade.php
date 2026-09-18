@@ -118,6 +118,17 @@
                                 <div><dt class="inline font-medium">Consegna:</dt> <dd class="inline">{{ \App\Support\Format::date($o->delivery_date) }}</dd></div>
                             </dl>
 
+                            @php $totale = $ordinato[$o->id] ?? null; @endphp
+                            <p class="mt-1 rounded-lg bg-slate-50 px-2 py-1.5 text-xs text-slate-700">
+                                @if ($totale && $totale->colli > 0)
+                                    <span aria-hidden="true">📦</span>
+                                    Già ordinati <strong>{{ $totale->colli }} colli</strong>
+                                    da {{ $totale->punti_vendita }} {{ $totale->punti_vendita === 1 ? 'punto vendita' : 'punti vendita' }}
+                                @else
+                                    <span aria-hidden="true">📦</span> Nessun ordine ancora: sei il primo
+                                @endif
+                            </p>
+
                             <a href="{{ route('cr.opportunita.show', $o) }}" class="btn-primary mt-auto w-full">
                                 {{ $risposta?->isSubmitted() ? 'Vedi o modifica' : 'Rispondi' }}
                             </a>
