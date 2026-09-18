@@ -51,6 +51,15 @@ opportunità nei diversi stati. Credenziali nella [README](../README.md).
 - [ ] Creazione guidata: i 4 passi salvano gli stessi dati; «Anteprima CR» mostra la vista del reparto.
 - [ ] Duplica: copia articolo, testi e prezzi; azzera disponibilità, scadenze, consegna e risposte.
 
+### B-bis — Modifica di un'opportunità già pubblicata
+- [ ] Dalla scheda di un'opportunità aperta compare «Modifica» e il modulo mostra il banner ambra.
+- [ ] Il pulsante dice «Salva modifiche» e non compare «Invia in verifica».
+- [ ] Dopo il salvataggio i capi reparto destinatari ricevono la notifica di modifica.
+- [ ] Ridurre i colli sotto quelli già confermati viene rifiutato con un messaggio esplicito.
+- [ ] Togliere un punto vendita che ha già risposto viene rifiutato, indicandone il codice.
+- [ ] Cambiando i kg per collo, i kg delle risposte già inviate risultano riallineati.
+- [ ] Un'opportunità in verifica non è modificabile; annullate e chiuse nemmeno.
+
 ### C — Verifica (Tecnico)
 - [ ] La checklist resta visibile durante lo scorrimento (pannello sticky).
 - [ ] «Richiedi correzioni» senza motivazione → bloccato.

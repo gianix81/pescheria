@@ -86,8 +86,11 @@ class OpportunityWorkflowService
      */
     public function updatePublished(Opportunity $opportunity, array $data, User $user): Opportunity
     {
+        $this->assertModificaCompatibile($opportunity, $data);
+
         return DB::transaction(function () use ($opportunity, $data, $user) {
             $before = $opportunity->only(array_keys($data));
+            $kgPerColloPrima = (float) $opportunity->kg_per_package;
 
             $opportunity->fill($data);
             $opportunity->recalculatePricing();
@@ -95,6 +98,23 @@ class OpportunityWorkflowService
 
             if (array_key_exists('store_ids', $data)) {
                 $opportunity->stores()->sync($data['store_ids']);
+            }
+
+            // Cambiando il peso del collo, i kg già registrati sulle risposte
+            // sarebbero incoerenti: si riallineano subito.
+            $kgPerColloDopo = (float) $opportunity->kg_per_package;
+
+            if (abs($kgPerColloDopo - $kgPerColloPrima) > 0.0001) {
+                foreach ($opportunity->responses()->where('packages', '>', 0)->get() as $risposta) {
+                    $risposta->forceFill([
+                        'kg' => round($risposta->packages * $kgPerColloDopo, 3),
+                    ])->save();
+                }
+
+                $this->audit->log('opportunity.kg_recalculated', $opportunity, [
+                    'kg_per_collo_prima' => $kgPerColloPrima,
+                    'kg_per_collo_dopo' => $kgPerColloDopo,
+                ], $user);
             }
 
             $this->audit->log('opportunity.updated_published', $opportunity, [
@@ -344,6 +364,57 @@ class OpportunityWorkflowService
     }
 
     // ------------------------------------------------------------- validazioni
+
+    /**
+     * Verifica che una modifica su un'opportunità già pubblicata non renda
+     * incoerenti gli ordini già raccolti.
+     */
+    public function assertModificaCompatibile(Opportunity $opportunity, array $data): void
+    {
+        $impegnati = (int) $opportunity->committed_packages;
+
+        if (array_key_exists('total_packages', $data) && $data['total_packages'] !== null) {
+            $nuovoTotale = (int) $data['total_packages'];
+
+            if ($nuovoTotale < $impegnati) {
+                throw new DomainException(
+                    "Non puoi scendere a {$nuovoTotale} colli: ne sono già stati confermati {$impegnati}."
+                );
+            }
+        }
+
+        // Passare da disponibilità limitata ad aperta è sempre consentito;
+        // il contrario, con ordini già raccolti, richiede un totale capiente.
+        if (array_key_exists('availability_type', $data)) {
+            $tipo = $data['availability_type'];
+            $diventaLimitata = ($tipo instanceof AvailabilityType ? $tipo : AvailabilityType::from((string) $tipo))
+                === AvailabilityType::LIMITATA;
+
+            if ($diventaLimitata && ($data['total_packages'] ?? null) === null && $impegnati > 0) {
+                throw new DomainException('Indica il totale dei colli: ce ne sono già '.$impegnati.' confermati.');
+            }
+        }
+
+        if (array_key_exists('store_ids', $data)) {
+            $rimossi = $opportunity->stores()
+                ->whereNotIn('stores.id', $data['store_ids'] ?: [0])
+                ->pluck('stores.id');
+
+            $conRisposta = $opportunity->responses()
+                ->whereIn('store_id', $rimossi)
+                ->submitted()
+                ->with('store')
+                ->get();
+
+            if ($conRisposta->isNotEmpty()) {
+                $codici = $conRisposta->map(fn ($r) => $r->store->code)->implode(', ');
+
+                throw new DomainException(
+                    "Non puoi togliere punti vendita che hanno già risposto: {$codici}."
+                );
+            }
+        }
+    }
 
     public function assertReadyForReview(Opportunity $opportunity): void
     {

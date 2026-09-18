@@ -30,17 +30,20 @@ class OpportunityPolicy
         return $user->isBuyer();
     }
 
-    /** Il Buyer modifica bozze e opportunità da correggere. */
+    /**
+     * Il Buyer modifica l'opportunità in qualsiasi momento, non solo da bozza.
+     * Fanno eccezione lo stato IN_VERIFICA, bloccato fino all'esito del Tecnico,
+     * e gli stati terminali.
+     */
     public function update(User $user, Opportunity $opportunity): bool
     {
-        return $user->isBuyer() && $opportunity->status->isEditableByBuyer();
+        return $user->isBuyer() && $opportunity->status->isModificabile();
     }
 
     /** Modifica di un'opportunità già pubblicata: consentita al Buyer, mai silenziosa. */
     public function updatePublished(User $user, Opportunity $opportunity): bool
     {
-        return $user->isBuyer()
-            && in_array($opportunity->status, [OpportunityStatus::PROGRAMMATA, OpportunityStatus::APERTA], true);
+        return $user->isBuyer() && $opportunity->status->isPubblicata();
     }
 
     public function submitForReview(User $user, Opportunity $opportunity): bool

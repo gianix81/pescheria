@@ -109,6 +109,28 @@ Due paracadute impediscono di chiudersi fuori: non ci si può eliminare o disatt
 l'ultimo Super Admin attivo non può essere rimosso, disattivato o declassato. In caso estremo
 resta la console: `php artisan pescheria:admin`.
 
+## 1.4-quater Modifica dell'opportunità dopo la pubblicazione
+
+Il capitolato (§3) dice che il Buyer «crea e modifica opportunità in qualsiasi momento». Una prima
+versione limitava la modifica alle bozze e alle opportunità respinte: corretto.
+
+Stati modificabili: `BOZZA`, `DA_CORREGGERE`, `PROGRAMMATA`, `APERTA`, `SCADUTA`.
+Restano bloccati `IN_VERIFICA` — §6 la vuole ferma fino all'esito del Tecnico — e gli stati
+terminali `CHIUSA`, `ANNULLATA`, `ARCHIVIATA`.
+
+Modificare un'opportunità già vista dai punti vendita non è però un'operazione neutra, quindi:
+
+| Situazione | Comportamento |
+|---|---|
+| Qualsiasi modifica | notifica ai destinatari e voce nell'audit log: mai in silenzio |
+| Riduzione dei colli sotto quelli già confermati | rifiutata, con il numero già impegnato nel messaggio |
+| Rimozione di un punto vendita che ha già risposto | rifiutata, con i codici interessati |
+| Modifica dei kg per collo | i kg delle risposte già raccolte vengono riallineati, con voce di audit dedicata |
+| Aumento della disponibilità | sempre consentito, riapre gli acquisti se era esaurita |
+
+Il vincolo forte resta quello del §7: il Buyer non tocca le quantità decise dai Capi Reparto. Le
+correzioni su una singola risposta passano per la funzione dedicata, tracciata separatamente.
+
 ## 1.5 Regole di business non negoziabili implementate
 
 1. `prezzo_vendita_netto = prezzo_vendita_lordo / (1 + aliquota_iva)`

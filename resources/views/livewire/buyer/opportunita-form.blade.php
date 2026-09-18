@@ -12,6 +12,21 @@
         </div>
     @endif
 
+    @if ($this->pubblicata)
+        <div class="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900" role="status">
+            <p class="font-semibold"><span aria-hidden="true">⚠</span> Opportunità già pubblicata ({{ $opportunity->status->label() }})</p>
+            <p class="mt-1">
+                Ogni modifica viene notificata ai punti vendita destinatari e registrata nell'audit log:
+                nessun cambiamento avviene in silenzio. Non puoi ridurre i colli sotto quelli già confermati,
+                né togliere punti vendita che hanno già risposto.
+            </p>
+        </div>
+    @endif
+
+    @error('salvataggio')
+        <p class="error" role="alert"><span aria-hidden="true">⚠</span>{{ $message }}</p>
+    @enderror
+
     <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
             <h2 class="text-lg font-bold text-slate-900">
@@ -150,8 +165,9 @@
 
     {{-- Azioni --}}
     <div class="sticky bottom-0 -mx-4 flex flex-wrap gap-3 border-t border-slate-200 bg-white px-4 py-3 sm:mx-0 sm:rounded-xl sm:border sm:px-5">
-        <button type="button" wire:click="salvaBozza" class="btn-ghost flex-1 sm:flex-none">
-            <span wire:loading.remove wire:target="salvaBozza">Salva bozza</span>
+        <button type="button" wire:click="salvaBozza"
+                @class(['flex-1 sm:flex-none', 'btn-primary' => $this->pubblicata, 'btn-ghost' => ! $this->pubblicata])>
+            <span wire:loading.remove wire:target="salvaBozza">{{ $this->pubblicata ? 'Salva modifiche' : 'Salva bozza' }}</span>
             <span wire:loading wire:target="salvaBozza">Salvataggio…</span>
         </button>
 
@@ -159,10 +175,16 @@
             {{ $anteprimaAperta ? 'Chiudi anteprima' : 'Anteprima CR' }}
         </button>
 
-        <button type="button" wire:click="inviaInVerifica" class="btn-primary flex-1 sm:ml-auto sm:flex-none">
-            <span wire:loading.remove wire:target="inviaInVerifica">Invia in verifica</span>
-            <span wire:loading wire:target="inviaInVerifica">Invio…</span>
-        </button>
+        @unless ($this->pubblicata)
+            <button type="button" wire:click="inviaInVerifica" class="btn-primary flex-1 sm:ml-auto sm:flex-none">
+                <span wire:loading.remove wire:target="inviaInVerifica">Invia in verifica</span>
+                <span wire:loading wire:target="inviaInVerifica">Invio…</span>
+            </button>
+        @else
+            <a href="{{ route('opportunita.show', $opportunity) }}" class="btn-ghost flex-1 sm:ml-auto sm:flex-none">
+                Torna alla scheda
+            </a>
+        @endunless
     </div>
 
     {{-- Anteprima identica alla vista del Capo Reparto --}}

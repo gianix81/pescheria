@@ -310,18 +310,44 @@ class OpportunitaForm extends Component
         ];
     }
 
+    /** L'opportunità è già stata vista dai punti vendita? */
+    public function getPubblicataProperty(): bool
+    {
+        return $this->opportunity?->status->isPubblicata() ?? false;
+    }
+
+    /**
+     * Salva le modifiche scegliendo il percorso giusto: bozza oppure
+     * opportunità già pubblicata, che comporta notifica ai destinatari e
+     * controlli di compatibilità con gli ordini già raccolti.
+     */
     public function salvaBozza(bool $silenzioso = false): ?Opportunity
     {
         $this->validate($this->regole(), $this->messaggi(), $this->attributiValidazione());
 
         $service = app(OpportunityWorkflowService::class);
 
-        $this->opportunity = $this->opportunity
-            ? $service->updateDraft($this->opportunity, $this->dati(), auth()->user())
-            : $service->createDraft($this->dati(), auth()->user());
+        try {
+            if (! $this->opportunity) {
+                $this->opportunity = $service->createDraft($this->dati(), auth()->user());
+                $messaggio = 'Bozza creata ('.$this->opportunity->reference.').';
+            } elseif ($this->pubblicata) {
+                $this->authorize('updatePublished', $this->opportunity);
+
+                $this->opportunity = $service->updatePublished($this->opportunity, $this->dati(), auth()->user());
+                $messaggio = 'Modifiche salvate: i punti vendita destinatari sono stati avvisati.';
+            } else {
+                $this->opportunity = $service->updateDraft($this->opportunity, $this->dati(), auth()->user());
+                $messaggio = 'Bozza salvata ('.$this->opportunity->reference.').';
+            }
+        } catch (DomainException $e) {
+            $this->addError('salvataggio', $e->getMessage());
+
+            return null;
+        }
 
         if (! $silenzioso) {
-            $this->dispatch('toast', messaggio: 'Bozza salvata ('.$this->opportunity->reference.').');
+            $this->dispatch('toast', messaggio: $messaggio);
         }
 
         return $this->opportunity;
