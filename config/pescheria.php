@@ -28,6 +28,24 @@ return [
         'signed_url_minutes' => (int) env('MEDIA_SIGNED_URL_MINUTES', 30),
         'max_files' => (int) env('MEDIA_MAX_FILES', 10),
         'antivirus_enabled' => env('MEDIA_ANTIVIRUS_ENABLED', false),
+        /*
+        | Compressione lato browser, prima dell'invio (resources/js/compressione).
+        | Valori passati al componente Alpine: cambiarli qui cambia il comportamento
+        | dell'interfaccia senza toccare il JavaScript.
+        */
+        'compressione' => [
+            'immagini' => [
+                'latoMassimo' => (int) env('MEDIA_IMG_LATO_MAX', 1920),
+                'qualita' => (float) env('MEDIA_IMG_QUALITA', 0.82),
+                'sogliaByte' => (int) env('MEDIA_IMG_SOGLIA_KB', 200) * 1024,
+            ],
+            'video' => [
+                'latoMassimo' => (int) env('MEDIA_VIDEO_LATO_MAX', 1280),
+                'frameRate' => (int) env('MEDIA_VIDEO_FPS', 30),
+                'sogliaByte' => (int) env('MEDIA_VIDEO_SOGLIA_MB', 3) * 1024 * 1024,
+            ],
+        ],
+
         'image_mimes' => ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'],
         'video_mimes' => ['video/mp4', 'video/quicktime', 'video/webm', 'video/x-m4v'],
     ],

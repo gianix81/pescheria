@@ -28,3 +28,6 @@ Thumbs.db
 
 # Media caricati dal Buyer (mai versionati)
 /storage/app/media
+
+# Bundle temporaneo dei test JS in browser
+/tests/js/harness/dist

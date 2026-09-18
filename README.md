@@ -162,14 +162,23 @@ WHATSAPP_PHONE_ID=…
 WhatsApp **non** è la fonte dell'ordine: il messaggio contiene solo un deep link alla scheda, che
 richiede autenticazione. Nessun pulsante registra ordini fuori dall'applicazione.
 
+### Compressione dei media
+
+Foto e video vengono **compressi nel browser prima dell'invio**: le foto a 1920 px, i video a
+1280 px in MP4/H.264 con WebCodecs. Un video da 300 MB parte tipicamente sotto i 20 MB, quindi
+l'upload dal punto di vendita è rapido. Soglie e limiti in
+[docs/07-compressione-media.md](docs/07-compressione-media.md). Se il browser non supporta la
+transcodifica, il file viene inviato com'è: nessun percorso resta bloccato.
+
 ## 4. Test
 
 I test girano su MySQL (come la produzione): servono lock di riga reali.
 
 ```bash
-php artisan test                      # tutta la suite
+php artisan test                      # tutta la suite (107 test)
 php artisan test --testsuite=Unit
 php artisan test --filter=ConcorrenzaStockTest
+npm run test:js                       # compressione media, in un Chrome headless reale
 ```
 
 `ConcorrenzaStockTest` avvia **processi PHP paralleli** che competono sullo stesso stock e verifica
