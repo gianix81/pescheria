@@ -1,18 +1,19 @@
 @props([
     'testo',
+    'numero' => null,
     'etichetta' => 'Condividi su WhatsApp',
     'descrizione' => null,
     'variante' => 'secondario',
 ])
 
 {{--
-    Apre WhatsApp con il messaggio già scritto: chi tocca sceglie il gruppo o il
-    contatto e invia. Nessuna API ufficiale permette di scrivere in un gruppo,
-    quindi l'invio resta un gesto della persona — ma di un tocco soltanto.
+    Apre WhatsApp con il messaggio già scritto. Con un numero apre direttamente
+    quella conversazione; senza, si sceglie la chat o il gruppo e si invia.
+    Funziona con WhatsApp personale: nessuna API, nessuna configurazione.
 --}}
 <div {{ $attributes->merge(['class' => 'space-y-2']) }} x-data="{ copiato: false }">
     <div class="flex flex-wrap gap-2">
-        <a href="{{ \App\Support\WhatsApp::link($testo) }}" target="_blank" rel="noopener"
+        <a href="{{ \App\Support\WhatsApp::link($testo, $numero) }}" target="_blank" rel="noopener"
            @class([
                'btn',
                'bg-[#25D366] text-white hover:bg-[#1da851]' => $variante === 'principale',

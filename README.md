@@ -163,10 +163,10 @@ WHATSAPP_PHONE_ID=…
 WhatsApp **non** è la fonte dell'ordine: il messaggio contiene solo un deep link alla scheda, che
 richiede autenticazione. Nessun pulsante registra ordini fuori dall'applicazione.
 
-Gli avvisi sono automatici verso le persone e «a un tocco» verso i gruppi, perché nessuna API
-ufficiale di Meta consente di scrivere in un gruppo: l'app prepara il messaggio già pronto e lo
-apre in WhatsApp. Momenti coperti, testi e attivazione in
-[docs/09-avvisi-whatsapp.md](docs/09-avvisi-whatsapp.md).
+L'azienda usa **WhatsApp personale**, quindi gli avvisi non passano da alcuna API: l'app prepara il
+messaggio già scritto e apre la conversazione giusta con un tocco — quella del singolo Tecnico o
+capo reparto se il numero è in anagrafica, altrimenti l'elenco delle chat per scegliere il gruppo.
+Momenti coperti e testi in [docs/09-avvisi-whatsapp.md](docs/09-avvisi-whatsapp.md).
 
 ### Compressione dei media
 

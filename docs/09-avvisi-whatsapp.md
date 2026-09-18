@@ -1,27 +1,35 @@
 # 9. Avvisi su WhatsApp
 
-## 9.1 Cosa si può automatizzare e cosa no
+## 9.1 Il contesto: WhatsApp personale
 
-| Destinatario | Automatico? | Perché |
-|---|---|---|
-| Una **persona** (Tecnico, Buyer, Capo Reparto) | sì, con WhatsApp Business API | l'API ufficiale invia messaggi 1:1 a chi ha dato consenso |
-| Un **gruppo** | **no** | nessuna API ufficiale di Meta consente di scrivere in un gruppo |
+In azienda si usa **WhatsApp personale, non Business**. Questo esclude l'invio automatico: l'API
+ufficiale esiste solo per gli account Business, richiede un numero verificato e ha un costo.
 
-Questa non è una scelta di progetto: è un limite della piattaforma. Esistono librerie non
-ufficiali che pilotano un account WhatsApp reale e riescono a scrivere nei gruppi, ma violano le
-condizioni d'uso e possono portare al blocco del numero — su un numero aziendale è un rischio
-concreto, e per questo non sono state usate.
+Tutto passa quindi dai collegamenti **«click to chat»** (`wa.me`), che funzionano con qualunque
+WhatsApp, su telefono e su WhatsApp Web, senza configurare nulla:
 
-Dove serve il gruppo, l'applicazione prepara quindi il messaggio già scritto e lo apre in
-WhatsApp: chi lo tocca sceglie il gruppo e invia. Un tocco, nessuna riscrittura a mano.
+| Destinatario | Come funziona |
+|---|---|
+| Una **persona** con il numero in anagrafica | il collegamento apre **quella conversazione**, messaggio già scritto: resta da premere invio |
+| Una **persona senza numero** | si apre l'elenco delle chat e si sceglie |
+| Un **gruppo** | si apre l'elenco delle chat, si sceglie il gruppo e si invia |
+
+Nessuna API ufficiale permette di scrivere in un gruppo, nemmeno con un account Business: l'ultimo
+tocco resta della persona. Esistono librerie non ufficiali che pilotano un account reale e ci
+riescono, ma violano le condizioni d'uso e rischiano il blocco del numero — su numeri personali di
+colleghi il rischio ricadrebbe su di loro, e per questo non sono state usate.
+
+**Il numero in anagrafica fa la differenza:** con il numero è un tocco solo, senza sono due. Vale
+la pena compilarlo per tutti dalla gestione utenti.
 
 ## 9.2 I tre momenti
 
 | Momento | Chi agisce | In app | Su WhatsApp |
 |---|---|---|---|
-| Opportunità inviata in verifica | Buyer | notifica automatica a tutti i Tecnici | pulsante «Scrivi ai Tecnici», sulla scheda in verifica. Con l'API attiva il messaggio parte anche da solo |
-| Opportunità approvata e aperta | Tecnico | notifica automatica ai capi reparto destinatari | pulsante «Condividi nel gruppo WhatsApp», sulla scheda aperta |
-| Punto vendita conferma l'ordine | Capo Reparto | notifica automatica a Buyer e Tecnici | pulsante «Comunica al gruppo», nella ricevuta |
+| Opportunità inviata in verifica | Buyer | notifica automatica a tutti i Tecnici | un pulsante **per ciascun Tecnico**, che apre la sua chat |
+| Opportunità approvata e aperta | Tecnico | notifica automatica ai capi reparto destinatari | «Condividi nel gruppo WhatsApp» |
+| Punto vendita conferma l'ordine | Capo Reparto | notifica automatica a Buyer e Tecnici | «Comunica al gruppo», nella ricevuta |
+| Qualcuno non ha ancora risposto | Buyer o Tecnico | sollecito in-app | un pulsante **per ciascun punto vendita mancante**, che apre la chat del suo capo reparto |
 
 Ogni messaggio porta il collegamento alla scheda, che richiede autenticazione. WhatsApp resta un
 canale di avviso: **l'ordine è valido solo dall'app**, e i messaggi non contengono pulsanti che
@@ -54,7 +62,9 @@ Scheda: https://…/cr/opportunita/12
 I testi sono in `App\Support\WhatsApp`: cambiarli non tocca né le notifiche in-app né il resto.
 Accanto a ogni pulsante c'è «Copia testo», per chi preferisce incollare a mano.
 
-## 9.4 Attivare l'invio automatico alle persone
+## 9.4 Se un giorno si passasse a WhatsApp Business
+
+L'integrazione è già pronta e spenta: l'invio automatico 1:1 si attiva senza toccare il codice.
 
 ```dotenv
 NOTIFY_WHATSAPP_ENABLED=true
@@ -70,13 +80,6 @@ notifica in-app resta comunque l'unica obbligatoria.
 Per i messaggi iniziati dall'azienda fuori dalla finestra di 24 ore Meta richiede modelli
 approvati: va previsto in fase di attivazione del numero.
 
-## 9.5 Se in futuro servisse l'invio automatico ai gruppi
-
-Le strade praticabili, in ordine di raccomandazione:
-
-1. **Sostituire il gruppo con la lista dei destinatari**: l'app sa già chi sono i capi reparto di
-   ogni punto vendita e può scrivere a ciascuno singolarmente, in modo automatico e conforme.
-   È la via consigliata: dà lo stesso risultato senza dipendere da un gruppo.
-2. **Canale WhatsApp** (broadcast ufficiale): adatto agli annunci in sola lettura, non alle
-   conversazioni.
-3. Librerie non ufficiali: fuori dalle condizioni d'uso, con rischio di blocco del numero.
+Con un account Business la strada conforme non è comunque il gruppo, ma **scrivere a ciascun capo
+reparto**: l'applicazione sa già chi sono e per quale punto vendita rispondono. Stesso risultato,
+in automatico, e nessuno resta indietro perché «non ha letto il gruppo».

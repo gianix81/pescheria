@@ -100,17 +100,90 @@ class AvvisiWhatsAppTest extends TestCase
     }
 
     #[Test]
-    public function la_scheda_in_verifica_propone_lavviso_ai_tecnici(): void
+    public function la_scheda_in_verifica_apre_la_chat_diretta_col_tecnico(): void
     {
         [$store] = $this->storeWithCr();
+        $tecnico = $this->tecnico();
+        $tecnico->forceFill(['first_name' => 'Giulia', 'phone' => '+39 333 111 2233'])->save();
+
         $opportunita = Opportunity::factory()->inVerifica()->create();
         $opportunita->stores()->sync([$store->id]);
 
         $this->actingAs($this->buyer())
             ->get(route('opportunita.show', $opportunita))
             ->assertOk()
-            ->assertSee('Scrivi ai Tecnici su WhatsApp')
-            ->assertSee('wa.me', escape: false);
+            ->assertSee('Avvisa i Tecnici su WhatsApp')
+            ->assertSee('Scrivi a Giulia')
+            // Il numero normalizzato finisce nel collegamento: apre quella conversazione.
+            ->assertSee('wa.me/393331112233', escape: false);
+    }
+
+    #[Test]
+    public function senza_numero_in_anagrafica_si_ripiega_sulla_scelta_della_chat(): void
+    {
+        [$store] = $this->storeWithCr();
+        $tecnico = $this->tecnico();
+        $tecnico->forceFill(['phone' => null])->save();
+
+        $opportunita = Opportunity::factory()->inVerifica()->create();
+        $opportunita->stores()->sync([$store->id]);
+
+        $this->actingAs($this->buyer())
+            ->get(route('opportunita.show', $opportunita))
+            ->assertOk()
+            ->assertSee('Scegli la chat')
+            ->assertSee('nessun numero in anagrafica');
+    }
+
+    #[Test]
+    public function i_punti_vendita_mancanti_si_sollecitano_uno_per_uno(): void
+    {
+        [$rispondente, $crRispondente] = $this->storeWithCr('PV931');
+        [$mancante, $crMancante] = $this->storeWithCr('PV932');
+        $crMancante->forceFill(['first_name' => 'Anna', 'phone' => '333 4445566'])->save();
+
+        $opportunita = $this->openOpportunity([$rispondente, $mancante]);
+        app(ResponseSubmissionService::class)->submitPurchase($opportunita, $rispondente, $crRispondente, 2);
+
+        $this->actingAs($this->tecnico())
+            ->get(route('opportunita.show', $opportunita))
+            ->assertOk()
+            ->assertSee('Sollecita chi non ha ancora risposto (1)')
+            ->assertSee('PV932')
+            ->assertSee('Scrivi a Anna')
+            ->assertSee('wa.me/393334445566', escape: false);
+
+        // Chi ha già risposto compare nella tabella delle risposte, ma non fra i
+        // solleciti: il conteggio nell'intestazione lo dimostra.
+        $this->assertSame(
+            1,
+            $opportunita->fresh()->completionStats()['mancanti'],
+        );
+    }
+
+    #[Test]
+    public function il_numero_di_telefono_viene_normalizzato(): void
+    {
+        $this->assertSame('393331112233', WhatsApp::numero('+39 333 111 2233'));
+        $this->assertSame('393331112233', WhatsApp::numero('0039 333 1112233'));
+        $this->assertSame('393331112233', WhatsApp::numero('333 1112233'));
+        $this->assertSame('393331112233', WhatsApp::numero('0333 1112233'));
+        $this->assertSame('14155550132', WhatsApp::numero('+1 415 555 0132'));
+        $this->assertNull(WhatsApp::numero(null));
+        $this->assertNull(WhatsApp::numero('   '));
+        $this->assertNull(WhatsApp::numero('non un numero'));
+        $this->assertNull(WhatsApp::numero('12'));
+    }
+
+    #[Test]
+    public function con_il_numero_il_collegamento_apre_quella_conversazione(): void
+    {
+        $conNumero = WhatsApp::link('ciao', '+39 333 111 2233');
+        $senzaNumero = WhatsApp::link('ciao');
+
+        $this->assertStringStartsWith('https://wa.me/393331112233?text=', $conNumero);
+        // Senza numero WhatsApp chiede a chi inviare: è così che si raggiunge un gruppo.
+        $this->assertStringStartsWith('https://wa.me/?text=', $senzaNumero);
     }
 
     #[Test]

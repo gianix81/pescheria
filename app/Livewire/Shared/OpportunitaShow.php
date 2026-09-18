@@ -3,9 +3,11 @@
 namespace App\Livewire\Shared;
 
 use App\Enums\ResponseStatus;
+use App\Enums\Role;
 use App\Exceptions\DomainException;
 use App\Models\Opportunity;
 use App\Models\Response;
+use App\Models\User;
 use App\Services\NotificationService;
 use App\Services\OpportunityWorkflowService;
 use App\Services\ResponseSubmissionService;
@@ -117,6 +119,20 @@ class OpportunitaShow extends Component
 
         return view('livewire.shared.opportunita-show', [
             'risposte' => $risposte,
+            'tecnici' => User::where('role', Role::TECNICO)
+                ->where('is_active', true)
+                ->orderBy('last_name')
+                ->get(),
+            'mancanti' => $this->opportunity->stores
+                ->reject(fn ($store) => ($risposte[$store->id] ?? null)?->isSubmitted())
+                ->map(fn ($store) => [
+                    'store' => $store,
+                    'utenti' => User::where('role', Role::CAPO_REPARTO)
+                        ->where('store_id', $store->id)
+                        ->where('is_active', true)
+                        ->get(),
+                ])
+                ->values(),
             'statistiche' => $this->opportunity->completionStats(),
             'colliTotali' => $this->opportunity->totalPackagesOrdered(),
             'kgTotali' => $this->opportunity->totalKgOrdered(),

@@ -61,7 +61,8 @@ opportunità nei diversi stati. Credenziali nella [README](../README.md).
 - [ ] Un'opportunità in verifica non è modificabile; annullate e chiuse nemmeno.
 
 ### B-ter — Avvisi su WhatsApp
-- [ ] Inviata in verifica: sulla scheda compare «Scrivi ai Tecnici su WhatsApp» e il testo contiene riferimento, articolo e collegamento.
+- [ ] Inviata in verifica: compare un pulsante per ciascun Tecnico; con il numero in anagrafica apre la sua chat, senza numero apre l'elenco.
+- [ ] Su un'opportunità aperta con risposte mancanti compare il sollecito diretto per ogni punto vendita che manca.
 - [ ] Approvata: compare «Condividi nel gruppo WhatsApp» e il collegamento porta alla scheda del Capo Reparto.
 - [ ] Un capo reparto che conferma vede «Comunica al gruppo» con quantità, kg e totale aggiornato.
 - [ ] Aprendo il collegamento, WhatsApp mostra il messaggio già scritto e chiede solo il destinatario.

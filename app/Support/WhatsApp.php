@@ -8,24 +8,78 @@ use App\Models\Response;
 /**
  * Testi e collegamenti per WhatsApp.
  *
- * Due meccanismi distinti, perché WhatsApp stesso li distingue:
+ * L'azienda usa WhatsApp personale, non Business: nessuna API, nessun token,
+ * nessun costo. Tutto passa quindi dai collegamenti «click to chat», che
+ * funzionano identici su telefono e su WhatsApp Web.
  *
- *  - verso una PERSONA l'invio può essere automatico, tramite WhatsApp Business
- *    API (vedi Services\Notifications\WhatsAppGateway);
- *  - verso un GRUPPO nessuna API ufficiale consente di scrivere. Qui si genera
- *    quindi un collegamento «click to chat» con il messaggio già pronto: chi lo
- *    tocca sceglie il gruppo e invia. Un tocco, nessuna riscrittura a mano.
+ *  - verso una PERSONA: wa.me/<numero> apre direttamente quella conversazione
+ *    con il messaggio già scritto;
+ *  - verso un GRUPPO: wa.me senza numero apre l'elenco delle chat, si sceglie
+ *    il gruppo e si invia. Nessuna API ufficiale permette di scrivere nei
+ *    gruppi, quindi l'ultimo tocco resta della persona.
  *
- * In entrambi i casi il messaggio porta un collegamento alla scheda, che
- * richiede autenticazione: WhatsApp resta un canale di avviso, mai la fonte
- * dell'ordine.
+ * Il messaggio porta sempre il collegamento alla scheda, che richiede
+ * autenticazione: WhatsApp è un avviso, mai la fonte dell'ordine.
  */
 final class WhatsApp
 {
-    /** Collegamento che apre WhatsApp con il testo già scritto. */
-    public static function link(string $testo): string
+    /** Prefisso usato quando il numero in anagrafica non lo riporta. */
+    private const PREFISSO_PREDEFINITO = '39';
+
+    /**
+     * Collegamento che apre WhatsApp con il testo già scritto.
+     * Con un numero apre quella conversazione, senza apre l'elenco delle chat
+     * (è così che si raggiunge un gruppo).
+     */
+    public static function link(string $testo, ?string $telefono = null): string
     {
-        return 'https://wa.me/?text='.rawurlencode($testo);
+        $numero = self::numero($telefono);
+
+        return 'https://wa.me/'.($numero ?? '').'?text='.rawurlencode($testo);
+    }
+
+    /**
+     * Normalizza un numero per wa.me: solo cifre, con prefisso internazionale.
+     * «+39 333 111 2233», «0039 333 1112233» e «333 1112233» danno lo stesso
+     * risultato. Restituisce null se non è un numero plausibile.
+     */
+    public static function numero(?string $telefono): ?string
+    {
+        $grezzo = trim((string) $telefono);
+
+        if ($grezzo === '') {
+            return null;
+        }
+
+        $internazionale = str_starts_with($grezzo, '+') || str_starts_with(preg_replace('/\s+/', '', $grezzo), '00');
+        $cifre = preg_replace('/\D+/', '', $grezzo);
+
+        if ($cifre === '') {
+            return null;
+        }
+
+        if (str_starts_with($cifre, '00')) {
+            $cifre = substr($cifre, 2);
+            $internazionale = true;
+        }
+
+        // Numero nazionale: si antepone il prefisso predefinito.
+        if (! $internazionale) {
+            $cifre = self::PREFISSO_PREDEFINITO.ltrim($cifre, '0');
+        }
+
+        return strlen($cifre) >= 8 && strlen($cifre) <= 15 ? $cifre : null;
+    }
+
+    /** Sollecito diretto a un capo reparto che non ha ancora risposto. */
+    public static function perSollecito(Opportunity $opportunity): string
+    {
+        return implode("\n", [
+            '⏰ Manca la tua risposta: '.$opportunity->title,
+            'Scadenza '.Format::dateTime($opportunity->closes_at),
+            '',
+            'Rispondi qui: '.route('cr.opportunita.show', $opportunity),
+        ]);
     }
 
     /** Avviso ai Tecnici: c'è una nuova opportunità da verificare. */
