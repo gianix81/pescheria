@@ -229,12 +229,14 @@ class NotificationService
             ->get();
     }
 
-    /** Link profondo alla scheda: apre l'app, non registra ordini. */
+    /**
+     * Collegamento alla scheda: apre l'app, non registra ordini.
+     * Passa dall'indirizzo neutro, così resta valido anche se l'utente cambia
+     * ruolo o se il collegamento viene inoltrato a qualcun altro.
+     */
     public function deepLink(Opportunity $opportunity, User $user): string
     {
-        return $user->isCapoReparto()
-            ? route('cr.opportunita.show', $opportunity)
-            : route('opportunita.show', $opportunity);
+        return route('opportunita.apri', $opportunity);
     }
 
     private function channelEnabled(NotificationChannel $channel): bool

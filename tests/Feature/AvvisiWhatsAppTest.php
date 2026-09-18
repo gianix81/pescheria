@@ -49,11 +49,12 @@ class AvvisiWhatsAppTest extends TestCase
         $this->assertStringContainsString('Da verificare', $testo);
         $this->assertStringContainsString($opportunita->reference, $testo);
         $this->assertStringContainsString($opportunita->article_code, $testo);
-        $this->assertStringContainsString(route('opportunita.show', $opportunita), $testo);
+        // Indirizzo unico: lo stesso messaggio finisce a ruoli diversi.
+        $this->assertStringContainsString(route('opportunita.apri', $opportunita), $testo);
     }
 
     #[Test]
-    public function il_messaggio_di_apertura_porta_al_percorso_del_capo_reparto(): void
+    public function il_messaggio_di_apertura_usa_lindirizzo_unico(): void
     {
         [$store, $cr] = $this->storeWithCr();
         $opportunita = $this->limitedOpportunity([$store], 25, ['title' => 'Cozze di Scardovari']);
@@ -63,8 +64,8 @@ class AvvisiWhatsAppTest extends TestCase
         $this->assertStringContainsString('Cozze di Scardovari', $testo);
         $this->assertStringContainsString('25 colli disponibili', $testo);
         $this->assertStringContainsString('Consegna', $testo);
-        // Il gruppo è fatto di capi reparto: il collegamento deve portare alla loro scheda.
-        $this->assertStringContainsString(route('cr.opportunita.show', $opportunita), $testo);
+        // Il gruppo è misto: un indirizzo unico porta ciascuno alla propria vista.
+        $this->assertStringContainsString(route('opportunita.apri', $opportunita), $testo);
         $this->assertStringContainsString('solo dall\'app', $testo);
     }
 

@@ -114,7 +114,8 @@ class NotificheTest extends TestCase
 
         $notifica = Notification::where('user_id', $cr->id)->firstOrFail();
 
-        $this->assertSame(route('cr.opportunita.show', $opportunita), $notifica->url);
+        // Indirizzo unico: resta valido anche se il collegamento viene inoltrato.
+        $this->assertSame(route('opportunita.apri', $opportunita), $notifica->url);
     }
 
     #[Test]

@@ -18,8 +18,10 @@ use App\Models\Response;
  *    il gruppo e si invia. Nessuna API ufficiale permette di scrivere nei
  *    gruppi, quindi l'ultimo tocco resta della persona.
  *
- * Il messaggio porta sempre il collegamento alla scheda, che richiede
- * autenticazione: WhatsApp è un avviso, mai la fonte dell'ordine.
+ * Il collegamento è sempre lo stesso indirizzo neutro (`/o/{id}`), che smista
+ * chi lo apre verso la propria schermata: un messaggio finisce in un gruppo
+ * misto e non può sapere in anticipo chi lo leggerà. Richiede comunque
+ * l'accesso: WhatsApp è un avviso, mai la fonte dell'ordine.
  */
 final class WhatsApp
 {
@@ -78,7 +80,7 @@ final class WhatsApp
             '⏰ Manca la tua risposta: '.$opportunity->title,
             'Scadenza '.Format::dateTime($opportunity->closes_at),
             '',
-            'Rispondi qui: '.route('cr.opportunita.show', $opportunity),
+            'Rispondi qui: '.route('opportunita.apri', $opportunity),
         ]);
     }
 
@@ -92,7 +94,7 @@ final class WhatsApp
             'Consegna '.Format::date($opportunity->delivery_date)
                 .' · scadenza ordini '.Format::dateTime($opportunity->closes_at),
             '',
-            'Apri la scheda: '.route('opportunita.show', $opportunity),
+            'Apri la scheda: '.route('opportunita.apri', $opportunity),
         ]));
     }
 
@@ -112,7 +114,7 @@ final class WhatsApp
             '📅 Consegna '.Format::date($opportunity->delivery_date),
             '⏱ Rispondere entro il '.Format::dateTime($opportunity->closes_at),
             '',
-            'Ordina qui: '.route('cr.opportunita.show', $opportunity),
+            'Ordina qui: '.route('opportunita.apri', $opportunity),
             '',
             'Le risposte valgono solo dall\'app.',
         ]));
@@ -126,7 +128,7 @@ final class WhatsApp
             $opportunity->reference.' · '.$opportunity->article_code,
             'Era già aperta: resta ferma finché non la confermi.',
             '',
-            'Verifica qui: '.route('opportunita.show', $opportunity),
+            'Verifica qui: '.route('opportunita.apri', $opportunity),
         ]);
     }
 
@@ -143,7 +145,7 @@ final class WhatsApp
             '⏱ Rispondere entro il '.Format::dateTime($opportunity->closes_at),
             '',
             'Qualcosa è cambiato: ricontrollate prima di confermare.',
-            'Scheda: '.route('cr.opportunita.show', $opportunity),
+            'Scheda: '.route('opportunita.apri', $opportunity),
         ]));
     }
 
@@ -169,7 +171,7 @@ final class WhatsApp
                 ? 'Restano '.$opportunity->remainingPackages().' colli'
                 : null,
             '',
-            'Scheda: '.route('cr.opportunita.show', $opportunity),
+            'Scheda: '.route('opportunita.apri', $opportunity),
         ]));
     }
 }

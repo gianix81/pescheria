@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AperturaOpportunitaController;
 use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
@@ -56,6 +57,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/password/cambia', [ChangePasswordController::class, 'update'])->name('password.change.update');
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
+
+    // Indirizzo unico da mettere nei messaggi: porta ciascuno alla propria vista.
+    Route::get('/o/{opportunity}', AperturaOpportunitaController::class)->name('opportunita.apri');
 
     Route::get('/notifiche', Livewire\Shared\Notifiche::class)->name('notifiche.index');
     Route::get('/notifiche/{notification}/apri', [HomeController::class, 'openNotification'])->name('notifiche.open');

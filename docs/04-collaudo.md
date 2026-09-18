@@ -71,6 +71,9 @@ opportunità nei diversi stati. Credenziali nella [README](../README.md).
 - [ ] Approvata: compare «Condividi nel gruppo WhatsApp» e il collegamento porta alla scheda del Capo Reparto.
 - [ ] Un capo reparto che conferma vede «Comunica al gruppo» con quantità, kg e totale aggiornato.
 - [ ] Aprendo il collegamento, WhatsApp mostra il messaggio già scritto e chiede solo il destinatario.
+- [ ] Lo stesso collegamento del messaggio funziona per tutti i ruoli: il capo reparto arriva alla scheda d'ordine, Buyer e Tecnico a quella completa. Nessun 403.
+- [ ] Aprendolo senza aver fatto l'accesso si passa dal login e poi si arriva all'opportunità.
+- [ ] Un capo reparto di un punto vendita non destinatario legge «non è destinata al tuo punto vendita».
 - [ ] «Copia testo» copia il messaggio negli appunti.
 - [ ] Alla conferma di un punto vendita, Buyer e Tecnico ricevono la notifica in-app.
 

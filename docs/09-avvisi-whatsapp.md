@@ -37,6 +37,26 @@ Ogni messaggio porta il collegamento alla scheda, che richiede autenticazione. W
 canale di avviso: **l'ordine è valido solo dall'app**, e i messaggi non contengono pulsanti che
 registrino quantità.
 
+## 9.2-bis Un solo indirizzo per tutti
+
+Un messaggio finisce in un gruppo misto: Buyer, Tecnici e capi reparto aprono lo **stesso**
+collegamento, ma ognuno ha la propria schermata. Mettere nel testo l'indirizzo di una sola vista
+condannava tutti gli altri a un `403 — non hai i permessi per accedere a questa sezione`.
+
+Tutti i messaggi e tutte le notifiche usano quindi un indirizzo neutro:
+
+```
+https://<dominio>/o/<id>
+```
+
+Chi lo apre viene smistato verso la propria vista: i capi reparto alla scheda da cui si ordina,
+Buyer, Tecnici e Super Admin alla scheda completa con le risposte. Chi non ha ancora fatto
+l'accesso passa dal login e viene poi riportato lì, quindi il collegamento funziona anche da un
+telefono che non ha mai aperto l'applicazione.
+
+Un capo reparto di un punto vendita non destinatario riceve un messaggio comprensibile —
+«questa opportunità non è destinata al tuo punto vendita» — e non il generico errore di permessi.
+
 ## 9.3 Come sono fatti i messaggi
 
 ```
@@ -47,7 +67,7 @@ ART10001 · PLU 2101
 📅 Consegna 20/09/2026
 ⏱ Rispondere entro il 18/09/2026 18:00
 
-Ordina qui: https://…/cr/opportunita/12
+Ordina qui: https://…/o/12
 
 Le risposte valgono solo dall'app.
 ```
@@ -58,7 +78,7 @@ Orata fresca · ART10001
 Totale finora: 11 colli (66,0 kg)
 Restano 29 colli
 
-Scheda: https://…/cr/opportunita/12
+Scheda: https://…/o/12
 ```
 
 I testi sono in `App\Support\WhatsApp`: cambiarli non tocca né le notifiche in-app né il resto.
