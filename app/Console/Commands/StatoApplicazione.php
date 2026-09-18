@@ -7,7 +7,9 @@ use App\Models\Opportunity;
 use App\Models\Store;
 use App\Models\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * Fotografia dell'ambiente, pensata per capire in trenta secondi perché
@@ -18,7 +20,9 @@ use Illuminate\Support\Facades\DB;
  */
 class StatoApplicazione extends Command
 {
-    protected $signature = 'pescheria:stato {--email= : Verifica un account specifico}';
+    protected $signature = 'pescheria:stato
+        {--email= : Verifica un account specifico}
+        {--password= : Prova la password di quell\'account e dice quale controllo fallisce}';
 
     protected $description = 'Diagnostica ambiente, database e profili di accesso';
 
@@ -119,6 +123,26 @@ class StatoApplicazione extends Command
 
                 if (! $utente->is_active || $utente->trashed()) {
                     $problemi[] = "L'account {$email} non è utilizzabile: riattivalo dalla gestione utenti.";
+                }
+
+                if ($password = $this->option('password')) {
+                    $corrisponde = Hash::check($password, $utente->password);
+
+                    $this->riga('Password fornita', $corrisponde ? 'corrisponde' : 'NON corrisponde');
+
+                    if (! $corrisponde) {
+                        $problemi[] = 'La password non corrisponde a quella salvata. Reimpostala con: '
+                            ."php artisan pescheria:admin --email={$email} --password=NUOVA_PASSWORD";
+                    }
+
+                    // Ripete esattamente il controllo del login, filtro su is_active compreso.
+                    $accettato = Auth::validate([
+                        'email' => $email,
+                        'password' => $password,
+                        'is_active' => true,
+                    ]);
+
+                    $this->riga('Esito del login', $accettato ? 'sarebbe accettato' : 'sarebbe RIFIUTATO');
                 }
             }
         }

@@ -43,10 +43,20 @@ servizio ed esegui `php artisan db:seed --force`.
 Nella shell del servizio:
 
 ```bash
-php artisan pescheria:stato                    # diagnosi completa
-php artisan pescheria:stato --email=tuo@indirizzo.it   # stato di un singolo account
-php artisan pescheria:admin --email=tuo@indirizzo.it   # crea o ripristina un Super Admin
+php artisan pescheria:stato                                        # diagnosi completa
+php artisan pescheria:stato --email=tuo@indirizzo.it               # stato di un account
+php artisan pescheria:stato --email=tuo@indirizzo.it --password=X  # dice quale controllo fallisce
+php artisan pescheria:admin --email=tuo@indirizzo.it               # crea o ripristina un Super Admin
 ```
+
+Con `--password` il comando ripete gli stessi controlli del login — esistenza, eliminazione,
+stato attivo, confronto dell'impronta della password — e dichiara se l'accesso *sarebbe accettato*.
+Distingue quindi «password sbagliata» da «account disattivato» da «utente inesistente», che
+dall'esterno appaiono tutti come «credenziali non valide». La password compare nella cronologia
+della shell: usalo per diagnosi, non di routine.
+
+**Attenzione a una trappola frequente:** `pescheria:admin` **sovrascrive** la password ogni volta
+che viene eseguito. Se lo lanci copiando un esempio, la password diventa quella dell'esempio.
 
 Le cause più frequenti, tutte segnalate dal comando di stato: il seeder non è mai stato eseguito
 (nessun utente), le variabili `DB_*` non arrivano al servizio (modalità dimostrativa attiva,

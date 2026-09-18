@@ -301,6 +301,25 @@ class SuperAdminTest extends TestCase
     }
 
     #[Test]
+    public function il_comando_di_stato_verifica_anche_la_password(): void
+    {
+        $this->artisan('pescheria:admin', [
+            '--email' => 'verifica@azienda.it',
+            '--password' => 'PasswordSicura1',
+        ])->assertSuccessful();
+
+        $this->artisan('pescheria:stato', [
+            '--email' => 'verifica@azienda.it',
+            '--password' => 'PasswordSicura1',
+        ])->expectsOutputToContain('sarebbe accettato')->assertSuccessful();
+
+        $this->artisan('pescheria:stato', [
+            '--email' => 'verifica@azienda.it',
+            '--password' => 'QuellaSbagliata1',
+        ])->expectsOutputToContain('NON corrisponde')->assertSuccessful();
+    }
+
+    #[Test]
     public function il_comando_di_stato_spiega_perche_un_account_non_entra(): void
     {
         [$store, $cr] = $this->storeWithCr();

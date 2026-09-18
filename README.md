@@ -188,11 +188,16 @@ Se l'accesso non funziona, il comando di diagnosi dice perché in trenta secondi
 
 ```bash
 php artisan pescheria:stato --email=utente@indirizzo.it
+php artisan pescheria:stato --email=utente@indirizzo.it --password=DaVerificare
 ```
 
 Verifica chiave applicativa, raggiungibilità del database, migrazioni non applicate, modalità
 dimostrativa, presenza di utenti e stato del singolo account (attivo, eliminato, cambio password
-richiesto).
+richiesto). Con `--password` ripete i controlli del login e dice se l'accesso sarebbe accettato,
+distinguendo password errata, account disattivato e utente inesistente.
+
+> `pescheria:admin` **sovrascrive** la password a ogni esecuzione: attenzione a non lanciarlo
+> copiando un esempio, o la password diventerà quella dell'esempio.
 
 ## 4. Test
 
