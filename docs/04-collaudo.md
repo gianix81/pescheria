@@ -31,6 +31,16 @@ opportunità nei diversi stati. Credenziali nella [README](../README.md).
 - [ ] Utente con `must_change_password`: ogni pagina reindirizza al cambio password.
 - [ ] Buyer su `/tecnico/...` → 403; Tecnico su `/buyer/...` → 403; CR su entrambi → 403.
 
+### A-bis — Super Admin
+- [ ] `admin@pescheria.local` accede e atterra sulla gestione profili.
+- [ ] Crea un profilo per ciascun ruolo; per un Capo Reparto il punto vendita è obbligatorio.
+- [ ] Reimposta la password di un utente: compare una sola volta e il log non la contiene.
+- [ ] Elimina un profilo: l'utente non accede più, ma compare in «Mostra eliminati» e si ripristina.
+- [ ] Non riesce a eliminare o disattivare se stesso.
+- [ ] Con un solo Super Admin attivo, non riesce a rimuoverlo, disattivarlo né declassarlo.
+- [ ] Un Tecnico crea e modifica profili ma non vede Elimina, Password e non può nominare Super Admin.
+- [ ] `php artisan pescheria:stato` non segnala problemi; con un account disattivato lo spiega.
+
 ### B — Creazione opportunità (Buyer)
 - [ ] Creazione rapida: video dalla fotocamera, ricerca articolo per PLU, prezzi, IVA, kg per collo,
       colli limitati, scadenza, consegna, destinatari, invio in verifica in una sola schermata.

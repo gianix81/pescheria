@@ -11,6 +11,11 @@ use App\Models\User;
 /** Scorciatoie per costruire lo scenario tipico: un Buyer, un Tecnico, N punti vendita con CR. */
 trait CreatesScenario
 {
+    protected function admin(): User
+    {
+        return User::factory()->admin()->create();
+    }
+
     protected function buyer(): User
     {
         return User::factory()->buyer()->create();

@@ -17,10 +17,32 @@ final class Navigation
         }
 
         return match (true) {
+            // L'ordine conta: il Super Admin supera anche i controlli di Buyer e Tecnico.
+            $user->isAdmin() => self::admin(),
             $user->isBuyer() => self::buyer(),
             $user->isTecnico() => self::tecnico(),
             default => self::capoReparto($user),
         };
+    }
+
+    /** Il Super Admin vede tutto, con la gestione profili in cima. */
+    private static function admin(): array
+    {
+        $daVerificare = Opportunity::where('status', OpportunityStatus::IN_VERIFICA)->count();
+
+        return [
+            self::item('Utenti', 'tecnico.anagrafiche.utenti', '👤'),
+            self::item('Punti vendita', 'tecnico.anagrafiche.punti-vendita', '🏬'),
+            self::item('Prodotti', 'tecnico.anagrafiche.prodotti', '🐟'),
+            self::item('Dashboard Tecnico', 'tecnico.dashboard', '▦'),
+            self::item('Da verificare', 'opportunita.index', '⚑', ['preset' => 'da_verificare'], $daVerificare),
+            self::item('Monitor compilazioni', 'tecnico.monitor', '▤'),
+            self::item('Opportunità', 'opportunita.index', '≡'),
+            self::item('Nuova opportunità', 'buyer.opportunita.create', '＋'),
+            self::item('Ordini / Risposte', 'buyer.ordini', '✓'),
+            self::item('Export', 'export.index', '⤓'),
+            self::item('Audit', 'tecnico.audit', '🔒'),
+        ];
     }
 
     private static function buyer(): array

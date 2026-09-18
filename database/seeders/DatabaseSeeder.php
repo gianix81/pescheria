@@ -27,6 +27,13 @@ class DatabaseSeeder extends Seeder
     {
         $forzaCambioPassword = ! app()->environment('local', 'testing');
 
+        User::updateOrCreate(['email' => 'admin@pescheria.local'], [
+            'first_name' => 'Super', 'last_name' => 'Admin',
+            'phone' => null, 'role' => Role::ADMIN,
+            'is_active' => true, 'must_change_password' => $forzaCambioPassword,
+            'password' => Hash::make('Pescheria2026!'),
+        ]);
+
         $buyer = User::updateOrCreate(['email' => 'buyer@pescheria.local'], [
             'first_name' => 'Marco', 'last_name' => 'Ferrari',
             'phone' => '+39 333 1112233', 'role' => Role::BUYER,

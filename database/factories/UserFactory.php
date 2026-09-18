@@ -33,6 +33,11 @@ class UserFactory extends Factory
         ];
     }
 
+    public function admin(): static
+    {
+        return $this->state(fn () => ['role' => Role::ADMIN, 'store_id' => null]);
+    }
+
     public function buyer(): static
     {
         return $this->state(fn () => ['role' => Role::BUYER, 'store_id' => null]);

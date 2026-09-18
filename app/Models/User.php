@@ -50,16 +50,23 @@ class User extends Authenticatable
         return trim($this->first_name.' '.$this->last_name);
     }
 
+    public function isAdmin(): bool
+    {
+        return $this->role === Role::ADMIN;
+    }
+
+    /** Il Super Admin ha anche tutte le facoltà operative di Buyer e Tecnico. */
     public function isBuyer(): bool
     {
-        return $this->role === Role::BUYER;
+        return $this->role === Role::BUYER || $this->isAdmin();
     }
 
     public function isTecnico(): bool
     {
-        return $this->role === Role::TECNICO;
+        return $this->role === Role::TECNICO || $this->isAdmin();
     }
 
+    /** Vero solo per il ruolo vero e proprio: il Super Admin non ha un punto vendita. */
     public function isCapoReparto(): bool
     {
         return $this->role === Role::CAPO_REPARTO;

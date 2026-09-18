@@ -86,6 +86,29 @@ Effetto collaterale da tenere presente: con disponibilità limitata la classific
 la corsa all'ultimo collo, ed è probabile che le quantità visibili influenzino le scelte di chi
 ordina dopo. È l'effetto voluto, ma va considerato leggendo i dati storici.
 
+## 1.4-ter Super Admin (ruolo aggiunto)
+
+La prima stesura prevedeva tre soli ruoli, con le anagrafiche in carico al Tecnico e nessun
+ruolo «Admin» (assunzione A5). Su richiesta del committente è stato aggiunto un quarto ruolo,
+**Super Admin**, perché serviva qualcuno in grado di creare, modificare ed eliminare i profili.
+
+| Facoltà | Tecnico | Super Admin |
+|---|---|---|
+| Creare e modificare utenti, punti vendita, prodotti | sì | sì |
+| Assegnare il ruolo Super Admin | no | sì |
+| Eliminare e ripristinare un profilo | no | sì |
+| Reimpostare la password di un altro utente | no | sì |
+| Verificare le opportunità, monitorare, esportare | sì | sì |
+| Creare opportunità (facoltà del Buyer) | no | sì |
+| Rispondere per un punto vendita | no | no (non ha un PdV) |
+
+Il Super Admin supera i controlli di Buyer e Tecnico, ma **non** quelli del Capo Reparto: non è
+associato a un punto vendita e non può quindi ordinare al posto di nessuno.
+
+Due paracadute impediscono di chiudersi fuori: non ci si può eliminare o disattivare da soli, e
+l'ultimo Super Admin attivo non può essere rimosso, disattivato o declassato. In caso estremo
+resta la console: `php artisan pescheria:admin`.
+
 ## 1.5 Regole di business non negoziabili implementate
 
 1. `prezzo_vendita_netto = prezzo_vendita_lordo / (1 + aliquota_iva)`

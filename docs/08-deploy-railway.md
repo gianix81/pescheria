@@ -38,6 +38,21 @@ Gira prima che la nuova versione vada in linea, quindi lo schema è sempre allin
 Per caricare i dati iniziali una sola volta (utenti, punti vendita, prodotti), apri la shell del
 servizio ed esegui `php artisan db:seed --force`.
 
+### Se l'accesso non funziona
+
+Nella shell del servizio:
+
+```bash
+php artisan pescheria:stato                    # diagnosi completa
+php artisan pescheria:stato --email=tuo@indirizzo.it   # stato di un singolo account
+php artisan pescheria:admin --email=tuo@indirizzo.it   # crea o ripristina un Super Admin
+```
+
+Le cause più frequenti, tutte segnalate dal comando di stato: il seeder non è mai stato eseguito
+(nessun utente), le variabili `DB_*` non arrivano al servizio (modalità dimostrativa attiva,
+banner ambra sul login), le migrazioni non sono state applicate, oppure l'account esiste ma è
+disattivato.
+
 ## 8.4 Media caricati
 
 Il filesystem del container si azzera a ogni deploy. Due strade:

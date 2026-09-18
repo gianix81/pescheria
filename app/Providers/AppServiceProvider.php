@@ -26,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
         setlocale(LC_TIME, 'it_IT.UTF-8', 'it_IT', 'Italian');
 
         Gate::define('gestire-anagrafiche', [AnagraficaPolicy::class, 'manage']);
+        Gate::define('gestire-account', [AnagraficaPolicy::class, 'manageAccounts']);
 
         $this->configureRateLimiting();
 

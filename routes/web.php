@@ -53,7 +53,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/media/{media}/poster', [MediaController::class, 'poster'])->middleware('signed')->name('media.poster');
 
     // ---------------------------------------------------------- Buyer
-    Route::middleware('role:BUYER')->prefix('buyer')->name('buyer.')->group(function () {
+    Route::middleware('role:BUYER,ADMIN')->prefix('buyer')->name('buyer.')->group(function () {
         Route::get('/dashboard', Livewire\Buyer\Dashboard::class)->name('dashboard');
         Route::get('/opportunita/nuova', Livewire\Buyer\OpportunitaForm::class)->name('opportunita.create');
         Route::get('/opportunita/{opportunity}/modifica', Livewire\Buyer\OpportunitaForm::class)->name('opportunita.edit');
@@ -61,7 +61,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // ---------------------------------------------------------- Tecnico
-    Route::middleware('role:TECNICO')->prefix('tecnico')->name('tecnico.')->group(function () {
+    Route::middleware('role:TECNICO,ADMIN')->prefix('tecnico')->name('tecnico.')->group(function () {
         Route::get('/dashboard', Livewire\Tecnico\Dashboard::class)->name('dashboard');
         Route::get('/verifica/{opportunity}', Livewire\Tecnico\Verifica::class)->name('verifica');
         Route::get('/monitor', Livewire\Tecnico\Monitor::class)->name('monitor');
@@ -75,7 +75,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // ---------------------------------------------------------- Buyer + Tecnico
-    Route::middleware('role:BUYER,TECNICO')->group(function () {
+    Route::middleware('role:BUYER,TECNICO,ADMIN')->group(function () {
         Route::get('/opportunita', Livewire\Shared\OpportunitaIndex::class)->name('opportunita.index');
         Route::get('/opportunita/{opportunity}', Livewire\Shared\OpportunitaShow::class)->name('opportunita.show');
         Route::get('/storico', Livewire\Shared\OpportunitaIndex::class)->defaults('preset', 'storico')->name('storico');

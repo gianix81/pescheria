@@ -53,6 +53,7 @@ Applicazione su <http://localhost:8000>.
 
 | Ruolo | Email | Password |
 |---|---|---|
+| Super Admin | `admin@pescheria.local` | `Pescheria2026!` |
 | Buyer | `buyer@pescheria.local` | `Pescheria2026!` |
 | Tecnico | `tecnico@pescheria.local` | `Pescheria2026!` |
 | Capo Reparto PV001…PV005 | `cr1@pescheria.local` … `cr5@pescheria.local` | `Pescheria2026!` |
@@ -169,6 +170,29 @@ Foto e video vengono **compressi nel browser prima dell'invio**: le foto a 1920 
 l'upload dal punto di vendita è rapido. Soglie e limiti in
 [docs/07-compressione-media.md](docs/07-compressione-media.md). Se il browser non supporta la
 transcodifica, il file viene inviato com'è: nessun percorso resta bloccato.
+
+### Primo accesso in produzione
+
+Il seeder popola anagrafiche e utenti dimostrativi; in produzione crea invece il tuo Super Admin
+dalla console, senza dipendere da esso:
+
+```bash
+php artisan pescheria:admin --email=tuo@indirizzo.it
+# stampa una password generata: annotala, non è recuperabile
+```
+
+Lo stesso comando **ripristina** un profilo eliminato o disattivato e lo promuove a Super Admin:
+è la via d'accesso garantita quando nessuno riesce più a entrare.
+
+Se l'accesso non funziona, il comando di diagnosi dice perché in trenta secondi:
+
+```bash
+php artisan pescheria:stato --email=utente@indirizzo.it
+```
+
+Verifica chiave applicativa, raggiungibilità del database, migrazioni non applicate, modalità
+dimostrativa, presenza di utenti e stato del singolo account (attivo, eliminato, cambio password
+richiesto).
 
 ## 4. Test
 
