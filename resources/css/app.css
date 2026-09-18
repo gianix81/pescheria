@@ -1,0 +1,123 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../views/**/*.blade.php';
+@source '../../app/**/*.php';
+
+/* -------------------------------------------------------------------------
+   Design system — contesto GDO/food, sobrio e ad alto contrasto (WCAG 2.1 AA)
+   ------------------------------------------------------------------------- */
+@theme {
+    --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+        'Helvetica Neue', Arial, sans-serif;
+
+    /* Blu mare profondo */
+    --color-mare-50: #e7eef2;
+    --color-mare-100: #c6d7e0;
+    --color-mare-300: #6f95a9;
+    --color-mare-500: #1d5a7a;
+    --color-mare-600: #134a66;
+    --color-mare-700: #0b3a53;
+    --color-mare-800: #082c3f;
+    --color-mare-900: #051d2a;
+
+    /* Turchese */
+    --color-laguna-50: #e6f4f5;
+    --color-laguna-100: #c2e5e7;
+    --color-laguna-500: #0e8a92;
+    --color-laguna-600: #0b727a;
+    --color-laguna-700: #085a61;
+
+    /* Sfondo applicativo */
+    --color-guscio: #f5f7f8;
+
+    /* Griglia a 8 px */
+    --spacing: 0.25rem;
+}
+
+@layer base {
+    html {
+        -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+        background-color: var(--color-guscio);
+        color: #0f172a;
+    }
+
+    /* Focus sempre visibile: requisito di accessibilità da tastiera. */
+    :focus-visible {
+        outline: 3px solid var(--color-laguna-500);
+        outline-offset: 2px;
+    }
+}
+
+/* Utility personalizzate: in Tailwind 4 devono essere @utility per poter
+   essere riusate con @apply nelle varianti sottostanti. */
+@utility btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold
+           transition focus:outline-none disabled:cursor-not-allowed disabled:opacity-50;
+    /* Target touch minimo 44x44 px */
+    min-height: 44px;
+}
+
+@layer components {
+    .card {
+        @apply rounded-xl border border-slate-200 bg-white shadow-xs;
+    }
+
+    .btn-primary {
+        @apply btn bg-mare-700 text-white hover:bg-mare-800;
+    }
+
+    .btn-secondary {
+        @apply btn bg-laguna-500 text-white hover:bg-laguna-600;
+    }
+
+    .btn-ghost {
+        @apply btn border border-slate-300 bg-white text-slate-700 hover:bg-slate-50;
+    }
+
+    .btn-danger {
+        @apply btn bg-rose-700 text-white hover:bg-rose-800;
+    }
+
+    .badge {
+        @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset;
+    }
+
+    .label {
+        @apply block text-sm font-medium text-slate-700;
+    }
+
+    .input {
+        @apply block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-xs
+               focus:border-laguna-500 focus:ring-2 focus:ring-laguna-500 sm:text-sm;
+        min-height: 44px;
+    }
+
+    .input-error {
+        @apply border-rose-500 focus:border-rose-500 focus:ring-rose-500;
+    }
+
+    .help {
+        @apply mt-1 text-xs text-slate-500;
+    }
+
+    .error {
+        @apply mt-1 flex items-start gap-1 text-sm font-medium text-rose-700;
+    }
+
+    .th {
+        @apply px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-600;
+    }
+
+    .td {
+        @apply px-3 py-2.5 text-sm text-slate-700;
+    }
+
+    .skeleton {
+        @apply animate-pulse rounded bg-slate-200;
+    }
+}

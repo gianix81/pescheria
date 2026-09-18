@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Avvia l'applicazione in locale con i limiti di upload corretti.
+#
+# Il binario PHP di questa macchina non carica alcun php.ini di sistema:
+# PHPRC lo fa puntare a quello del progetto, altrimenti gli upload oltre 2 MB
+# falliscono con "Il caricamento del file non è riuscito".
+#
+# Uso: bin/dev serve | queue | scheduler | all
+
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+export PATH="$HOME/.local/bin:$PATH"
+export PHPRC="$(pwd)/docker/php/uploads.ini"
+
+case "${1:-serve}" in
+    serve)     exec php artisan serve --host=127.0.0.1 --port=8000 ;;
+    queue)     exec php artisan queue:work --tries=3 --timeout=120 ;;
+    scheduler) exec php artisan schedule:work ;;
+    all)
+        php artisan queue:work --tries=3 --timeout=120 &
+        php artisan schedule:work &
+        exec php artisan serve --host=127.0.0.1 --port=8000
+        ;;
+    *) echo "Uso: bin/dev [serve|queue|scheduler|all]" >&2; exit 1 ;;
+esac

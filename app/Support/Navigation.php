@@ -1,0 +1,75 @@
+<?php
+
+namespace App\Support;
+
+use App\Enums\OpportunityStatus;
+use App\Models\Opportunity;
+use App\Models\User;
+
+/** Voci di menu per ruolo (capitolato §12). */
+final class Navigation
+{
+    /** @return array<int, array{label:string, url:string, icon:string, active:bool, badge:int}> */
+    public static function for(?User $user): array
+    {
+        if (! $user) {
+            return [];
+        }
+
+        return match (true) {
+            $user->isBuyer() => self::buyer(),
+            $user->isTecnico() => self::tecnico(),
+            default => self::capoReparto($user),
+        };
+    }
+
+    private static function buyer(): array
+    {
+        return [
+            self::item('Dashboard', 'buyer.dashboard', '▦'),
+            self::item('Opportunità', 'opportunita.index', '≡'),
+            self::item('Nuova opportunità', 'buyer.opportunita.create', '＋'),
+            self::item('Ordini / Risposte', 'buyer.ordini', '✓'),
+            self::item('Export', 'export.index', '⤓'),
+            self::item('Storico', 'storico', '🕘'),
+        ];
+    }
+
+    private static function tecnico(): array
+    {
+        $daVerificare = Opportunity::where('status', OpportunityStatus::IN_VERIFICA)->count();
+
+        return [
+            self::item('Dashboard', 'tecnico.dashboard', '▦'),
+            self::item('Da verificare', 'opportunita.index', '⚑', ['preset' => 'da_verificare'], $daVerificare),
+            self::item('Monitor compilazioni', 'tecnico.monitor', '▤'),
+            self::item('Opportunità', 'opportunita.index', '≡'),
+            self::item('Anagrafiche', 'tecnico.anagrafiche.punti-vendita', '🗂'),
+            self::item('Export', 'export.index', '⤓'),
+            self::item('Audit', 'tecnico.audit', '🔒'),
+        ];
+    }
+
+    private static function capoReparto(User $user): array
+    {
+        return [
+            self::item('Opportunità attive', 'cr.dashboard', '▦'),
+            self::item('Da completare', 'cr.dashboard', '⚑', ['vista' => 'da_completare']),
+            self::item('Inviate', 'cr.dashboard', '✓', ['vista' => 'inviate']),
+            self::item('Storico', 'cr.dashboard', '🕘', ['vista' => 'storico']),
+        ];
+    }
+
+    private static function item(string $label, string $route, string $icon, array $params = [], int $badge = 0): array
+    {
+        $url = route($route, $params);
+
+        return [
+            'label' => $label,
+            'url' => $url,
+            'icon' => $icon,
+            'active' => request()->fullUrl() === $url,
+            'badge' => $badge,
+        ];
+    }
+}
