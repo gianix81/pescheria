@@ -1,5 +1,7 @@
 <?php
 
+use App\Support\AppUrl;
+
 return [
 
     /*
@@ -52,7 +54,9 @@ return [
     |
     */
 
-    'url' => env('APP_URL') ?: 'http://localhost',
+    // Vedi App\Support\AppUrl: rifiuta i riferimenti non risolti dalla
+    // piattaforma, che altrimenti fermano il build con «Invalid URI».
+    'url' => AppUrl::risolvi(),
 
     /*
     |--------------------------------------------------------------------------

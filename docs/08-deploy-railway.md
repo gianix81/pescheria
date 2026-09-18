@@ -69,10 +69,13 @@ Nixpacks legge i requisiti dal repository, non li indovina:
 | `vite: not found` durante `npm run build` | il build gira dopo `npm prune --omit=dev` | gli strumenti di build stanno fra le `dependencies`, non fra le `devDependencies` |
 | pagina bianca o 404 dopo un build riuscito | document root sbagliata | variabile `NIXPACKS_PHP_ROOT_DIR=/app/public` |
 | `No application encryption key` | manca `APP_KEY` | vedi §8.2 |
+| `Invalid URI` durante `php artisan config:cache` | `APP_URL` conteneva `${{RAILWAY_PUBLIC_DOMAIN}}`, non ancora risolto perché il dominio pubblico nasce col primo deploy riuscito | `App\Support\AppUrl` scarta i riferimenti non risolti e ricade sul dominio della piattaforma. **Dopo il primo deploy, imposta `APP_URL` al dominio reale**: i link nelle notifiche inviate da coda e scheduler nascono da lì |
 
 ## 8.6 Verifica dopo il primo deploy
 
 - [ ] `https://<dominio>/up` risponde `200`.
+- [ ] `APP_URL` è stata sostituita con il dominio reale e il servizio è stato ridistribuito
+      (i link nelle notifiche generate fuori da una richiesta HTTP dipendono da questo valore).
 - [ ] La pagina di accesso **non** mostra il banner «Ambiente dimostrativo»: se lo mostra, le
       variabili `DB_*` non sono arrivate al servizio.
 - [ ] Il login funziona e la dashboard mostra i dati del seeder.
