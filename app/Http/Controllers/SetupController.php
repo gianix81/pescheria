@@ -6,6 +6,7 @@ use App\Enums\Role;
 use App\Models\User;
 use App\Services\AuditService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 
 /**
@@ -66,15 +67,32 @@ class SetupController extends Controller
 
     private function assertDisponibile(string $token): void
     {
-        $atteso = (string) config('pescheria.setup_token');
+        // Le piattaforme che eseguono `config:cache` durante il build congelano i
+        // valori di allora: una variabile aggiunta dopo resterebbe invisibile fino
+        // a una nuova pubblicazione. Qui si rilegge anche l'ambiente reale, così
+        // impostare SETUP_TOKEN ha effetto subito.
+        $atteso = (string) (config('pescheria.setup_token') ?: env('SETUP_TOKEN', ''));
 
-        abort_if($atteso === '', 404);
-        abort_unless(hash_equals($atteso, $token), 404);
-
-        // Già configurata: la porta si chiude da sé.
-        abort_if(
+        $this->rifiuta($atteso === '', 'SETUP_TOKEN non impostato');
+        $this->rifiuta(! hash_equals($atteso, $token), 'token non corrispondente');
+        $this->rifiuta(
             User::where('role', Role::ADMIN)->where('is_active', true)->exists(),
-            404,
+            'esiste già un Super Admin attivo',
         );
+    }
+
+    /**
+     * Risponde 404 senza rivelare il motivo a chi chiama, ma lo scrive nei log
+     * della piattaforma: chi sta configurando può capire quale condizione manca.
+     */
+    private function rifiuta(bool $condizione, string $motivo): void
+    {
+        if (! $condizione) {
+            return;
+        }
+
+        Log::warning("[setup] pagina non disponibile: {$motivo}");
+
+        abort(404);
     }
 }

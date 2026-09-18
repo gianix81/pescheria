@@ -8,6 +8,7 @@ use App\Http\Controllers\ExportController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\SetupController;
+use App\Http\Controllers\StatoController;
 use App\Livewire;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/cron/esegui', [CronController::class, 'run'])
     ->middleware('throttle:cron')
     ->name('cron.run');
+
+// Health check della piattaforma: risponde 200 e dichiara la versione pubblicata.
+Route::get('/up', StatoController::class)->name('up');
 
 // Primo accesso: crea il Super Admin iniziale dal browser. Esiste solo se
 // SETUP_TOKEN è impostato e non c'è ancora un Super Admin attivo.

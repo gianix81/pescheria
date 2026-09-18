@@ -177,7 +177,9 @@ Due strade, a seconda che tu possa aprire una shell.
 
 **Dal browser** (nessuna shell): imposta `SETUP_TOKEN` fra le variabili d'ambiente e apri
 `https://<dominio>/setup/<token>`. Crei il primo Super Admin e la pagina si disattiva da sola.
-Esiste solo finché non c'è un Super Admin attivo.
+Esiste solo finché non c'è un Super Admin attivo; se risponde 404 il motivo è nei log del
+servizio. L'endpoint `/up` dichiara quale versione è pubblicata:
+`{"stato":"ok","versione":"b9d25bd","ambiente":"production"}`.
 
 **Dalla console:**
 

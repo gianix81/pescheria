@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Enums\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Env;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Support\CreatesScenario;
 use Tests\TestCase;
@@ -116,6 +117,31 @@ class SetupInizialeTest extends TestCase
         $this->tecnico();
 
         $this->get('/setup/'.$this->token)->assertOk();
+    }
+
+    #[Test]
+    public function il_token_funziona_anche_se_la_configurazione_e_in_cache(): void
+    {
+        // Le piattaforme che eseguono config:cache durante il build congelano i
+        // valori di allora: una variabile aggiunta dopo resterebbe invisibile.
+        config(['pescheria.setup_token' => '']);
+        Env::getRepository()->set('SETUP_TOKEN', $this->token);
+
+        try {
+            $this->get('/setup/'.$this->token)->assertOk();
+        } finally {
+            Env::getRepository()->clear('SETUP_TOKEN');
+        }
+    }
+
+    #[Test]
+    public function lhealth_check_dichiara_la_versione_pubblicata(): void
+    {
+        $risposta = $this->get('/up')->assertOk();
+
+        $risposta->assertJsonStructure(['stato', 'versione', 'ambiente']);
+        $this->assertSame('ok', $risposta->json('stato'));
+        $this->assertNotSame('', $risposta->json('versione'));
     }
 
     #[Test]

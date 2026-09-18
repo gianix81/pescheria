@@ -53,6 +53,35 @@ La pagina esiste **solo** se il token è impostato, corrisponde, e non c'è anco
 attivo: appena l'account è creato risponde 404 da sola, senza bisogno di ricordarsi di chiuderla.
 Torna disponibile se l'ultimo Super Admin viene disattivato, come via di rientro.
 
+#### Se `/setup/<token>` risponde 404
+
+Quattro cause, tre delle quali sono volute:
+
+| Causa | Come riconoscerla |
+|---|---|
+| Il codice pubblicato non contiene ancora la pagina | `https://<dominio>/up` non risponde, oppure il campo `versione` non corrisponde all'ultimo commit |
+| `SETUP_TOKEN` non impostato | nei log del servizio compare `[setup] pagina non disponibile: SETUP_TOKEN non impostato` |
+| Token diverso da quello nell'indirizzo | log: `token non corrispondente` — attenzione a spazi e virgolette |
+| Esiste già un Super Admin attivo | log: `esiste già un Super Admin attivo` — tipico dopo `db:seed`, che crea `admin@pescheria.local` |
+
+Il 404 è voluto: la pagina non deve rivelare la propria esistenza. Il motivo però finisce nei log
+della piattaforma, dove chi sta configurando può leggerlo.
+
+> **Le variabili richiedono una nuova pubblicazione.** Il build esegue `php artisan config:cache`:
+> i valori vengono congelati in quel momento. Aggiungere o cambiare una variabile e limitarsi a
+> riavviare il servizio non ha effetto — serve un **Redeploy**. Fa eccezione `SETUP_TOKEN`, che
+> viene riletto anche dall'ambiente reale proprio per non incorrere in questo problema.
+
+### Verificare quale versione è pubblicata
+
+```
+https://<dominio>/up
+{"stato":"ok","versione":"b9d25bd","ambiente":"production"}
+```
+
+Se `versione` non corrisponde all'ultimo commit del repository, il sito sta girando un build
+precedente: qualunque novità — comprese le pagine e i comandi appena aggiunti — non esiste ancora.
+
 ### Se l'accesso non funziona
 
 Nella shell del servizio:
