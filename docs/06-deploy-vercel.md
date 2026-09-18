@@ -50,9 +50,25 @@ Il plugin Vite di Laravel compila invece in `public/build`. Il `vercel.json` ora
    ]
    ```
 
-3. **Variabili d'ambiente.** Copia quelle di [.env.vercel.example](../.env.vercel.example) in
-   Project → Settings → Environment Variables. `APP_KEY` si genera con
-   `php artisan key:generate --show`; `CRON_SECRET` con `openssl rand -hex 32`.
+3. **Variabili d'ambiente.** L'applicazione imposta da sola ciò che su serverless ha un solo
+   significato sensato (`APP_STORAGE_PATH`, `VIEW_COMPILED_PATH`, `LOG_CHANNEL=stderr`,
+   `SESSION_DRIVER=database`, `CACHE_STORE=database`, `QUEUE_CONNECTION=sync`): non serve
+   inserirle, e se le inserisci le tue hanno la precedenza.
+
+   Restano **obbligatorie** solo queste:
+
+   | Variabile | Come ottenerla |
+   |---|---|
+   | `APP_KEY` | `php artisan key:generate --show` |
+   | `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` | dal MySQL gestito |
+   | `APP_URL` | l'indirizzo del progetto |
+
+   Poi, per le funzioni che le richiedono: `AWS_*` e `MEDIA_DISK=media_s3` per i media,
+   `CRON_SECRET` (`openssl rand -hex 32`) per i comandi pianificati, `MAIL_*` per le email.
+   L'elenco completo è in [.env.vercel.example](../.env.vercel.example).
+
+   Se una obbligatoria manca, l'applicazione non risponde con un 500 muto: mostra una pagina
+   che elenca per nome ciò che manca e come ottenerlo.
 
 4. **Deploy.** Importa il repository GitHub. Il framework preset deve restare
    **Other**: `vercel.json` definisce già build, output e routing.
@@ -116,12 +132,30 @@ predefinito sensato (`APP_KEY`, `DB_*`, `AWS_*`, `CRON_SECRET`) vanno comunque v
 
 - [ ] `https://<progetto>.vercel.app/up` risponde `200`.
 - [ ] Nessuna variabile d'ambiente è stata creata con il valore in bianco (vedi §6.4-bis).
-- [ ] Il login funziona (se fallisce con errore 500, il database non è raggiungibile).
+- [ ] Il login funziona. In caso di errore: la pagina «Configurazione incompleta» elenca le
+      variabili mancanti; per un errore diverso imposta temporaneamente `APP_DEBUG=true`, ricarica,
+      leggi il messaggio e **rimetti `APP_DEBUG=false`**.
 - [ ] La pagina ha lo stile corretto: se è senza CSS, `dist/build` non è stato generato.
 - [ ] Un Buyer carica un video da più di 5 MB: se fallisce, manca `LIVEWIRE_TEMPORARY_FILE_UPLOAD_DISK=s3`.
 - [ ] Il video si rivede nella scheda: se no, controlla la CORS del bucket.
 - [ ] `curl "https://<progetto>.vercel.app/cron/esegui?token=<CRON_SECRET>"` restituisce JSON.
 - [ ] Un export XLSX si scarica correttamente.
+
+## 6.5-bis Diagnosi di un 500 a corpo vuoto
+
+Se ogni rotta PHP risponde `500` con corpo vuoto — **compresa `/up`**, che non tocca il database —
+l'errore è all'avvio della funzione, prima che Laravel possa mostrare qualcosa. Le cause, in ordine
+di frequenza:
+
+| Sintomo | Causa | Verifica |
+|---|---|---|
+| Pagina «Dipendenze PHP non installate» | il build non ha eseguito `composer install` | log di build del deploy |
+| Pagina «Configurazione incompleta» | manca una variabile obbligatoria | l'elenco è nella pagina stessa |
+| Pagina «Avvio non riuscito» | errore applicativo | `APP_DEBUG=true` temporaneo, oppure Vercel → Logs |
+| 500 davvero vuoto | errore fatale di PHP prima del punto di ingresso | Vercel → Logs, sezione runtime |
+
+Gli asset statici che rispondono `200` mentre le rotte PHP danno `500` confermano che build e
+routing funzionano: il problema è dentro la funzione.
 
 ## 6.6 Confronto con un hosting PHP
 
