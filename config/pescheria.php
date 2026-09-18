@@ -22,7 +22,7 @@ return [
     'allocation_strategy' => FirstConfirmedFirstServed::class,
 
     'media' => [
-        'disk' => env('MEDIA_DISK', 'media_local'),
+        'disk' => env('MEDIA_DISK') ?: 'media_local',
         'max_image_mb' => (int) env('MEDIA_MAX_IMAGE_MB', 10),
         'max_video_mb' => (int) env('MEDIA_MAX_VIDEO_MB', 100),
         'signed_url_minutes' => (int) env('MEDIA_SIGNED_URL_MINUTES', 30),

@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME') ?: 'Laravel',
 
     /*
     |--------------------------------------------------------------------------
@@ -26,7 +26,7 @@ return [
     |
     */
 
-    'env' => env('APP_ENV', 'production'),
+    'env' => env('APP_ENV') ?: 'production',
 
     /*
     |--------------------------------------------------------------------------
@@ -52,7 +52,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env('APP_URL') ?: 'http://localhost',
 
     /*
     |--------------------------------------------------------------------------
@@ -63,14 +63,20 @@ return [
     | will be used by the PHP date and date-time functions. The timezone
     | is set to "UTC" by default as it is suitable for most use cases.
     |
+    | Nota: si usa `env(...) ?: default` e non il secondo argomento di env(),
+    | perché una variabile d'ambiente presente ma VUOTA (caso frequente nei
+    | pannelli di hosting, dove si crea la chiave e si lascia il valore in bianco)
+    | restituisce '' e non attiva il default. Con un timezone vuoto Laravel non
+    | parte proprio.
+    |
     */
 
-    'timezone' => env('APP_TIMEZONE', 'UTC'),
+    'timezone' => env('APP_TIMEZONE') ?: 'UTC',
 
     /*
     | Fuso orario usato SOLO per la presentazione. I dati restano in UTC.
     */
-    'display_timezone' => env('APP_DISPLAY_TIMEZONE', 'Europe/Rome'),
+    'display_timezone' => env('APP_DISPLAY_TIMEZONE') ?: 'Europe/Rome',
 
     /*
     |--------------------------------------------------------------------------
@@ -83,11 +89,11 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'it'),
+    'locale' => env('APP_LOCALE') ?: 'it',
 
-    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'it'),
+    'fallback_locale' => env('APP_FALLBACK_LOCALE') ?: 'it',
 
-    'faker_locale' => env('APP_FAKER_LOCALE', 'it_IT'),
+    'faker_locale' => env('APP_FAKER_LOCALE') ?: 'it_IT',
 
     /*
     |--------------------------------------------------------------------------
@@ -124,8 +130,8 @@ return [
     */
 
     'maintenance' => [
-        'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
-        'store' => env('APP_MAINTENANCE_STORE', 'database'),
+        'driver' => env('APP_MAINTENANCE_DRIVER') ?: 'file',
+        'store' => env('APP_MAINTENANCE_STORE') ?: 'database',
     ],
 
 ];

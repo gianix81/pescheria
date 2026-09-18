@@ -95,9 +95,27 @@ l'avvio di Laravel. Percepibile, non bloccante.
 
 **Log.** Niente file: `LOG_CHANNEL=stderr`, si leggono in Vercel → Logs, con la retention del piano.
 
+## 6.4-bis Variabili d'ambiente vuote
+
+Nel pannello di Vercel è facile creare una variabile e lasciare il valore in bianco. In PHP quella
+variabile **esiste e vale stringa vuota**, quindi `env('CHIAVE', 'predefinito')` restituisce `''` e
+non il predefinito. Con `APP_TIMEZONE` vuota l'applicazione non si avvia affatto:
+
+```
+Notice: date_default_timezone_set(): Timezone ID '' is invalid
+        in .../Foundation/Bootstrap/LoadConfiguration.php on line 65
+```
+
+La configurazione ora si difende da sola — `config/app.php`, `database.php`, `session.php`,
+`cache.php`, `queue.php`, `filesystems.php`, `logging.php`, `mail.php` e `pescheria.php` usano
+`env(...) ?: predefinito` sulle chiavi critiche, e `ConfigurazioneAmbienteTest` lo verifica — ma
+resta buona regola: **o dai un valore alla variabile, o la elimini.** Le variabili senza un
+predefinito sensato (`APP_KEY`, `DB_*`, `AWS_*`, `CRON_SECRET`) vanno comunque valorizzate.
+
 ## 6.5 Verifica dopo il primo deploy
 
 - [ ] `https://<progetto>.vercel.app/up` risponde `200`.
+- [ ] Nessuna variabile d'ambiente è stata creata con il valore in bianco (vedi §6.4-bis).
 - [ ] Il login funziona (se fallisce con errore 500, il database non è raggiungibile).
 - [ ] La pagina ha lo stile corretto: se è senza CSS, `dist/build` non è stato generato.
 - [ ] Un Buyer carica un video da più di 5 MB: se fallisce, manca `LIVEWIRE_TEMPORARY_FILE_UPLOAD_DISK=s3`.
