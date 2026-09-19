@@ -19,6 +19,8 @@
         </div>
 
         <p class="mt-6 text-center text-xs text-mare-100">Accesso riservato al personale autorizzato.</p>
+
+        <x-firma-progetto class="mt-3 text-center text-[11px] leading-relaxed text-mare-100/70" />
     </div>
 </body>
 </html>

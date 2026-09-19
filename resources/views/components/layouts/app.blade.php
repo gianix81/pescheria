@@ -116,8 +116,11 @@
             {{ $slot }}
         </main>
 
-        <footer class="border-t border-slate-200 px-4 py-4 text-xs text-slate-500 sm:px-6">
-            {{ config('app.name') }} — orari in {{ config('app.display_timezone') }}.
+        <footer class="space-y-1.5 border-t border-slate-200 px-4 py-4 sm:px-6">
+            <p class="text-xs text-slate-500">
+                {{ config('app.name') }} — orari in {{ config('app.display_timezone') }}.
+            </p>
+            <x-firma-progetto />
         </footer>
     </div>
 </div>
