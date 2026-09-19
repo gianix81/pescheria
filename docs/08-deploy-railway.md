@@ -120,14 +120,32 @@ Verifica con `php artisan pescheria:stato`, sezione *Media*:
   dei rilasci precedenti. Dopo la seconda pubblicazione la risposta è certa: «sì» se il disco
   regge, altrimenti resta «non ancora determinabile» perché ogni volta riparte da zero.
 
-Due strade:
+> **Il volume del database non basta.** Il plugin MySQL ha un proprio volume montato su
+> `/var/lib/mysql`: tiene al sicuro i dati del database, ed è il motivo per cui utenti e
+> opportunità sopravvivono alle pubblicazioni. I media però stanno nel servizio App, che ha un
+> filesystem tutto suo. Serve **un secondo volume, sul servizio App**.
 
-- **Volume Railway** (semplice): servizio App → Settings → Volumes → Add Volume, mount path
-  `/app/storage`. Nessuna variabile da cambiare. Se lo monti altrove, indica il percorso con
-  `MEDIA_ROOT=/tuo/percorso`.
-- **Bucket S3**: `MEDIA_DISK=media_s3` più le `AWS_*`. Indicata se il volume cresce troppo.
+Due strade, in ordine di preferenza:
 
-Senza nessuna delle due i video caricati spariscono al deploy successivo.
+**1. Volume su un percorso dedicato (consigliato).**
+Servizio **App** → Settings → Volumes → Add Volume, mount path `/data`. Poi fra le variabili:
+
+```
+MEDIA_ROOT=/data/media
+```
+
+La cartella viene creata al primo caricamento. È la via più sicura perché il volume non interferisce
+con nulla: `storage/` resta quello dell'applicazione.
+
+**2. Volume su `/app/storage`.**
+Funziona ed evita la variabile, ma il volume è vuoto e **copre** la struttura di `storage/` creata
+durante il build: Laravel non troverebbe più dove compilare le viste. L'applicazione ricrea da sola
+le sottocartelle mancanti all'avvio, quindi la strada è praticabile — ma la prima è più pulita.
+
+**3. Bucket S3**: `MEDIA_DISK=media_s3` più le `AWS_*`. Indicata se lo spazio cresce molto o se un
+domani si cambia piattaforma.
+
+Senza nessuna delle tre i video caricati spariscono al deploy successivo.
 
 ## 8.5 Limiti di upload
 

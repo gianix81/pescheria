@@ -16,6 +16,8 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->assicuraCartelleScrivibili();
+
         // La politica di assegnazione dello stock è sostituibile da configurazione (assunzione A4).
         $this->app->bind(AllocationStrategy::class, fn () => $this->app->make(config('pescheria.allocation_strategy')));
     }
@@ -32,6 +34,29 @@ class AppServiceProvider extends ServiceProvider
 
         if ($this->app->environment('production')) {
             URL::forceScheme('https');
+        }
+    }
+
+    /**
+     * Ricrea le sottocartelle di storage/ se mancano.
+     *
+     * Serve quando un volume viene montato su /app/storage: il volume, vuoto,
+     * copre la struttura creata durante il build e Laravel non trova più dove
+     * compilare le viste. Sono quattro controlli su directory esistenti, senza
+     * costo apprezzabile, e tolgono di mezzo un errore che a schermo si
+     * presenterebbe come una pagina bianca.
+     */
+    private function assicuraCartelleScrivibili(): void
+    {
+        foreach ([
+            storage_path('framework/views'),
+            storage_path('framework/cache/data'),
+            storage_path('framework/sessions'),
+            storage_path('logs'),
+        ] as $cartella) {
+            if (! is_dir($cartella)) {
+                @mkdir($cartella, 0755, true);
+            }
         }
     }
 
