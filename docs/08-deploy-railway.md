@@ -113,13 +113,18 @@ Il filesystem del container si azzera **a ogni pubblicazione**. Senza volume, le
 caricati spariscono al deploy successivo: le righe restano in tabella e a schermo compare
 «file non più disponibile».
 
-Verifica in qualsiasi momento con `php artisan pescheria:stato`, sezione *Media*: se
-«File non trovati» è maggiore di zero, manca il disco persistente.
+Verifica con `php artisan pescheria:stato`, sezione *Media*:
+
+- **File non trovati** maggiore di zero → i file sono già andati persi;
+- **Disco persistente** → l'applicazione lascia un contrassegno a ogni rilascio e cerca quelli
+  dei rilasci precedenti. Dopo la seconda pubblicazione la risposta è certa: «sì» se il disco
+  regge, altrimenti resta «non ancora determinabile» perché ogni volta riparte da zero.
 
 Due strade:
 
-- **Volume Railway** (semplice): Settings → Volumes → mount path `/app/storage`.
-  Le variabili restano `MEDIA_DISK=media_local`. Sopravvive ai deploy.
+- **Volume Railway** (semplice): servizio App → Settings → Volumes → Add Volume, mount path
+  `/app/storage`. Nessuna variabile da cambiare. Se lo monti altrove, indica il percorso con
+  `MEDIA_ROOT=/tuo/percorso`.
 - **Bucket S3**: `MEDIA_DISK=media_s3` più le `AWS_*`. Indicata se il volume cresce troppo.
 
 Senza nessuna delle due i video caricati spariscono al deploy successivo.

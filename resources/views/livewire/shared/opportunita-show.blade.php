@@ -14,6 +14,25 @@
         </div>
     @endif
 
+    @php $mediaMancanti = $opportunity->media->reject->esiste(); @endphp
+
+    @if ($mediaMancanti->isNotEmpty())
+        <div class="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900" role="status">
+            <p class="font-semibold">
+                <span aria-hidden="true">🖼</span>
+                {{ $mediaMancanti->count() }}
+                {{ $mediaMancanti->count() === 1 ? 'file non si trova più sul disco' : 'file non si trovano più sul disco' }}
+            </p>
+            <p class="mt-1">
+                Le righe ci sono ma il contenuto no: succede quando il disco non è persistente e viene
+                azzerato a ogni pubblicazione.
+                @can('update', $opportunity)
+                    <a href="{{ route('buyer.opportunita.edit', $opportunity) }}" class="font-semibold underline">Ricaricali dalla modifica</a>.
+                @endcan
+            </p>
+        </div>
+    @endif
+
     @error('azione') <p class="error" role="alert"><span aria-hidden="true">⚠</span>{{ $message }}</p> @enderror
 
     {{-- Intestazione --}}

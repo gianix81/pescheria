@@ -53,7 +53,10 @@ return [
          */
         'media_local' => [
             'driver' => 'local',
-            'root' => storage_path('app/media'),
+            // MEDIA_ROOT permette di puntare a un volume montato altrove
+            // (es. /data/media): il disco del container viene ricreato a ogni
+            // pubblicazione e i file caricati andrebbero persi.
+            'root' => env('MEDIA_ROOT') ?: storage_path('app/media'),
             'throw' => false,
             'serve' => false,
             'visibility' => 'private',

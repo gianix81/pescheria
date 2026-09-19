@@ -11,6 +11,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Fotografia dell'ambiente, pensata per capire in trenta secondi perché
@@ -124,10 +125,17 @@ class StatoApplicazione extends Command
         $this->riga('File registrati', (string) $totaleMedia);
         $this->riga('File non trovati', (string) $mancanti);
 
+        $persistenza = $this->verificaPersistenza();
+        $this->riga('Disco persistente', $persistenza['descrizione']);
+
+        if ($persistenza['effimero']) {
+            $problemi[] = 'Il disco dei media non sopravvive alle pubblicazioni: i file caricati '
+                .'spariscono al deploy successivo. Monta un volume (es. /app/storage) oppure passa '
+                .'a MEDIA_DISK=media_s3.';
+        }
+
         if ($mancanti > 0) {
-            $problemi[] = "{$mancanti} file su {$totaleMedia} non si trovano sul disco: "
-                .'quasi sempre significa che il disco non è persistente e viene azzerato a ogni '
-                .'pubblicazione. Monta un volume su /app/storage oppure passa a MEDIA_DISK=media_s3.';
+            $problemi[] = "{$mancanti} file su {$totaleMedia} non si trovano sul disco: vanno ricaricati.";
         }
 
         if ($email = $this->option('email')) {
@@ -188,6 +196,51 @@ class StatoApplicazione extends Command
         }
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Stabilisce se il disco dei media sopravvive alle pubblicazioni.
+     *
+     * Si lascia un contrassegno per ogni rilascio: se se ne ritrova anche solo
+     * uno di un rilascio precedente, il disco è persistente. È l'unico modo per
+     * saperlo con certezza — la piattaforma non lo dichiara.
+     *
+     * @return array{effimero: bool, descrizione: string}
+     */
+    private function verificaPersistenza(): array
+    {
+        $disco = config('pescheria.media.disk');
+        $rilascio = (string) (env('RAILWAY_DEPLOYMENT_ID') ?: env('VERCEL_DEPLOYMENT_ID') ?: gethostname() ?: 'locale');
+        $contrassegno = '_persistenza/'.substr(md5($rilascio), 0, 12).'.txt';
+
+        try {
+            $archivio = Storage::disk($disco);
+
+            $precedenti = collect($archivio->files('_persistenza'))
+                ->reject(fn (string $f) => $f === $contrassegno)
+                ->count();
+
+            if (! $archivio->exists($contrassegno)) {
+                $archivio->put($contrassegno, now()->toIso8601String());
+            }
+
+            if ($precedenti > 0) {
+                return [
+                    'effimero' => false,
+                    'descrizione' => "sì — trovati contrassegni di {$precedenti} rilasci precedenti",
+                ];
+            }
+
+            // Nessun contrassegno precedente: o è la prima esecuzione, o il
+            // disco è stato azzerato. Se ci sono file mancanti, è la seconda.
+            return [
+                'effimero' => OpportunityMedia::count() > 0
+                    && OpportunityMedia::all()->contains(fn ($f) => ! $f->esiste()),
+                'descrizione' => 'non ancora determinabile — riesegui dopo la prossima pubblicazione',
+            ];
+        } catch (\Throwable $e) {
+            return ['effimero' => false, 'descrizione' => 'non verificabile ('.$e->getMessage().')'];
+        }
     }
 
     private function riga(string $etichetta, string $valore): void
