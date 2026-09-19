@@ -20,7 +20,7 @@ class PuntiVendita extends Component
     public string $ricerca = '';
 
     public array $form = [
-        'code' => '', 'name' => '', 'address' => '', 'city' => '',
+        'code' => '', 'portal_code' => '', 'name' => '', 'address' => '', 'city' => '',
         'province' => '', 'email' => '', 'phone' => '', 'is_active' => true,
     ];
 
@@ -39,7 +39,7 @@ class PuntiVendita extends Component
     public function nuovo(): void
     {
         $this->modificaId = null;
-        $this->form = ['code' => '', 'name' => '', 'address' => '', 'city' => '', 'province' => '', 'email' => '', 'phone' => '', 'is_active' => true];
+        $this->form = ['code' => '', 'portal_code' => '', 'name' => '', 'address' => '', 'city' => '', 'province' => '', 'email' => '', 'phone' => '', 'is_active' => true];
     }
 
     public function salva(): void
@@ -48,6 +48,7 @@ class PuntiVendita extends Component
 
         $dati = $this->validate([
             'form.code' => ['required', 'string', 'max:20', 'unique:stores,code'.($this->modificaId ? ','.$this->modificaId : '')],
+            'form.portal_code' => ['nullable', 'string', 'max:20'],
             'form.name' => ['required', 'string', 'max:160'],
             'form.address' => ['nullable', 'string', 'max:190'],
             'form.city' => ['nullable', 'string', 'max:120'],

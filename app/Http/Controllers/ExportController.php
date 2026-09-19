@@ -35,6 +35,18 @@ class ExportController extends Controller
         ])->deleteFileAfterSend(true);
     }
 
+    /** File nel tracciato del portale del fornitore. */
+    public function portale(Request $request)
+    {
+        $this->authorize('export', Opportunity::class);
+
+        $risultato = $this->export->assegnazionePortale($this->filters($request), $request->user());
+
+        return response()->download($risultato['path'], $risultato['filename'], [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ])->deleteFileAfterSend(true);
+    }
+
     /** I filtri dell'export sono esattamente quelli mostrati a schermo. */
     private function filters(Request $request): array
     {

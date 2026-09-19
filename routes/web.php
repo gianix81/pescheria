@@ -100,6 +100,7 @@ Route::middleware('auth')->group(function () {
         Route::middleware('throttle:export')->group(function () {
             Route::get('/export/csv', [ExportController::class, 'csv'])->name('export.csv');
             Route::get('/export/xlsx', [ExportController::class, 'xlsx'])->name('export.xlsx');
+            Route::get('/export/portale', [ExportController::class, 'portale'])->name('export.portale');
         });
     });
 

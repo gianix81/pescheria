@@ -5,6 +5,7 @@ namespace App\Livewire\Shared;
 use App\Enums\OpportunityStatus;
 use App\Models\Opportunity;
 use App\Models\Store;
+use App\Services\Export\AssegnazionePortale;
 use App\Services\ExportService;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -43,11 +44,15 @@ class Esporta extends Component
 
     public function render()
     {
-        $anteprima = app(ExportService::class)->opportunities($this->filtri());
+        $servizio = app(ExportService::class);
+        $anteprima = $servizio->opportunities($this->filtri());
+        $portale = new AssegnazionePortale;
 
         return view('livewire.shared.esporta', [
             'anteprima' => $anteprima->take(25),
             'totale' => $anteprima->count(),
+            'righePortale' => count($portale->righe($anteprima)),
+            'codiciMancanti' => $portale->codiciMancanti($anteprima),
             'stati' => OpportunityStatus::cases(),
             'puntiVendita' => Store::orderBy('code')->get(),
             'opportunitaElenco' => Opportunity::orderByDesc('closes_at')->limit(100)->get(),

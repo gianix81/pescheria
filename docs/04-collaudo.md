@@ -123,6 +123,15 @@ opportunità nei diversi stati. Credenziali nella [README](../README.md).
 - [ ] Il nome file contiene data di consegna e timestamp.
 - [ ] Ogni export compare in `/tecnico/audit`.
 
+### G-bis — Export per il portale
+- [ ] In Anagrafiche i punti vendita e i prodotti mostrano il codice portale, e «manca» dove assente.
+- [ ] La pagina Export indica quante righe produrrà il file del portale con i filtri attuali.
+- [ ] Se manca un codice, l'elenco in rosso lo segnala prima del download.
+- [ ] Il file scaricato si chiama «Assegnazione per portale.xlsx» e ha il foglio «DATI».
+- [ ] Le colonne sono DATA CONSEGNA, CLIENTE, PRODOTTO, QUANTITA in quest'ordine.
+- [ ] La data resta scritta gg/mm/aaaa anche aprendo il file su un computer con impostazioni estere.
+- [ ] Compaiono solo gli acquisti confermati: nessuna riga per rifiuti o mancate risposte.
+
 ### H — Sicurezza
 - [ ] URL media senza firma → 403; con firma scaduta → 403.
 - [ ] CR non destinatario che tenta l'URL firmato di un altro PdV → 403.

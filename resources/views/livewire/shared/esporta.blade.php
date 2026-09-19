@@ -50,12 +50,59 @@
             </fieldset>
         </div>
 
-        <div class="mt-5 flex flex-wrap gap-3 border-t border-slate-200 pt-4">
-            <a href="{{ route('export.xlsx', $this->filtri()) }}" class="btn-primary">⤓ Scarica XLSX (3 fogli)</a>
+        <div class="mt-5 space-y-4 border-t border-slate-200 pt-4">
+
+            {{-- Tracciato del portale del fornitore: è il file che si carica davvero --}}
+            <div class="rounded-lg border border-mare-200 bg-mare-50 p-4">
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                        <p class="text-sm font-bold text-mare-800">Assegnazione per portale</p>
+                        <p class="help">
+                            Tracciato del fornitore: foglio «DATI» con DATA CONSEGNA, CLIENTE, PRODOTTO, QUANTITA.
+                            Una riga per ogni acquisto confermato: {{ $righePortale }}
+                            {{ $righePortale === 1 ? 'riga' : 'righe' }} con i filtri attuali.
+                        </p>
+                    </div>
+
+                    <a href="{{ route('export.portale', $this->filtri()) }}"
+                       @class(['btn-primary', 'pointer-events-none opacity-50' => $righePortale === 0])>
+                        ⤓ Scarica per il portale
+                    </a>
+                </div>
+
+                @if ($codiciMancanti['punti_vendita'] || $codiciMancanti['prodotti'])
+                    <div class="mt-3 rounded-lg border border-rose-300 bg-rose-50 px-3 py-2 text-sm text-rose-900" role="alert">
+                        <p class="font-semibold"><span aria-hidden="true">⚠</span> Codici portale mancanti</p>
+                        <p class="mt-1">Senza questi codici il portale rifiuta le righe. Compilali nelle anagrafiche.</p>
+
+                        @if ($codiciMancanti['punti_vendita'])
+                            <p class="mt-2 font-medium">Punti vendita:</p>
+                            <ul class="list-inside list-disc">
+                                @foreach ($codiciMancanti['punti_vendita'] as $voce)
+                                    <li>{{ $voce }}</li>
+                                @endforeach
+                            </ul>
+                        @endif
+
+                        @if ($codiciMancanti['prodotti'])
+                            <p class="mt-2 font-medium">Prodotti:</p>
+                            <ul class="list-inside list-disc">
+                                @foreach ($codiciMancanti['prodotti'] as $voce)
+                                    <li>{{ $voce }}</li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </div>
+                @endif
+            </div>
+
+        <div class="flex flex-wrap gap-3">
+            <a href="{{ route('export.xlsx', $this->filtri()) }}" class="btn-ghost">⤓ Scarica XLSX (3 fogli)</a>
             <a href="{{ route('export.csv', $this->filtri()) }}" class="btn-ghost">⤓ Scarica CSV normalizzato</a>
             <p class="w-full text-xs text-slate-500">
                 CSV in UTF-8 con BOM, separatore «;», date gg/mm/aaaa: si apre correttamente in Excel italiano.
             </p>
+        </div>
         </div>
     </div>
 

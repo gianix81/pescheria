@@ -14,6 +14,7 @@ class StoreFactory extends Factory
     {
         return [
             'code' => 'PV'.fake()->unique()->numberBetween(100, 999),
+            'portal_code' => (string) fake()->unique()->numberBetween(500000, 599999),
             'name' => 'Punto Vendita '.fake()->city(),
             'address' => fake()->streetAddress(),
             'city' => fake()->city(),

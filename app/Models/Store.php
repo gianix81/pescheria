@@ -15,7 +15,7 @@ class Store extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'code', 'name', 'address', 'city', 'province', 'email', 'phone', 'is_active',
+        'code', 'portal_code', 'name', 'address', 'city', 'province', 'email', 'phone', 'is_active',
     ];
 
     protected function casts(): array

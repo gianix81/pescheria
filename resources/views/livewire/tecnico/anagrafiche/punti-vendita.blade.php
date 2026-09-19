@@ -10,6 +10,7 @@
                 <thead class="bg-slate-50">
                     <tr>
                         <th scope="col" class="th">Codice</th>
+                        <th scope="col" class="th">Portale</th>
                         <th scope="col" class="th">Nome</th>
                         <th scope="col" class="th">Città</th>
                         <th scope="col" class="th">Stato</th>
@@ -20,6 +21,13 @@
                     @foreach ($elenco as $pv)
                         <tr class="hover:bg-slate-50">
                             <td class="td font-semibold">{{ $pv->code }}</td>
+                            <td class="td">
+                                @if ($pv->portal_code)
+                                    {{ $pv->portal_code }}
+                                @else
+                                    <span class="text-xs text-rose-700">manca</span>
+                                @endif
+                            </td>
                             <td class="td">{{ $pv->name }}</td>
                             <td class="td">{{ $pv->city }} ({{ $pv->province }})</td>
                             <td class="td">
@@ -54,6 +62,12 @@
                 <label for="code" class="label">Codice *</label>
                 <input id="code" wire:model="form.code" class="input @error('form.code') input-error @enderror">
                 @error('form.code') <p class="error"><span aria-hidden="true">⚠</span>{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label for="portal_code" class="label">Codice cliente portale</label>
+                <input id="portal_code" wire:model="form.portal_code" class="input" inputmode="numeric">
+                <p class="help">Numero cliente usato dal portale del fornitore, es. 566518.</p>
+                @error('form.portal_code') <p class="error"><span aria-hidden="true">⚠</span>{{ $message }}</p> @enderror
             </div>
             <div>
                 <label for="name" class="label">Ragione sociale / nome *</label>

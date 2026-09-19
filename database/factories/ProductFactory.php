@@ -19,6 +19,7 @@ class ProductFactory extends Factory
 
         return [
             'article_code' => 'ART'.fake()->unique()->numberBetween(10000, 99999),
+            'portal_code' => (string) fake()->unique()->numberBetween(400000, 499999),
             'plu' => (string) fake()->unique()->numberBetween(1000, 9999),
             'description' => $specie.' '.fake()->randomElement(['fresco', 'allevamento', 'pescato', 'decongelato']),
             'long_description' => 'Prodotto ittico '.strtolower($specie).' selezionato per il reparto pescheria.',

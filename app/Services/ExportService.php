@@ -6,6 +6,7 @@ use App\Enums\OpportunityStatus;
 use App\Enums\ResponseStatus;
 use App\Models\Opportunity;
 use App\Models\User;
+use App\Services\Export\AssegnazionePortale;
 use App\Support\Format;
 use Illuminate\Support\Collection;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -131,6 +132,43 @@ class ExportService
         ], $user);
 
         return ['filename' => $filename, 'content' => $content];
+    }
+
+    // ------------------------------------------------------ portale fornitore
+
+    /**
+     * File nel tracciato richiesto dal portale del fornitore.
+     *
+     * @return array{filename: string, path: string, mancanti: array{punti_vendita: array, prodotti: array}, righe: int}
+     */
+    public function assegnazionePortale(array $filters, ?User $user = null): array
+    {
+        $opportunita = $this->opportunities($filters);
+        $scrittore = new AssegnazionePortale;
+
+        $path = tempnam(sys_get_temp_dir(), 'portale_').'.xlsx';
+        $scrittore->scrivi($opportunita, $path);
+
+        $righe = count($scrittore->righe($opportunita));
+        $mancanti = $scrittore->codiciMancanti($opportunita);
+
+        // Nome identico a quello fornito dal portale: alcuni caricamenti sono
+        // sensibili anche al nome del file.
+        $filename = 'Assegnazione per portale.xlsx';
+
+        $this->audit->log('export.portale', null, [
+            'filtri' => $this->auditableFilters($filters),
+            'righe' => $righe,
+            'codici_mancanti' => count($mancanti['punti_vendita']) + count($mancanti['prodotti']),
+        ], $user);
+
+        return compact('filename', 'path', 'mancanti', 'righe');
+    }
+
+    /** Anteprima dei codici mancanti, senza generare il file. */
+    public function codiciPortaleMancanti(array $filters): array
+    {
+        return (new AssegnazionePortale)->codiciMancanti($this->opportunities($filters));
     }
 
     // -------------------------------------------------------------------- XLSX

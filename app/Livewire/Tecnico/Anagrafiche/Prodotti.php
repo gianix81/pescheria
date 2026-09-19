@@ -20,7 +20,7 @@ class Prodotti extends Component
     public string $ricerca = '';
 
     public array $form = [
-        'article_code' => '', 'plu' => '', 'description' => '', 'long_description' => '',
+        'article_code' => '', 'portal_code' => '', 'plu' => '', 'description' => '', 'long_description' => '',
         'category' => '', 'origin' => '', 'fao_zone' => '', 'production_method' => '',
         'caliber' => '', 'unit_of_measure' => 'KG', 'vat_rate' => 10,
         'default_kg_per_package' => null, 'is_active' => true,
@@ -41,7 +41,7 @@ class Prodotti extends Component
     {
         $this->modificaId = null;
         $this->form = [
-            'article_code' => '', 'plu' => '', 'description' => '', 'long_description' => '',
+            'article_code' => '', 'portal_code' => '', 'plu' => '', 'description' => '', 'long_description' => '',
             'category' => '', 'origin' => '', 'fao_zone' => '', 'production_method' => '',
             'caliber' => '', 'unit_of_measure' => 'KG', 'vat_rate' => 10,
             'default_kg_per_package' => null, 'is_active' => true,
@@ -54,6 +54,7 @@ class Prodotti extends Component
 
         $dati = $this->validate([
             'form.article_code' => ['required', 'string', 'max:40', 'unique:products,article_code'.($this->modificaId ? ','.$this->modificaId : '')],
+            'form.portal_code' => ['nullable', 'string', 'max:20'],
             'form.plu' => ['nullable', 'string', 'max:20'],
             'form.description' => ['required', 'string', 'max:190'],
             'form.long_description' => ['nullable', 'string', 'max:2000'],

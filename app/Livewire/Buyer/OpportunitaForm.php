@@ -42,6 +42,8 @@ class OpportunitaForm extends Component
     // --- dati opportunità ---------------------------------------------------
     public string $article_code = '';
 
+    public string $portal_product_code = '';
+
     public string $plu = '';
 
     public string $description = '';
@@ -108,7 +110,7 @@ class OpportunitaForm extends Component
             $this->modalita = 'guidata';
 
             $campiTesto = [
-                'article_code', 'plu', 'description', 'title', 'commercial_description',
+                'article_code', 'portal_product_code', 'plu', 'description', 'title', 'commercial_description',
                 'technical_notes', 'logistics_notes', 'category', 'origin',
                 'fao_zone', 'production_method', 'caliber',
             ];
@@ -146,6 +148,7 @@ class OpportunitaForm extends Component
 
         $this->product_id = $prodotto->id;
         $this->article_code = $prodotto->article_code;
+        $this->portal_product_code = (string) $prodotto->portal_code;
         $this->plu = (string) $prodotto->plu;
         $this->description = $prodotto->description;
         $this->title = $this->title ?: $prodotto->description;
@@ -227,6 +230,7 @@ class OpportunitaForm extends Component
     {
         return [
             'article_code' => ['required', 'string', 'max:40'],
+            'portal_product_code' => ['nullable', 'string', 'max:20'],
             'plu' => ['nullable', 'string', 'max:20'],
             'description' => ['required', 'string', 'max:190'],
             'title' => ['required', 'string', 'max:160'],
@@ -282,6 +286,7 @@ class OpportunitaForm extends Component
         return [
             'product_id' => $this->product_id,
             'article_code' => $this->article_code,
+            'portal_product_code' => $this->portal_product_code ?: null,
             'plu' => $this->plu ?: null,
             'description' => $this->description,
             'title' => $this->title,

@@ -10,6 +10,7 @@
                 <thead class="bg-slate-50">
                     <tr>
                         <th scope="col" class="th">Codice</th>
+                        <th scope="col" class="th">Portale</th>
                         <th scope="col" class="th">PLU</th>
                         <th scope="col" class="th">Descrizione</th>
                         <th scope="col" class="th">Categoria</th>
@@ -21,6 +22,13 @@
                     @foreach ($elenco as $p)
                         <tr class="hover:bg-slate-50">
                             <td class="td font-semibold">{{ $p->article_code }}</td>
+                            <td class="td">
+                                @if ($p->portal_code)
+                                    {{ $p->portal_code }}
+                                @else
+                                    <span class="text-xs text-rose-700">manca</span>
+                                @endif
+                            </td>
                             <td class="td">{{ $p->plu }}</td>
                             <td class="td">{{ $p->description }}</td>
                             <td class="td">{{ $p->category }}</td>
@@ -52,6 +60,12 @@
                 <label for="article_code" class="label">Codice articolo *</label>
                 <input id="article_code" wire:model="form.article_code" class="input @error('form.article_code') input-error @enderror">
                 @error('form.article_code') <p class="error"><span aria-hidden="true">⚠</span>{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label for="portal_code" class="label">Codice prodotto portale</label>
+                <input id="portal_code" wire:model="form.portal_code" class="input" inputmode="numeric">
+                <p class="help">Numero articolo usato dal portale del fornitore, es. 497109.</p>
+                @error('form.portal_code') <p class="error"><span aria-hidden="true">⚠</span>{{ $message }}</p> @enderror
             </div>
             <div>
                 <label for="plu" class="label">PLU</label>

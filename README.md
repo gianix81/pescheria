@@ -214,6 +214,13 @@ distinguendo password errata, account disattivato e utente inesistente.
 > `pescheria:admin` **sovrascrive** la password a ogni esecuzione: attenzione a non lanciarlo
 > copiando un esempio, o la password diventerà quella dell'esempio.
 
+### Export per il portale del fornitore
+
+Oltre a CSV e XLSX, l'applicazione genera il file nel tracciato richiesto dal portale
+(`Assegnazione per portale.xlsx`, foglio `DATI`): riprodotto identico all'originale e verificato
+cella per cella contro il file reale. Richiede i codici portale nelle anagrafiche di punti vendita
+e prodotti — vedi [docs/10-tracciato-portale.md](docs/10-tracciato-portale.md).
+
 ## 4. Test
 
 I test girano su MySQL (come la produzione): servono lock di riga reali.

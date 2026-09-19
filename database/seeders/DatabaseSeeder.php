@@ -50,14 +50,15 @@ class DatabaseSeeder extends Seeder
 
         // ------------------------------------------------------------ punti vendita
         $datiStore = [
-            ['PV001', 'Iper Mare Nord', 'Milano', 'MI'],
-            ['PV002', 'Super Laguna Centro', 'Venezia', 'VE'],
-            ['PV003', 'Iper Costa Est', 'Rimini', 'RN'],
-            ['PV004', 'Super Porto Sud', 'Bari', 'BA'],
-            ['PV005', 'Iper Scoglio Ovest', 'Genova', 'GE'],
+            ['PV001', 'Iper Mare Nord', 'Milano', 'MI', '566518'],
+            ['PV002', 'Super Laguna Centro', 'Venezia', 'VE', '566519'],
+            ['PV003', 'Iper Costa Est', 'Rimini', 'RN', '566520'],
+            ['PV004', 'Super Porto Sud', 'Bari', 'BA', '566521'],
+            ['PV005', 'Iper Scoglio Ovest', 'Genova', 'GE', '566522'],
         ];
 
         $stores = collect($datiStore)->map(fn ($d) => Store::updateOrCreate(['code' => $d[0]], [
+            'portal_code' => $d[4],
             'name' => $d[1],
             'address' => 'Via del Mercato 1',
             'city' => $d[2],
@@ -83,20 +84,22 @@ class DatabaseSeeder extends Seeder
         });
 
         // ------------------------------------------------------------ prodotti
+        // L'ultimo valore è il codice prodotto del portale del fornitore.
         $datiProdotti = [
-            ['ART10001', '2101', 'Orata allevamento 400/600', 'Pesce', 'Italia', 6.0],
-            ['ART10002', '2102', 'Branzino pescato 300/400', 'Pesce', 'Grecia', 5.0],
-            ['ART10003', '2103', 'Cozze di Scardovari', 'Molluschi', 'Italia', 10.0],
-            ['ART10004', '2104', 'Vongole veraci', 'Molluschi', 'Italia', 4.0],
-            ['ART10005', '2105', 'Gambero rosso di Mazara', 'Crostacei', 'Italia', 3.0],
-            ['ART10006', '2106', 'Polpo doppio strato', 'Molluschi', 'Spagna', 8.0],
-            ['ART10007', '2107', 'Salmone norvegese filetto', 'Pesce', 'Norvegia', 5.0],
-            ['ART10008', '2108', 'Tonno pinna gialla trancio', 'Pesce', 'Oceano Indiano', 4.0],
-            ['ART10009', '2109', 'Sogliola atlantica', 'Pesce', 'Francia', 5.0],
-            ['ART10010', '2110', 'Calamaro nazionale', 'Molluschi', 'Italia', 6.0],
+            ['ART10001', '2101', 'Orata allevamento 400/600', 'Pesce', 'Italia', 6.0, '497109'],
+            ['ART10002', '2102', 'Branzino pescato 300/400', 'Pesce', 'Grecia', 5.0, '497110'],
+            ['ART10003', '2103', 'Cozze di Scardovari', 'Molluschi', 'Italia', 10.0, '497111'],
+            ['ART10004', '2104', 'Vongole veraci', 'Molluschi', 'Italia', 4.0, '497112'],
+            ['ART10005', '2105', 'Gambero rosso di Mazara', 'Crostacei', 'Italia', 3.0, '497113'],
+            ['ART10006', '2106', 'Polpo doppio strato', 'Molluschi', 'Spagna', 8.0, '497114'],
+            ['ART10007', '2107', 'Salmone norvegese filetto', 'Pesce', 'Norvegia', 5.0, '497115'],
+            ['ART10008', '2108', 'Tonno pinna gialla trancio', 'Pesce', 'Oceano Indiano', 4.0, '497116'],
+            ['ART10009', '2109', 'Sogliola atlantica', 'Pesce', 'Francia', 5.0, '497117'],
+            ['ART10010', '2110', 'Calamaro nazionale', 'Molluschi', 'Italia', 6.0, '497118'],
         ];
 
         $prodotti = collect($datiProdotti)->map(fn ($d) => Product::updateOrCreate(['article_code' => $d[0]], [
+            'portal_code' => $d[6] ?? null,
             'plu' => $d[1],
             'description' => $d[2],
             'long_description' => $d[2].' — prodotto selezionato per il reparto pescheria.',
@@ -193,6 +196,7 @@ class DatabaseSeeder extends Seeder
             'reference' => Opportunity::nextReference(),
             'product_id' => $prodotto->id,
             'article_code' => $prodotto->article_code,
+            'portal_product_code' => $prodotto->portal_code,
             'plu' => $prodotto->plu,
             'description' => $prodotto->description,
             'long_description' => $prodotto->long_description,

@@ -27,6 +27,7 @@ class OpportunityFactory extends Factory
             'reference' => fn () => Opportunity::nextReference(),
             'product_id' => $product,
             'article_code' => fn (array $attrs) => Product::find($attrs['product_id'])?->article_code ?? 'ART00000',
+            'portal_product_code' => fn (array $attrs) => Product::find($attrs['product_id'])?->portal_code,
             'plu' => fn (array $attrs) => Product::find($attrs['product_id'])?->plu,
             'description' => fn (array $attrs) => Product::find($attrs['product_id'])?->description ?? 'Articolo',
             'long_description' => null,

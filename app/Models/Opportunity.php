@@ -23,7 +23,7 @@ class Opportunity extends Model
 
     protected $fillable = [
         'reference', 'product_id',
-        'article_code', 'plu', 'description', 'long_description', 'category',
+        'article_code', 'portal_product_code', 'plu', 'description', 'long_description', 'category',
         'origin', 'fao_zone', 'production_method', 'caliber',
         'title', 'commercial_description', 'technical_notes', 'logistics_notes',
         'order_unit', 'kg_per_package', 'price_unit', 'purchase_price', 'sale_price_gross',
