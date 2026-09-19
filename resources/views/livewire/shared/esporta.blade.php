@@ -56,7 +56,9 @@
             <div class="rounded-lg border border-mare-200 bg-mare-50 p-4">
                 <div class="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                        <p class="text-sm font-bold text-mare-800">Assegnazione per portale</p>
+                        <p class="text-sm font-bold text-mare-800">
+                            Assegnazione per portale — è questo il file da caricare
+                        </p>
                         <p class="help">
                             Tracciato del fornitore: foglio «DATI» con DATA CONSEGNA, CLIENTE, PRODOTTO, QUANTITA.
                             Una riga per ogni acquisto confermato: {{ $righePortale }}
@@ -66,7 +68,7 @@
 
                     <a href="{{ route('export.portale', $this->filtri()) }}"
                        @class(['btn-primary', 'pointer-events-none opacity-50' => $righePortale === 0])>
-                        ⤓ Scarica per il portale
+                        ⤓ Scarica il file per il portale (XLSX)
                     </a>
                 </div>
 
@@ -96,9 +98,17 @@
                 @endif
             </div>
 
-        <div class="flex flex-wrap gap-3">
-            <a href="{{ route('export.xlsx', $this->filtri()) }}" class="btn-ghost">⤓ Scarica XLSX (3 fogli)</a>
-            <a href="{{ route('export.csv', $this->filtri()) }}" class="btn-ghost">⤓ Scarica CSV normalizzato</a>
+        <div>
+            <p class="text-sm font-semibold text-slate-700">Report interni</p>
+            <p class="help">
+                Non servono al portale: sono per analisi e archivio, con matrice per punto vendita,
+                dettaglio delle risposte e mancanti.
+            </p>
+
+            <div class="mt-2 flex flex-wrap gap-3">
+                <a href="{{ route('export.xlsx', $this->filtri()) }}" class="btn-ghost">⤓ Report XLSX (3 fogli)</a>
+                <a href="{{ route('export.csv', $this->filtri()) }}" class="btn-ghost">⤓ Report CSV</a>
+            </div>
             <p class="w-full text-xs text-slate-500">
                 CSV in UTF-8 con BOM, separatore «;», date gg/mm/aaaa: si apre correttamente in Excel italiano.
             </p>

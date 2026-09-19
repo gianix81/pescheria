@@ -188,6 +188,40 @@ class AssegnazionePortaleTest extends TestCase
     }
 
     #[Test]
+    public function la_pagina_export_distingue_il_file_del_portale_dai_report(): void
+    {
+        $opportunita = $this->scenarioDelRiferimento();
+
+        $this->actingAs($this->buyer())
+            ->get(route('export.index'))
+            ->assertOk()
+            // Il file da caricare è dichiarato tale, e i report interni non si
+            // chiamano più come lui: è così che si prende il file sbagliato.
+            ->assertSee('è questo il file da caricare')
+            ->assertSee('Scarica il file per il portale (XLSX)')
+            ->assertSee('Report interni')
+            ->assertSee('Report XLSX (3 fogli)')
+            ->assertDontSee('Scarica XLSX (3 fogli)');
+    }
+
+    #[Test]
+    public function il_file_e_sempre_xlsx_anche_se_vuoto(): void
+    {
+        [$store, $cr] = $this->storeWithCr();
+        $opportunita = $this->openOpportunity([$store]);     // nessun ordine
+
+        $risultato = app(ExportService::class)->assegnazionePortale(['opportunity_id' => $opportunita->id]);
+
+        $this->assertStringEndsWith('.xlsx', $risultato['filename']);
+        $this->assertSame(0, $risultato['righe']);
+
+        // Deve restare un XLSX valido e apribile, con le sole intestazioni.
+        $foglio = IOFactory::load($risultato['path'])->getSheetByName('DATI');
+        $this->assertSame(['DATA CONSEGNA', 'CLIENTE', 'PRODOTTO', 'QUANTITA'], $foglio->rangeToArray('A1:D1')[0]);
+        @unlink($risultato['path']);
+    }
+
+    #[Test]
     public function un_capo_reparto_non_puo_scaricarlo(): void
     {
         [$store, $cr] = $this->storeWithCr();
