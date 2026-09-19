@@ -62,6 +62,21 @@ class OpportunityFactory extends Factory
         ];
     }
 
+    /**
+     * Ricarico e margine si ricalcolano sempre dai prezzi finali.
+     *
+     * Senza, sovrascrivendo i prezzi nel create() resterebbero quelli generati
+     * a caso: i test vedrebbero percentuali che non corrispondono ai prezzi,
+     * esattamente ciò che nell'applicazione non può accadere perché il ricalcolo
+     * è nel modello.
+     */
+    public function configure(): static
+    {
+        return $this->afterMaking(function (Opportunity $opportunity) {
+            $opportunity->recalculatePricing();
+        });
+    }
+
     public function aperta(): static
     {
         return $this->state(fn () => [

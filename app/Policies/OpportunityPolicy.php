@@ -56,6 +56,16 @@ class OpportunityPolicy
         return $user->isTecnico() && $opportunity->status === OpportunityStatus::IN_VERIFICA;
     }
 
+    /**
+     * Il Tecnico corregge il prezzo di vendita mentre verifica, prima che
+     * l'opportunità arrivi ai punti vendita. Dopo la pubblicazione non più:
+     * il prezzo è già stato letto da chi decide se ordinare.
+     */
+    public function updatePrice(User $user, Opportunity $opportunity): bool
+    {
+        return $user->isTecnico() && $opportunity->status === OpportunityStatus::IN_VERIFICA;
+    }
+
     public function close(User $user, Opportunity $opportunity): bool
     {
         return $user->isBuyer()

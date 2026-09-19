@@ -91,6 +91,15 @@ opportunità nei diversi stati. Credenziali nella [README](../README.md).
 - [ ] Approvazione con apertura futura → `PROGRAMMATA`; con apertura passata → `APERTA`.
 - [ ] All'apertura i CR destinatari ricevono la notifica in-app; gli altri no.
 
+### C-bis — Correzione del prezzo in verifica
+- [ ] In verifica il Tecnico vede il pannello «Prezzo di vendita» con acquisto e IVA a fianco.
+- [ ] Digitando un prezzo diverso, netto, ricarico e margine si aggiornano prima di salvare.
+- [ ] Il pulsante resta disattivo finché il prezzo non cambia davvero.
+- [ ] Dopo il salvataggio il Buyer riceve la notifica con il prima e il dopo.
+- [ ] In Audit compare «opportunity.price_updated» con entrambi i valori.
+- [ ] Su un'opportunità già aperta il pannello non compare.
+- [ ] Il prezzo corretto è quello che vedono i capi reparto dopo l'approvazione.
+
 ### D — Risposta (Capo Reparto, da smartphone)
 - [ ] Dopo il login si atterra sull'elenco delle opportunità, non su una dashboard.
 - [ ] Un'opportunità chiusa o annullata non compare in prima pagina, ma si trova in «Storico».

@@ -255,6 +255,60 @@ class OpportunityWorkflowService
         return $opportunity;
     }
 
+    /**
+     * Correzione del prezzo di vendita da parte del Tecnico durante la verifica.
+     *
+     * È l'unico dato che il Tecnico modifica direttamente, e solo prima della
+     * pubblicazione: dopo, il prezzo è già stato letto da chi ha ordinato.
+     * Ricarico e margine si ricalcolano di conseguenza — non si digitano mai.
+     */
+    public function aggiornaPrezzoVendita(Opportunity $opportunity, User $tecnico, float $nuovoPrezzo, ?string $nota = null): Opportunity
+    {
+        if ($opportunity->status !== OpportunityStatus::IN_VERIFICA) {
+            throw new DomainException('Il prezzo si corregge solo mentre l\'opportunità è in verifica.');
+        }
+
+        if ($nuovoPrezzo <= 0) {
+            throw new DomainException('Il prezzo di vendita deve essere maggiore di zero.');
+        }
+
+        $prezzoPrima = (float) $opportunity->sale_price_gross;
+
+        if (abs($nuovoPrezzo - $prezzoPrima) < 0.0001) {
+            return $opportunity;        // nessuna modifica, nessuna traccia inutile
+        }
+
+        return DB::transaction(function () use ($opportunity, $tecnico, $nuovoPrezzo, $nota, $prezzoPrima) {
+            $ricaricoPrima = $opportunity->markup_percent;
+
+            $opportunity->sale_price_gross = $nuovoPrezzo;
+            $opportunity->recalculatePricing();
+            $opportunity->save();
+
+            $this->audit->log('opportunity.price_updated', $opportunity, [
+                'riferimento' => $opportunity->reference,
+                'prezzo_prima' => round($prezzoPrima, 4),
+                'prezzo_dopo' => round($nuovoPrezzo, 4),
+                'ricarico_prima' => $ricaricoPrima,
+                'ricarico_dopo' => $opportunity->markup_percent,
+                'nota' => $nota,
+            ], $tecnico);
+
+            // Il Buyer deve saperlo: è un suo dato che è cambiato.
+            $this->notifications->notifyUser(
+                $opportunity->creator,
+                $opportunity,
+                NotificationType::OPPORTUNITA_MODIFICATA,
+                'Prezzo corretto dal Tecnico: '.$opportunity->title,
+                'Vendita da '.Format::money($prezzoPrima).' a '
+                    .Format::money($nuovoPrezzo).'/kg'
+                    .($nota ? ' — '.$nota : '').'.',
+            );
+
+            return $opportunity;
+        });
+    }
+
     // ------------------------------------------------------------- automatismi
 
     /** PROGRAMMATA → APERTA. Idempotente: se non è più programmata non fa nulla. */

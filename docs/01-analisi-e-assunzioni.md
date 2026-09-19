@@ -175,6 +175,22 @@ che è stato eliminato resta traccia di chi, quando e perché.
 La conferma dichiara in anticipo quanti file, quante risposte e quanti colli si stanno per perdere:
 è un'operazione irreversibile e non deve sembrare una qualsiasi.
 
+## 1.4-septies Correzione del prezzo da parte del Tecnico
+
+Su indicazione del committente il Tecnico può correggere il **prezzo di vendita al pubblico**
+durante la verifica. È l'unico dato che modifica direttamente, e solo in stato `IN_VERIFICA`:
+dopo la pubblicazione il prezzo è già stato letto da chi decide se ordinare, e cambiarlo di nascosto
+falserebbe una scelta già fatta.
+
+- ricarico e margine si **ricalcolano**, non si digitano: resta valida la regola del §5.1;
+- la schermata di verifica mostra l'effetto della correzione *prima* di salvare, così il Tecnico
+  vede dove va a finire il ricarico mentre digita;
+- il Buyer riceve una notifica con il prima e il dopo: è un suo dato che è cambiato;
+- la correzione finisce nell'audit log con entrambi i valori e l'eventuale nota;
+- salvare lo stesso prezzo non produce né notifica né voce di audit.
+
+Il prezzo di **acquisto** resta del Buyer: è il dato negoziato col fornitore e il Tecnico non lo tocca.
+
 ## 1.5 Regole di business non negoziabili implementate
 
 1. `prezzo_vendita_netto = prezzo_vendita_lordo / (1 + aliquota_iva)`

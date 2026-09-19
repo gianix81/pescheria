@@ -6,6 +6,7 @@ use App\Exceptions\DomainException;
 use App\Models\Opportunity;
 use App\Services\OpportunityWorkflowService;
 use App\Support\Format;
+use App\Support\PricingCalculator;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -28,11 +29,56 @@ class Verifica extends Component
     /** @var array<string, bool> */
     public array $checklist = [];
 
+    /** Prezzo di vendita in correzione, in ora italiana di lavoro del Tecnico. */
+    public $prezzoVendita = null;
+
+    public string $notaPrezzo = '';
+
     public function mount(Opportunity $opportunity): void
     {
         $this->authorize('review', $opportunity);
 
         $this->opportunity = $opportunity->load(['media', 'stores', 'creator']);
+        $this->prezzoVendita = (float) $opportunity->sale_price_gross;
+    }
+
+    /**
+     * Ricarico e margine che risulterebbero dal prezzo digitato, prima di
+     * salvare: il Tecnico vede l'effetto della correzione mentre la fa.
+     *
+     * @return array{net: float, markup: ?float, margin: ?float}
+     */
+    public function getPrezziPropostiProperty(): array
+    {
+        return PricingCalculator::all(
+            (float) $this->opportunity->purchase_price,
+            (float) ($this->prezzoVendita ?: 0),
+            (float) $this->opportunity->vat_rate,
+        );
+    }
+
+    public function aggiornaPrezzo(): void
+    {
+        $this->authorize('updatePrice', $this->opportunity);
+
+        $this->validate([
+            'prezzoVendita' => ['required', 'numeric', 'min:0.01', 'max:99999'],
+            'notaPrezzo' => ['nullable', 'string', 'max:500'],
+        ], [], ['prezzoVendita' => 'prezzo di vendita']);
+
+        try {
+            $this->opportunity = app(OpportunityWorkflowService::class)->aggiornaPrezzoVendita(
+                $this->opportunity,
+                auth()->user(),
+                (float) $this->prezzoVendita,
+                $this->notaPrezzo ?: null,
+            )->load(['media', 'stores', 'creator']);
+
+            $this->notaPrezzo = '';
+            $this->dispatch('toast', messaggio: 'Prezzo aggiornato: il Buyer è stato avvisato.');
+        } catch (DomainException $e) {
+            $this->addError('verifica', $e->getMessage());
+        }
     }
 
     public function approva(): void

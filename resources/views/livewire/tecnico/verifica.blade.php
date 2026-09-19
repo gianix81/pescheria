@@ -91,6 +91,60 @@
                 </div>
             @endif
 
+            {{-- Correzione del prezzo di vendita: unico dato che il Tecnico tocca --}}
+            @can('updatePrice', $opportunity)
+                <div class="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3">
+                    <p class="text-sm font-semibold text-slate-800">Prezzo di vendita</p>
+                    <p class="help">
+                        Acquisto {{ \App\Support\Format::money($opportunity->purchase_price) }}/kg ·
+                        IVA {{ \App\Support\Format::percent($opportunity->vat_rate, 0) }}
+                    </p>
+
+                    <div class="mt-2">
+                        <label for="prezzoVendita" class="sr-only">Prezzo di vendita al pubblico</label>
+                        <div class="flex items-center gap-2">
+                            <input id="prezzoVendita" type="number" step="0.01" min="0.01"
+                                   wire:model.live.debounce.400ms="prezzoVendita"
+                                   class="input @error('prezzoVendita') input-error @enderror">
+                            <span class="shrink-0 text-sm text-slate-600">/kg</span>
+                        </div>
+                        @error('prezzoVendita') <p class="error"><span aria-hidden="true">⚠</span>{{ $message }}</p> @enderror
+                    </div>
+
+                    {{-- Effetto della correzione, prima di salvare --}}
+                    <dl class="mt-2 grid grid-cols-3 gap-2 text-center text-xs" aria-live="polite">
+                        <div class="rounded bg-white px-2 py-1.5">
+                            <dt class="text-slate-500">Netto</dt>
+                            <dd class="font-bold text-slate-900">{{ \App\Support\Format::money($this->prezziProposti['net']) }}</dd>
+                        </div>
+                        <div class="rounded bg-white px-2 py-1.5">
+                            <dt class="text-slate-500" title="Utile diviso il prezzo di acquisto.">Ricarico</dt>
+                            <dd class="font-bold text-slate-900">{{ \App\Support\Format::percent($this->prezziProposti['markup']) }}</dd>
+                        </div>
+                        <div class="rounded bg-white px-2 py-1.5">
+                            <dt class="text-slate-500" title="Utile diviso il prezzo di vendita netto IVA.">Margine</dt>
+                            <dd class="font-bold text-slate-900">{{ \App\Support\Format::percent($this->prezziProposti['margin']) }}</dd>
+                        </div>
+                    </dl>
+
+                    <div class="mt-2">
+                        <label for="notaPrezzo" class="sr-only">Motivo della correzione</label>
+                        <input id="notaPrezzo" wire:model="notaPrezzo" class="input py-2 text-sm"
+                               placeholder="Motivo della correzione (facoltativo)">
+                    </div>
+
+                    <button type="button" wire:click="aggiornaPrezzo" class="btn-ghost mt-2 w-full"
+                            @disabled((float) $prezzoVendita === (float) $opportunity->sale_price_gross)>
+                        Aggiorna prezzo
+                    </button>
+
+                    <p class="help">
+                        Il Buyer viene avvisato e la correzione resta nell'audit log.
+                        Dopo la pubblicazione il prezzo non è più modificabile da qui.
+                    </p>
+                </div>
+            @endcan
+
             @error('verifica') <p class="error" role="alert"><span aria-hidden="true">⚠</span>{{ $message }}</p> @enderror
 
             <div class="mt-4">
