@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\OpportunityStatus;
 use App\Livewire\Cr\Opportunita;
 use App\Services\ResponseSubmissionService;
 use App\Support\Format;
@@ -125,6 +126,70 @@ class PaginaIngressoCapoRepartoTest extends TestCase
             ->call('aggiornaVista', 'inviate')
             ->assertSee('Hai ordinato 3 colli')
             ->assertSee('Vedi o modifica');
+    }
+
+    #[Test]
+    public function unopportunita_chiusa_non_compare_in_prima_pagina(): void
+    {
+        [$store, $cr] = $this->storeWithCr();
+
+        $aperta = $this->openOpportunity([$store], ['title' => 'Ancora aperta']);
+        $chiusa = $this->openOpportunity([$store], [
+            'title' => 'Gia chiusa',
+            'status' => OpportunityStatus::CHIUSA,
+            'closed_at' => now()->subHour(),
+        ]);
+
+        $this->actingAs($cr)
+            ->get(route('cr.opportunita.index'))
+            ->assertOk()
+            ->assertSee('Ancora aperta')
+            ->assertDontSee('Gia chiusa');
+
+        // Ma resta consultabile nello storico.
+        Livewire::actingAs($cr)
+            ->test(Opportunita::class)
+            ->call('aggiornaVista', 'storico')
+            ->assertSee('Gia chiusa');
+    }
+
+    #[Test]
+    public function unopportunita_scaduta_esce_di_scena_anche_se_lo_scheduler_e_fermo(): void
+    {
+        [$store, $cr] = $this->storeWithCr();
+
+        // Stato ancora APERTA perché il passaggio a SCADUTA non è stato eseguito,
+        // ma il termine è passato: il server rifiuterebbe comunque l'invio.
+        $scaduta = $this->openOpportunity([$store], [
+            'title' => 'Termine passato',
+            'closes_at' => now()->subMinutes(5),
+        ]);
+        $this->assertSame(OpportunityStatus::APERTA, $scaduta->fresh()->status);
+
+        $this->actingAs($cr)
+            ->get(route('cr.opportunita.index'))
+            ->assertOk()
+            ->assertDontSee('Termine passato');
+
+        Livewire::actingAs($cr)
+            ->test(Opportunita::class)
+            ->call('aggiornaVista', 'storico')
+            ->assertSee('Termine passato');
+    }
+
+    #[Test]
+    public function elenco_e_conteggi_dicono_la_stessa_cosa(): void
+    {
+        [$store, $cr] = $this->storeWithCr();
+
+        $this->openOpportunity([$store], ['title' => 'Valida']);
+        $this->openOpportunity([$store], ['title' => 'Termine passato', 'closes_at' => now()->subMinute()]);
+
+        $componente = Livewire::actingAs($cr)->test(Opportunita::class);
+
+        // Prima il contatore diceva 1 e la lista ne mostrava 2.
+        $this->assertSame(1, $componente->viewData('conteggi')['da_completare']);
+        $this->assertCount(1, $componente->viewData('opportunita')->items());
     }
 
     #[Test]

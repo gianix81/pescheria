@@ -86,6 +86,9 @@ opportunità nei diversi stati. Credenziali nella [README](../README.md).
 
 ### D — Risposta (Capo Reparto, da smartphone)
 - [ ] Dopo il login si atterra sull'elenco delle opportunità, non su una dashboard.
+- [ ] Un'opportunità chiusa o annullata non compare in prima pagina, ma si trova in «Storico».
+- [ ] Un'opportunità con il termine passato sparisce dalle prime schede anche se lo scheduler è fermo.
+- [ ] Il numero sulla scheda «Da rispondere» coincide con le card mostrate.
 - [ ] Ogni card mostra articolo, PLU, prezzo, peso collo, disponibilità, consegna e countdown senza aprirla.
 - [ ] I conteggi compaiono nelle schede di filtro, non in riquadri dedicati.
 - [ ] Un'opportunità esaurita lo dichiara già nell'elenco.

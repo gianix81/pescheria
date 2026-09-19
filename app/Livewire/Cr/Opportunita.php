@@ -101,10 +101,35 @@ class Opportunita extends Component
 
         $risposte = Response::where('store_id', $utente->store_id)->get()->keyBy('opportunity_id');
 
+        /*
+         | In prima pagina va solo ciò su cui si può ancora agire: stato APERTA
+         | E termine non ancora passato.
+         |
+         | Il doppio controllo non è ridondante. Lo stato viene fatto avanzare
+         | dallo scheduler, che potrebbe essere fermo o in ritardo di qualche
+         | minuto: senza il confronto sulla data, un'opportunità già scaduta
+         | resterebbe fra quelle da rispondere, mentre il server rifiuterebbe
+         | comunque l'invio. È la stessa regola che vale ovunque: la scadenza si
+         | legge dall'orologio, non dallo stato.
+         */
         match ($this->vista) {
-            'storico' => $query->whereIn('status', [OpportunityStatus::SCADUTA, OpportunityStatus::CHIUSA, OpportunityStatus::ANNULLATA])
+            'storico' => $query
+                ->where(function ($q) {
+                    $q->whereIn('status', [
+                        OpportunityStatus::SCADUTA,
+                        OpportunityStatus::CHIUSA,
+                        OpportunityStatus::ANNULLATA,
+                    ])->orWhere(function ($scadute) {
+                        // Scadute di fatto, non ancora spazzate dallo scheduler.
+                        $scadute->where('status', OpportunityStatus::APERTA)
+                            ->where('closes_at', '<=', now());
+                    });
+                })
                 ->orderByDesc('closes_at'),
-            default => $query->where('status', OpportunityStatus::APERTA)->orderBy('closes_at'),
+            default => $query
+                ->where('status', OpportunityStatus::APERTA)
+                ->where('closes_at', '>', now())
+                ->orderBy('closes_at'),
         };
 
         $opportunita = $query->paginate(12);

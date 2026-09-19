@@ -38,7 +38,7 @@
 
 | Rotta | Componente | Contenuto |
 |---|---|---|
-| `/cr/opportunita` | `Cr\Opportunita` | **pagina d'ingresso: l'elenco della merce, non una dashboard.** Schede di filtro con i conteggi (Da rispondere / Bozze / Inviate / Storico), una sola riga di avviso quando c'è una scadenza vicina, e card con anteprima grande, articolo, PLU, origine, prezzo, peso collo, disponibilità residua, consegna, countdown, esito della propria risposta e **quanto hanno già ordinato gli altri punti vendita**. `/cr/dashboard` reindirizza qui |
+| `/cr/opportunita` | `Cr\Opportunita` | **pagina d'ingresso: l'elenco della merce, non una dashboard.** In prima pagina solo ciò su cui si può ancora agire — stato `APERTA` **e** termine non passato; chiuse, annullate e scadute stanno in «Storico». Schede di filtro con i conteggi (Da rispondere / Bozze / Inviate / Storico), una sola riga di avviso quando c'è una scadenza vicina, e card con anteprima grande, articolo, PLU, origine, prezzo, peso collo, disponibilità residua, consegna, countdown, esito della propria risposta e **quanto hanno già ordinato gli altri punti vendita**. `/cr/dashboard` reindirizza qui |
 | `/cr/opportunita/{id}` | `Cr\Scheda` | due colonne su desktop (galleria + dati), colonna unica e barra azioni sticky su mobile; box decisione «Acquista / Non acquista», pulsanti rapidi 1–6, stepper, «Altra quantità», riepilogo `N colli × X kg = Y kg`, conferma modale, ricevuta; **classifica degli ordini degli altri punti vendita** con totali e, se la disponibilità è limitata, barra di quanto è già impegnato |
 
 ## Priorità e lettura su telefono
