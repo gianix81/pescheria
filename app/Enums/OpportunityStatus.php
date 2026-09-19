@@ -94,7 +94,7 @@ enum OpportunityStatus: string
         return in_array($this, [self::PROGRAMMATA, self::APERTA, self::SCADUTA], true);
     }
 
-    /** Stati visibili ai Capi Reparto. */
+    /** Stati visibili ai punti vendita. */
     public static function visibleToStores(): array
     {
         return [self::APERTA, self::SCADUTA, self::CHIUSA, self::ANNULLATA];

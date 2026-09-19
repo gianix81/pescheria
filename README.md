@@ -2,7 +2,7 @@
 
 Applicazione web che sostituisce il gruppo WhatsApp usato oggi per raccogliere gli ordini dei
 reparti pescheria: il Buyer pubblica un'opportunità (video, scheda articolo, prezzi, disponibilità,
-scadenza, consegna), il Tecnico la verifica e monitora le compilazioni, ogni Capo Reparto dichiara
+scadenza, consegna), il Tecnico la verifica e monitora le compilazioni, ogni punto vendita dichiara
 esplicitamente se acquista — e quanti colli — oppure no.
 
 - **Stack:** PHP 8.3+ · Laravel 13 · MySQL 8 · Blade + Livewire 4 + Alpine · Tailwind 4 · PhpSpreadsheet
@@ -56,7 +56,7 @@ Applicazione su <http://localhost:8000>.
 | Super Admin | `admin@pescheria.local` | `Pescheria2026!` |
 | Buyer | `buyer@pescheria.local` | `Pescheria2026!` |
 | Tecnico | `tecnico@pescheria.local` | `Pescheria2026!` |
-| Capo Reparto PV001…PV005 | `cr1@pescheria.local` … `cr5@pescheria.local` | `Pescheria2026!` |
+| Punto vendita PV001…PV005 | `cr1@pescheria.local` … `cr5@pescheria.local` | `Pescheria2026!` |
 
 > Fuori dall'ambiente `local` il seeder imposta `must_change_password = true`: al primo accesso
 > l'applicazione obbliga al cambio password. **Non usare queste credenziali in produzione.**
@@ -313,4 +313,4 @@ tests/                  Unit/ e Feature/ (98 test)
 - API JSON pubbliche: il dominio è già isolato nei servizi, un futuro `/api/v1` non richiede
   riscritture, ma non è implementato.
 - Scansione antivirus: presente il punto di estensione (`ScanUploadedMedia`), non il motore.
-- Gestione di più punti vendita per un singolo Capo Reparto (assunzione A1).
+- Gestione di più punti vendita per un singolo utente di punto vendita (assunzione A1).

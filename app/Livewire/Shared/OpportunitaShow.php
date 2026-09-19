@@ -129,7 +129,7 @@ class OpportunitaShow extends Component
         $inviati = app(NotificationService::class)->remindMissing($this->opportunity, 'manuale-'.now()->format('YmdHi'));
 
         $this->dispatch('toast', messaggio: $inviati > 0
-            ? "Sollecito inviato a {$inviati} capi reparto."
+            ? "Sollecito inviato a {$inviati} punti vendita."
             : 'Nessun punto vendita da sollecitare.');
     }
 

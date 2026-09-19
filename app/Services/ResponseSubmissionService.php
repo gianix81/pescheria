@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 
 /**
- * Tutte le scritture sulle risposte dei Capi Reparto passano da qui.
+ * Tutte le scritture sulle risposte dei punti vendita passano da qui.
  *
  * Invarianti garantite:
  *  - la finestra temporale è verificata sull'orologio del server, mai sul browser;

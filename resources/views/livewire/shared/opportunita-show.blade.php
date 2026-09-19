@@ -174,7 +174,7 @@
                 <p class="text-sm font-semibold text-amber-900">
                     Sollecita chi non ha ancora risposto ({{ $mancanti->count() }})
                 </p>
-                <p class="help">Scrivi direttamente al capo reparto, senza passare dal gruppo.</p>
+                <p class="help">Scrivi direttamente a chi ordina per quel punto vendita, senza passare dal gruppo.</p>
 
                 <div class="mt-3 space-y-2">
                     @foreach ($mancanti as $riga)
@@ -183,7 +183,7 @@
                                 <span class="font-semibold text-slate-900">{{ $riga['store']->code }}</span>
                                 <span class="text-slate-600">— {{ $riga['store']->name }}</span>
                                 @if ($riga['utenti']->isEmpty())
-                                    <span class="block text-xs text-rose-700">Nessun capo reparto attivo</span>
+                                    <span class="block text-xs text-rose-700">Nessun utente attivo</span>
                                 @endif
                             </span>
 

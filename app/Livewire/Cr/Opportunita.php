@@ -13,7 +13,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 /**
- * Pagina d'ingresso del Capo Reparto: l'elenco della merce disponibile.
+ * Pagina d'ingresso del punto vendita: l'elenco della merce disponibile.
  *
  * Non è una dashboard e non deve diventarlo: chi apre l'applicazione da un
  * reparto vuole vedere subito che cosa c'è da ordinare, non dei contatori.

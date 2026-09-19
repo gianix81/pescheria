@@ -103,7 +103,7 @@ class Utenti extends Component
             'form.is_active' => ['boolean'],
             'password' => [$this->modificaId ? 'nullable' : 'required', PasswordRule::min(10)->letters()->numbers()],
         ], [
-            'form.store_id.required_if' => 'Un Capo Reparto deve essere associato a un punto vendita.',
+            'form.store_id.required_if' => 'Scegli il punto vendita per cui questo utente ordina.',
         ]);
 
         $utente = $this->modificaId ? $this->trovaUtente($this->modificaId) : new User;

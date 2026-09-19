@@ -73,7 +73,7 @@ final class WhatsApp
         return strlen($cifre) >= 8 && strlen($cifre) <= 15 ? $cifre : null;
     }
 
-    /** Sollecito diretto a un capo reparto che non ha ancora risposto. */
+    /** Sollecito diretto a un punto vendita che non ha ancora risposto. */
     public static function perSollecito(Opportunity $opportunity): string
     {
         return implode("\n", [

@@ -67,7 +67,7 @@ class DatabaseSeeder extends Seeder
             'is_active' => true,
         ]));
 
-        // ------------------------------------------------------------ capi reparto
+        // -------------------------------------------------- utenti dei punti vendita
         $nomiCr = [
             ['Luca', 'Rossi'], ['Anna', 'Verdi'], ['Paolo', 'Esposito'],
             ['Sara', 'Greco'], ['Davide', 'Conti'],

@@ -24,7 +24,7 @@
             <ul class="mt-2 space-y-1 font-mono text-xs">
                 <li><button type="button" class="underline" x-on:click="$refs.email.value = 'buyer@pescheria.local'; $refs.password.value = 'Pescheria2026!'">buyer@pescheria.local</button></li>
                 <li><button type="button" class="underline" x-on:click="$refs.email.value = 'tecnico@pescheria.local'; $refs.password.value = 'Pescheria2026!'">tecnico@pescheria.local</button></li>
-                <li><button type="button" class="underline" x-on:click="$refs.email.value = 'cr1@pescheria.local'; $refs.password.value = 'Pescheria2026!'">cr1@pescheria.local</button> (Capo Reparto)</li>
+                <li><button type="button" class="underline" x-on:click="$refs.email.value = 'cr1@pescheria.local'; $refs.password.value = 'Pescheria2026!'">cr1@pescheria.local</button> (Punto vendita)</li>
             </ul>
             <p class="mt-2 text-xs">Password per tutti: <strong>Pescheria2026!</strong> — tocca un indirizzo per compilare il modulo.</p>
         </div>

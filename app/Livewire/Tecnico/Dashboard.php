@@ -20,7 +20,7 @@ class Dashboard extends Component
         $inviati = app(NotificationService::class)->remindMissing($opportunita, 'manuale-'.now()->format('YmdHi'));
 
         $this->dispatch('toast', messaggio: $inviati > 0
-            ? "Sollecito inviato a {$inviati} capi reparto."
+            ? "Sollecito inviato a {$inviati} punti vendita."
             : 'Tutti i punti vendita hanno già risposto.');
     }
 

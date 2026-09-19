@@ -17,7 +17,7 @@ class SendResponseReminders extends Command
 {
     protected $signature = 'opportunita:solleciti';
 
-    protected $description = 'Invia i promemoria ai capi reparto che non hanno ancora risposto';
+    protected $description = 'Invia i promemoria ai punti vendita che non hanno ancora risposto';
 
     public function handle(NotificationService $notifiche): int
     {

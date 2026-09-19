@@ -63,7 +63,7 @@ class Monitor extends Component
         $this->selezione[$opportunityId] = [];
 
         $this->dispatch('toast', messaggio: $inviati > 0
-            ? "Sollecito inviato a {$inviati} capi reparto."
+            ? "Sollecito inviato a {$inviati} punti vendita."
             : 'Nessun destinatario da sollecitare.');
     }
 

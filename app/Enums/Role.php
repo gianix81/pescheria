@@ -15,7 +15,7 @@ enum Role: string
             self::ADMIN => 'Super Admin',
             self::BUYER => 'Buyer',
             self::TECNICO => 'Tecnico',
-            self::CAPO_REPARTO => 'Capo Reparto',
+            self::CAPO_REPARTO => 'Punto vendita',
         };
     }
 
@@ -25,7 +25,7 @@ enum Role: string
             self::ADMIN => 'Accesso completo: gestisce utenti, anagrafiche e tutte le opportunità.',
             self::BUYER => 'Crea e pubblica le opportunità, esporta i risultati.',
             self::TECNICO => 'Verifica le opportunità e monitora le compilazioni.',
-            self::CAPO_REPARTO => 'Risponde per il proprio punto vendita.',
+            self::CAPO_REPARTO => 'Ordina per il proprio punto vendita.',
         };
     }
 

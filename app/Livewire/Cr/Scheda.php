@@ -14,7 +14,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 /**
- * Scheda opportunità del Capo Reparto: è il flusso prioritario, pensato prima per mobile.
+ * Scheda opportunità del punto vendita: è il flusso prioritario, pensato prima per mobile.
  * Ogni azione passa dal ResponseSubmissionService, che riverifica scadenza e quantità.
  */
 #[Layout('components.layouts.app')]

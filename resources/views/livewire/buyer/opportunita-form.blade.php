@@ -191,10 +191,10 @@
         @endunless
     </div>
 
-    {{-- Anteprima identica alla vista del Capo Reparto --}}
+    {{-- Anteprima identica a ciò che vedrà il punto vendita --}}
     @if ($anteprimaAperta)
-        <section class="card p-5" aria-label="Anteprima scheda Capo Reparto">
-            <h3 class="text-sm font-bold uppercase tracking-wide text-slate-500">Anteprima vista Capo Reparto</h3>
+        <section class="card p-5" aria-label="Anteprima della scheda come la vedrà il punto vendita">
+            <h3 class="text-sm font-bold uppercase tracking-wide text-slate-500">Anteprima vista punto vendita</h3>
             <div class="mt-4 grid gap-5 lg:grid-cols-2">
                 <div class="rounded-xl bg-slate-100 p-8 text-center text-sm text-slate-500">
                     {{ $opportunity?->media?->count() ? $opportunity->media->count().' contenuti multimediali' : 'Nessun media caricato' }}

@@ -18,6 +18,12 @@ Limiti strutturali:
 | Nessuna tracciabilità | contestazioni | audit log immutabile + revisioni risposta |
 | Modifica del sondaggio dopo la scadenza | ordini non validi | scadenza applicata server-side dallo scheduler |
 
+> **Nota sulle diciture.** Nell'interfaccia il ruolo che ordina per il negozio si chiama
+> **«Punto vendita»**, non più «Capo Reparto»: è il termine che l'azienda usa davvero. Nel codice
+> il valore del ruolo resta `CAPO_REPARTO` — rinominarlo avrebbe richiesto di migrare i dati e
+> riscrivere ogni riferimento senza che nulla cambiasse a schermo. Nei documenti tecnici le due
+> diciture si equivalgono.
+
 ## 1.2 Attori
 
 - **Buyer** – crea, duplica, pubblica, chiude, esporta. Non risponde per conto dei PdV.
