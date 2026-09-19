@@ -25,7 +25,29 @@
         <x-vuoto titolo="Nessuna opportunità trovata"
                  descrizione="Modifica i filtri oppure crea una nuova opportunità." />
     @else
-        <div class="card overflow-hidden">
+        {{-- Telefono: lista compatta, niente tabella da far scorrere di lato --}}
+        <ul class="card divide-y divide-slate-100 lg:hidden">
+            @foreach ($opportunita as $o)
+                <li>
+                    <a href="{{ route('opportunita.show', $o) }}" class="block px-4 py-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <span class="min-w-0">
+                                <span class="block truncate text-sm font-semibold text-slate-900">{{ $o->description }}</span>
+                                <span class="block truncate text-xs text-slate-500">{{ $o->reference }} · {{ $o->article_code }}</span>
+                            </span>
+                            <x-badge-stato :stato="$o->status" class="shrink-0" />
+                        </div>
+                        <p class="mt-1 text-xs text-slate-600">
+                            Consegna {{ \App\Support\Format::date($o->delivery_date) }} ·
+                            {{ $o->stores_count }} PdV ·
+                            {{ $o->isLimited() ? $o->remainingPackages().'/'.$o->total_packages.' colli' : 'illimitati' }}
+                        </p>
+                    </a>
+                </li>
+            @endforeach
+        </ul>
+
+        <div class="card hidden overflow-hidden lg:block">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-slate-200">
                     <thead class="sticky top-0 bg-slate-50">

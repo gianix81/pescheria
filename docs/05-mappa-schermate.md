@@ -41,6 +41,24 @@
 | `/cr/opportunita` | `Cr\Opportunita` | **pagina d'ingresso: l'elenco della merce, non una dashboard.** Schede di filtro con i conteggi (Da rispondere / Bozze / Inviate / Storico), una sola riga di avviso quando c'è una scadenza vicina, e card con anteprima grande, articolo, PLU, origine, prezzo, peso collo, disponibilità residua, consegna, countdown, esito della propria risposta e **quanto hanno già ordinato gli altri punti vendita**. `/cr/dashboard` reindirizza qui |
 | `/cr/opportunita/{id}` | `Cr\Scheda` | due colonne su desktop (galleria + dati), colonna unica e barra azioni sticky su mobile; box decisione «Acquista / Non acquista», pulsanti rapidi 1–6, stepper, «Altra quantità», riepilogo `N colli × X kg = Y kg`, conferma modale, ricevuta; **classifica degli ordini degli altri punti vendita** con totali e, se la disponibilità è limitata, barra di quanto è già impegnato |
 
+## Priorità e lettura su telefono
+
+Ogni pagina di ruolo si apre con **una riga sola** che dice che cosa si sta guardando e qual è la
+prossima cosa da fare, con il pulsante dell'azione principale accanto. La frase cambia con la
+situazione, in ordine di urgenza:
+
+| Ruolo | Prima | Poi | Se non c'è nulla |
+|---|---|---|---|
+| Buyer | opportunità respinte da correggere | in scadenza entro 6 ore | «pubblicane una nuova» |
+| Tecnico | opportunità che aspettano la verifica | punti vendita che non hanno risposto | «tutto in ordine» |
+| Capo Reparto | opportunità che aspettano la sua risposta | — | elenco della merce |
+
+I conteggi stanno in riquadri **due per riga su telefono** (quattro da tablet), alti quanto basta:
+occupano mezza schermata invece di quattro, e sono collegamenti ai rispettivi elenchi.
+
+Le tabelle larghe — ultime opportunità, compilazioni, elenco opportunità — hanno una **lista
+compatta per telefono** e restano tabelle da 1024 px in su. Su telefono non si scorre mai di lato.
+
 ## Comportamenti trasversali
 
 - **Skeleton** durante i caricamenti Livewire, **stati vuoti** con spiegazione e azione successiva.

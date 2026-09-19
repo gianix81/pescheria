@@ -103,13 +103,13 @@ class PaginaIngressoCapoRepartoTest extends TestCase
 
         $this->actingAs($cr)
             ->get(route('cr.opportunita.index'))
-            ->assertSee('in attesa della tua risposta');
+            ->assertSee('aspetta la tua risposta');
 
         app(ResponseSubmissionService::class)->submitPurchase($opportunita, $store, $cr, 2);
 
         $this->actingAs($cr)
             ->get(route('cr.opportunita.index'))
-            ->assertDontSee('in attesa della tua risposta');
+            ->assertDontSee('aspetta la tua risposta');
     }
 
     #[Test]

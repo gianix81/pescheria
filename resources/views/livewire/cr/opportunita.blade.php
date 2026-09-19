@@ -40,23 +40,20 @@
         </div>
     </div>
 
-    {{-- Un'unica riga di avviso quando c'è fretta: nessun riquadro riepilogativo --}}
-    @if ($vista === 'da_completare' && $conteggi['da_completare'] > 0 && $prossimaScadenza)
-        <p class="flex flex-wrap items-center gap-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-            <span aria-hidden="true">⏱</span>
-            <span>
-                <strong>{{ $conteggi['da_completare'] }}</strong>
-                {{ $conteggi['da_completare'] === 1 ? 'opportunità in attesa della tua risposta' : 'opportunità in attesa della tua risposta' }} —
-                la prima scade il {{ \App\Support\Format::dateTime($prossimaScadenza) }}
-            </span>
-        </p>
+    {{-- Una riga sola: che cosa ti aspetta e dove andare. Nessun riquadro riepilogativo. --}}
+    @if ($conteggi['da_completare'] > 0)
+        <x-obiettivo
+            :titolo="$conteggi['da_completare'].' '.($conteggi['da_completare'] === 1 ? 'opportunità aspetta la tua risposta' : 'opportunità aspettano la tua risposta').($prossimaScadenza ? ' — la prima scade il '.\App\Support\Format::dateTime($prossimaScadenza) : '')"
+            :urgente="true"
+            :azione="$vista === 'da_completare' ? null : 'Vedi'"
+            :url-azione="$vista === 'da_completare' ? null : route('cr.opportunita.index', ['vista' => 'da_completare'])" />
     @endif
 
     {{-- Skeleton durante i caricamenti --}}
     <div wire:loading.delay class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         @for ($i = 0; $i < 3; $i++)
             <div class="card space-y-3 p-4">
-                <div class="skeleton h-40 w-full"></div>
+                <div class="skeleton h-32 w-full sm:h-40"></div>
                 <div class="skeleton h-5 w-3/4"></div>
                 <div class="skeleton h-4 w-1/2"></div>
             </div>
@@ -92,9 +89,9 @@
                     ])>
                         {{-- L'anteprima occupa spazio: è la merce, deve vedersi --}}
                         <a href="{{ route('cr.opportunita.show', $o) }}" class="block">
-                            <div class="relative flex h-44 items-center justify-center bg-slate-100">
+                            <div class="relative flex h-32 items-center justify-center bg-slate-100 sm:h-44">
                                 @if ($anteprima && ! $anteprima->isVideo())
-                                    <img src="{{ $anteprima->temporaryUrl() }}" alt="" class="h-44 w-full object-cover">
+                                    <img src="{{ $anteprima->temporaryUrl() }}" alt="" class="h-32 w-full object-cover sm:h-44">
                                 @elseif ($anteprima)
                                     <span class="text-4xl" aria-hidden="true">▶</span>
                                     <span class="sr-only">Video disponibile</span>
@@ -124,7 +121,7 @@
                             </div>
                         </a>
 
-                        <div class="flex flex-1 flex-col gap-2 p-4">
+                        <div class="flex flex-1 flex-col gap-1.5 p-3 sm:gap-2 sm:p-4">
                             <div>
                                 <h3 class="text-base font-bold leading-tight text-slate-900">
                                     <a href="{{ route('cr.opportunita.show', $o) }}" class="hover:underline">{{ $o->title }}</a>

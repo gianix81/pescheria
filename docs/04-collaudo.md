@@ -140,6 +140,10 @@ opportunità nei diversi stati. Credenziali nella [README](../README.md).
 - [ ] Modifica manuale dell'ID in URL (IDOR) → 403.
 
 ### I — Accessibilità e responsive
+- [ ] Su telefono, ogni ruolo legge in cima una riga che dice cosa fare, senza scorrere.
+- [ ] I conteggi stanno due per riga, non uno sotto l'altro.
+- [ ] Nessuna tabella richiede lo scorrimento orizzontale su telefono: al suo posto c'è una lista.
+- [ ] Le card delle opportunità entrano in schermata senza scorrimenti lunghi.
 - [ ] Navigazione completa da tastiera con focus sempre visibile.
 - [ ] Ogni campo ha una label associata; gli errori sono annunciati.
 - [ ] Nessuna informazione veicolata dal solo colore.
