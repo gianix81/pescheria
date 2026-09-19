@@ -131,6 +131,39 @@ class StatoSistemaTest extends TestCase
     }
 
     #[Test]
+    public function un_disco_non_ancora_verificato_non_e_segnalato_come_errore(): void
+    {
+        // Nessun file mancante e nessun contrassegno precedente: è semplicemente
+        // troppo presto per dirlo, e la pagina non deve allarmare.
+        $media = Sistema::media();
+
+        $this->assertNull($media['persistente']);
+        $this->assertSame(0, $media['mancanti']);
+
+        $this->actingAs($this->admin())
+            ->get(route('tecnico.stato'))
+            ->assertOk()
+            ->assertSee('non ancora determinabile')
+            ->assertSee('Dopo il prossimo rilascio')
+            ->assertDontSee('Serve un volume sul servizio');
+    }
+
+    #[Test]
+    public function i_negozi_non_si_confondono_con_gli_utenti_di_punto_vendita(): void
+    {
+        [$store, $cr] = $this->storeWithCr();
+
+        // Il ruolo si chiama "Punto vendita" come i negozi: le due voci vanno
+        // distinte, altrimenti si leggono due numeri uguali senza capirli.
+        $this->actingAs($this->admin())
+            ->get(route('tecnico.stato'))
+            ->assertOk()
+            ->assertSee('Utenti attivi')
+            ->assertSee('Anagrafiche')
+            ->assertSee('Negozi registrati');
+    }
+
+    #[Test]
     public function avvisa_quando_la_modalita_dimostrativa_e_attiva(): void
     {
         config(['pescheria.demo.enabled' => true]);

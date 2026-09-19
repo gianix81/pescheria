@@ -51,15 +51,20 @@
             <p class="help">Esegui <code class="rounded bg-white px-1">php artisan migrate --force</code> e imposta il pre-deploy step, altrimenti resterà indietro a ogni pubblicazione.</p>
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-        <dl class="mt-2 grid gap-1.5 text-sm sm:grid-cols-3">
+        <p class="mt-3 text-[11px] font-semibold uppercase tracking-wide text-slate-500">Utenti attivi</p>
+        <dl class="mt-1 grid gap-1.5 text-sm sm:grid-cols-2">
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $utenti; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ruolo => $quanti): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                 <div class="flex justify-between gap-2">
                     <dt class="truncate text-slate-600"><?php echo e($ruolo); ?></dt>
                     <dd class="font-semibold text-slate-900"><?php echo e($quanti); ?></dd>
                 </div>
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+        </dl>
+
+        <p class="mt-3 text-[11px] font-semibold uppercase tracking-wide text-slate-500">Anagrafiche</p>
+        <dl class="mt-1 grid gap-1.5 text-sm sm:grid-cols-2">
             <div class="flex justify-between gap-2">
-                <dt class="text-slate-600">Punti vendita</dt>
+                <dt class="text-slate-600">Negozi registrati</dt>
                 <dd class="font-semibold text-slate-900"><?php echo e($puntiVendita); ?></dd>
             </div>
             <div class="flex justify-between gap-2">
@@ -70,11 +75,17 @@
     </section>
 
     
-    <?php [$icona, $testo, $sfondo] = $ok($mediaOk && $media['mancanti'] === 0); ?>
+    <?php
+        [$icona, $testo, $sfondo] = match (true) {
+            $media['persistente'] === true && $media['mancanti'] === 0 => ['✓', 'text-emerald-800', 'bg-emerald-50 border-emerald-200'],
+            $media['persistente'] === false || $media['mancanti'] > 0 => ['⚠', 'text-rose-800', 'bg-rose-50 border-rose-200'],
+            default => ['ⓘ', 'text-slate-700', 'bg-white border-slate-200'],
+        };
+    ?>
     <section class="card border <?php echo e($sfondo); ?> p-4">
         <h2 class="text-xs font-bold uppercase tracking-wide text-slate-500">Foto e video</h2>
         <p class="mt-1 text-sm font-semibold <?php echo e($testo); ?>">
-            <span aria-hidden="true"><?php echo e($mediaOk && $media['mancanti'] === 0 ? '✓' : ($media['persistente'] === null ? 'ⓘ' : '⚠')); ?></span>
+            <span aria-hidden="true"><?php echo e($icona); ?></span>
             Disco persistente: <?php echo e($media['descrizione']); ?>
 
         </p>
@@ -94,11 +105,16 @@
             </div>
         </dl>
 
-        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($media['persistente'] !== true): ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($media['persistente'] === false): ?>
             <p class="help">
                 Serve un volume sul servizio dell'applicazione. Se lo monti su un percorso dedicato,
-                indicalo con <code class="rounded bg-white px-1">MEDIA_ROOT</code>; il percorso qui sopra
-                deve corrispondere.
+                indicalo con <code class="rounded bg-slate-100 px-1">MEDIA_ROOT</code>; il percorso qui
+                sopra deve corrispondere.
+            </p>
+        <?php elseif($media['persistente'] === null): ?>
+            <p class="help">
+                Il contrassegno di questa pubblicazione è stato appena scritto e non c'è ancora nulla
+                con cui confrontarlo. Dopo il prossimo rilascio questa riga dirà «sì» se il disco regge.
             </p>
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
     </section>

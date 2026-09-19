@@ -51,15 +51,20 @@
             <p class="help">Esegui <code class="rounded bg-white px-1">php artisan migrate --force</code> e imposta il pre-deploy step, altrimenti resterà indietro a ogni pubblicazione.</p>
         @endif
 
-        <dl class="mt-2 grid gap-1.5 text-sm sm:grid-cols-3">
+        <p class="mt-3 text-[11px] font-semibold uppercase tracking-wide text-slate-500">Utenti attivi</p>
+        <dl class="mt-1 grid gap-1.5 text-sm sm:grid-cols-2">
             @foreach ($utenti as $ruolo => $quanti)
                 <div class="flex justify-between gap-2">
                     <dt class="truncate text-slate-600">{{ $ruolo }}</dt>
                     <dd class="font-semibold text-slate-900">{{ $quanti }}</dd>
                 </div>
             @endforeach
+        </dl>
+
+        <p class="mt-3 text-[11px] font-semibold uppercase tracking-wide text-slate-500">Anagrafiche</p>
+        <dl class="mt-1 grid gap-1.5 text-sm sm:grid-cols-2">
             <div class="flex justify-between gap-2">
-                <dt class="text-slate-600">Punti vendita</dt>
+                <dt class="text-slate-600">Negozi registrati</dt>
                 <dd class="font-semibold text-slate-900">{{ $puntiVendita }}</dd>
             </div>
             <div class="flex justify-between gap-2">
@@ -69,12 +74,18 @@
         </dl>
     </section>
 
-    {{-- Media --}}
-    @php [$icona, $testo, $sfondo] = $ok($mediaOk && $media['mancanti'] === 0); @endphp
+    {{-- Media: tre stati, perché «non ancora determinabile» non è un problema --}}
+    @php
+        [$icona, $testo, $sfondo] = match (true) {
+            $media['persistente'] === true && $media['mancanti'] === 0 => ['✓', 'text-emerald-800', 'bg-emerald-50 border-emerald-200'],
+            $media['persistente'] === false || $media['mancanti'] > 0 => ['⚠', 'text-rose-800', 'bg-rose-50 border-rose-200'],
+            default => ['ⓘ', 'text-slate-700', 'bg-white border-slate-200'],
+        };
+    @endphp
     <section class="card border {{ $sfondo }} p-4">
         <h2 class="text-xs font-bold uppercase tracking-wide text-slate-500">Foto e video</h2>
         <p class="mt-1 text-sm font-semibold {{ $testo }}">
-            <span aria-hidden="true">{{ $mediaOk && $media['mancanti'] === 0 ? '✓' : ($media['persistente'] === null ? 'ⓘ' : '⚠') }}</span>
+            <span aria-hidden="true">{{ $icona }}</span>
             Disco persistente: {{ $media['descrizione'] }}
         </p>
 
@@ -93,11 +104,16 @@
             </div>
         </dl>
 
-        @if ($media['persistente'] !== true)
+        @if ($media['persistente'] === false)
             <p class="help">
                 Serve un volume sul servizio dell'applicazione. Se lo monti su un percorso dedicato,
-                indicalo con <code class="rounded bg-white px-1">MEDIA_ROOT</code>; il percorso qui sopra
-                deve corrispondere.
+                indicalo con <code class="rounded bg-slate-100 px-1">MEDIA_ROOT</code>; il percorso qui
+                sopra deve corrispondere.
+            </p>
+        @elseif ($media['persistente'] === null)
+            <p class="help">
+                Il contrassegno di questa pubblicazione è stato appena scritto e non c'è ancora nulla
+                con cui confrontarlo. Dopo il prossimo rilascio questa riga dirà «sì» se il disco regge.
             </p>
         @endif
     </section>
