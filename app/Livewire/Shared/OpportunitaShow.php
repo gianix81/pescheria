@@ -48,6 +48,12 @@ class OpportunitaShow extends Component
     public function conferma(): void
     {
         try {
+            if ($this->azione === 'elimina') {
+                $this->elimina();
+
+                return;     // l'opportunità non esiste più: si esce dalla pagina
+            }
+
             match ($this->azione) {
                 'chiudi' => $this->chiudi(),
                 'annulla' => $this->annulla(),
@@ -89,6 +95,20 @@ class OpportunitaShow extends Component
         );
 
         $this->dispatch('toast', messaggio: 'Risposta riaperta.');
+    }
+
+    private function elimina(): void
+    {
+        $this->authorize('delete', $this->opportunity);
+
+        $riferimento = $this->opportunity->reference;
+
+        app(OpportunityWorkflowService::class)
+            ->eliminaDefinitivamente($this->opportunity, auth()->user(), $this->motivazione);
+
+        session()->flash('status', "Opportunità {$riferimento} eliminata definitivamente.");
+
+        $this->redirectRoute('opportunita.index', navigate: true);
     }
 
     public function duplica(): void

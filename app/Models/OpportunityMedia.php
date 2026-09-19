@@ -7,6 +7,7 @@ use Database\Factories\OpportunityMediaFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 
 class OpportunityMedia extends Model
@@ -33,6 +34,18 @@ class OpportunityMedia extends Model
     public function opportunity(): BelongsTo
     {
         return $this->belongsTo(Opportunity::class);
+    }
+
+    /**
+     * Il file è ancora al suo posto?
+     *
+     * Su una piattaforma senza disco persistente il contenuto sparisce a ogni
+     * pubblicazione mentre la riga in tabella resta: senza questo controllo si
+     * vedrebbero immagini rotte e il motivo non sarebbe chiaro a nessuno.
+     */
+    public function esiste(): bool
+    {
+        return Storage::disk($this->disk)->exists($this->path);
     }
 
     public function isVideo(): bool

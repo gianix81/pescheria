@@ -9,7 +9,19 @@
     @else
         @foreach ($media as $indice => $file)
             <div x-show="attivo === {{ $indice }}" @if($indice > 0) x-cloak @endif>
-                @if ($file->isVideo())
+                @if (! $file->esiste())
+                    {{-- La riga c'è, il file no: succede se il disco non è persistente. --}}
+                    <div class="flex aspect-[4/3] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-6 text-center">
+                        <span class="text-3xl" aria-hidden="true">🖼</span>
+                        <p class="text-sm font-semibold text-slate-700">
+                            {{ $file->type->label() }} non più disponibile
+                        </p>
+                        <p class="max-w-sm text-xs text-slate-500">
+                            Il file è stato caricato il {{ \App\Support\Format::date($file->created_at) }}
+                            ma non si trova più sul disco. Ricaricalo dalla modifica dell'opportunità.
+                        </p>
+                    </div>
+                @elseif ($file->isVideo())
                     {{-- Nessun autoplay: il video parte solo su azione dell'utente --}}
                     <video
                         class="mx-auto max-h-[60vh] w-full rounded-xl bg-black object-contain"

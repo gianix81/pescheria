@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Enums\Role;
 use App\Models\Opportunity;
+use App\Models\OpportunityMedia;
 use App\Models\Store;
 use App\Models\User;
 use Illuminate\Console\Command;
@@ -103,6 +104,31 @@ class StatoApplicazione extends Command
 
         $this->riga('Punti vendita', (string) Store::count());
         $this->riga('Opportunità', (string) Opportunity::count());
+
+        $this->newLine();
+        $this->components->info('Media');
+
+        $disco = config('pescheria.media.disk');
+        $this->riga('Disco', (string) $disco);
+        $this->riga('Percorso', (string) config("filesystems.disks.{$disco}.root", '—'));
+
+        $totaleMedia = OpportunityMedia::count();
+        $mancanti = 0;
+
+        foreach (OpportunityMedia::all() as $file) {
+            if (! $file->esiste()) {
+                $mancanti++;
+            }
+        }
+
+        $this->riga('File registrati', (string) $totaleMedia);
+        $this->riga('File non trovati', (string) $mancanti);
+
+        if ($mancanti > 0) {
+            $problemi[] = "{$mancanti} file su {$totaleMedia} non si trovano sul disco: "
+                .'quasi sempre significa che il disco non è persistente e viene azzerato a ogni '
+                .'pubblicazione. Monta un volume su /app/storage oppure passa a MEDIA_DISK=media_s3.';
+        }
 
         if ($email = $this->option('email')) {
             $this->newLine();

@@ -252,6 +252,21 @@ class Opportunity extends Model
         return $this->published_at !== null;
     }
 
+    /** Da quanti giorni il termine è passato (mai negativo). */
+    public function giorniDallaScadenza(): int
+    {
+        return $this->closes_at->isFuture() ? 0 : (int) $this->closes_at->diffInDays(now());
+    }
+
+    /**
+     * Un'opportunità scaduta da almeno un mese è storia vecchia: eliminarla non
+     * richiede di giustificarsi. Tutto il resto sì.
+     */
+    public function eliminabileSenzaMotivazione(): bool
+    {
+        return $this->closes_at->lessThanOrEqualTo(now()->subMonth());
+    }
+
     public function hasMedia(): bool
     {
         return $this->media()->exists();

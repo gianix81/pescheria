@@ -77,6 +77,13 @@ opportunità nei diversi stati. Credenziali nella [README](../README.md).
 - [ ] «Copia testo» copia il messaggio negli appunti.
 - [ ] Alla conferma di un punto vendita, Buyer e Tecnico ricevono la notifica in-app.
 
+### B-quater — Eliminazione definitiva
+- [ ] Sulla scheda, il Buyer vede «Elimina» accanto ad «Annulla»; Tecnico e Capo Reparto no.
+- [ ] La conferma dichiara quanti file, risposte e colli andranno persi.
+- [ ] Su un'opportunità recente la motivazione è obbligatoria e senza non si procede.
+- [ ] Su una scaduta da oltre un mese il campo motivazione non compare.
+- [ ] Dopo l'eliminazione l'opportunità non è più in elenco e in Audit compare «opportunity.deleted» con il riepilogo.
+
 ### C — Verifica (Tecnico)
 - [ ] La checklist resta visibile durante lo scorrimento (pannello sticky).
 - [ ] «Richiedi correzioni» senza motivazione → bloccato.

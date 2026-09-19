@@ -157,6 +157,24 @@ Ogni card mostra ciò che serve per decidere senza aprirla: anteprima grande di 
 titolo, codice articolo, PLU, origine, prezzo di vendita, peso del collo, disponibilità residua,
 data di consegna, countdown, la propria risposta se già inviata e quanto hanno ordinato gli altri.
 
+## 1.4-sexies Eliminazione definitiva di un'opportunità
+
+Oltre all'annullamento — che conserva tutto e comunica ai punti vendita — il Buyer può eliminare
+definitivamente un'opportunità creata per errore o troppo vecchia per meritare l'archivio.
+
+| Situazione | Motivazione |
+|---|---|
+| Termine passato da almeno un mese | non richiesta |
+| Tutto il resto, comprese le bozze | obbligatoria |
+
+L'eliminazione porta via media, risposte, revisioni e destinatari. **Resta però la voce nell'audit
+log**, che non ha vincoli verso le opportunità e sopravvive alla cancellazione: vi si trovano
+riferimento, articolo, stato, scadenza, numero di risposte, colli ordinati e motivazione. Di ciò
+che è stato eliminato resta traccia di chi, quando e perché.
+
+La conferma dichiara in anticipo quanti file, quante risposte e quanti colli si stanno per perdere:
+è un'operazione irreversibile e non deve sembrare una qualsiasi.
+
 ## 1.5 Regole di business non negoziabili implementate
 
 1. `prezzo_vendita_netto = prezzo_vendita_lordo / (1 + aliquota_iva)`

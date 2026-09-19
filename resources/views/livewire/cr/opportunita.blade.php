@@ -90,7 +90,9 @@
                         {{-- L'anteprima occupa spazio: è la merce, deve vedersi --}}
                         <a href="{{ route('cr.opportunita.show', $o) }}" class="block">
                             <div class="relative flex h-32 items-center justify-center bg-slate-100 sm:h-44">
-                                @if ($anteprima && ! $anteprima->isVideo())
+                                @if ($anteprima && ! $anteprima->esiste())
+                                    <span class="text-sm text-slate-500">Immagine non disponibile</span>
+                                @elseif ($anteprima && ! $anteprima->isVideo())
                                     <img src="{{ $anteprima->temporaryUrl() }}" alt="" class="h-32 w-full object-cover sm:h-44">
                                 @elseif ($anteprima)
                                     <span class="text-4xl" aria-hidden="true">▶</span>

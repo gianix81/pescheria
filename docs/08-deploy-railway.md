@@ -107,9 +107,16 @@ Le cause più frequenti, tutte segnalate dal comando di stato: il seeder non è 
 banner ambra sul login), le migrazioni non sono state applicate, oppure l'account esiste ma è
 disattivato.
 
-## 8.4 Media caricati
+## 8.4 Media caricati — **obbligatorio**
 
-Il filesystem del container si azzera a ogni deploy. Due strade:
+Il filesystem del container si azzera **a ogni pubblicazione**. Senza volume, le foto e i video
+caricati spariscono al deploy successivo: le righe restano in tabella e a schermo compare
+«file non più disponibile».
+
+Verifica in qualsiasi momento con `php artisan pescheria:stato`, sezione *Media*: se
+«File non trovati» è maggiore di zero, manca il disco persistente.
+
+Due strade:
 
 - **Volume Railway** (semplice): Settings → Volumes → mount path `/app/storage`.
   Le variabili restano `MEDIA_DISK=media_local`. Sopravvive ai deploy.

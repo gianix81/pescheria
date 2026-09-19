@@ -67,6 +67,15 @@ class OpportunityPolicy
         return $user->isBuyer() && ! in_array($opportunity->status, OpportunityStatus::terminal(), true);
     }
 
+    /**
+     * Eliminazione definitiva: solo il Buyer, per opportunità create per errore
+     * o troppo vecchie perché valga la pena tenerle in archivio.
+     */
+    public function delete(User $user, Opportunity $opportunity): bool
+    {
+        return $user->isBuyer();
+    }
+
     public function duplicate(User $user, Opportunity $opportunity): bool
     {
         return $user->isBuyer();

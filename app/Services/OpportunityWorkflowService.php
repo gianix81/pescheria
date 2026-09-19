@@ -15,6 +15,7 @@ use App\Models\OpportunityReview;
 use App\Models\User;
 use App\Support\Format;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Macchina a stati dell'opportunità (capitolato §6).
@@ -346,6 +347,62 @@ class OpportunityWorkflowService
         $this->transition($opportunity, OpportunityStatus::ARCHIVIATA, $user, ['archived_at' => now()]);
 
         return $opportunity;
+    }
+
+    /**
+     * Eliminazione definitiva.
+     *
+     * Non è l'annullamento: qui l'opportunità sparisce davvero, con media,
+     * risposte e revisioni. Serve per ciò che è stato creato per errore o è
+     * talmente vecchio da non meritare l'archivio.
+     *
+     * La motivazione è obbligatoria finché l'opportunità è recente; è invece
+     * superflua se il termine è passato da oltre un mese.
+     *
+     * Resta la voce nell'audit log, che non ha vincoli verso le opportunità e
+     * sopravvive alla cancellazione: di ciò che è stato eliminato resta traccia.
+     */
+    public function eliminaDefinitivamente(Opportunity $opportunity, User $user, ?string $motivo = null): void
+    {
+        $motivo = trim((string) $motivo);
+
+        if ($motivo === '' && ! $opportunity->eliminabileSenzaMotivazione()) {
+            throw new DomainException(
+                'Serve una motivazione: l\'opportunità non è scaduta da almeno un mese.'
+            );
+        }
+
+        $riepilogo = [
+            'riferimento' => $opportunity->reference,
+            'articolo' => $opportunity->article_code,
+            'descrizione' => $opportunity->description,
+            'stato' => $opportunity->status->value,
+            'scadenza' => $opportunity->closes_at->toIso8601String(),
+            'consegna' => $opportunity->delivery_date->toDateString(),
+            'punti_vendita' => $opportunity->stores()->count(),
+            'risposte_inviate' => $opportunity->responses()->submitted()->count(),
+            'colli_ordinati' => $opportunity->totalPackagesOrdered(),
+            'motivazione' => $motivo !== '' ? $motivo : 'non richiesta (scaduta da oltre un mese)',
+        ];
+
+        $media = $opportunity->media()->get();
+
+        DB::transaction(function () use ($opportunity, $user, $riepilogo, $media) {
+            // L'audit va scritto prima: dopo, l'opportunità non esiste più.
+            $this->audit->log('opportunity.deleted', $opportunity, $riepilogo, $user);
+
+            $opportunity->delete();
+
+            // I file si tolgono dopo il commit logico: se la transazione
+            // fallisse, meglio file orfani che righe senza contenuto.
+            foreach ($media as $file) {
+                Storage::disk($file->disk)->delete($file->path);
+
+                if ($file->poster_path) {
+                    Storage::disk($file->disk)->delete($file->poster_path);
+                }
+            }
+        });
     }
 
     // ------------------------------------------------------------- duplicazione

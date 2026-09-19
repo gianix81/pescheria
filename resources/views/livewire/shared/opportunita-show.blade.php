@@ -87,7 +87,10 @@
                 <button type="button" wire:click="apriAzione('chiudi')" class="btn-ghost">Chiudi</button>
             @endcan
             @can('cancel', $opportunity)
-                <button type="button" wire:click="apriAzione('annulla')" class="btn-danger">Annulla</button>
+                <button type="button" wire:click="apriAzione('annulla')" class="btn-ghost text-rose-700">Annulla</button>
+            @endcan
+            @can('delete', $opportunity)
+                <button type="button" wire:click="apriAzione('elimina')" class="btn-danger">Elimina</button>
             @endcan
             <button type="button" wire:click="sollecita" class="btn-secondary">Sollecita mancanti</button>
             <a href="{{ route('export.index', ['opportunity_id' => $opportunity->id]) }}" class="btn-ghost">⤓ Export</a>
@@ -247,9 +250,39 @@
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4" role="dialog" aria-modal="true" aria-labelledby="titolo-azione">
             <div class="card w-full max-w-md p-5">
                 <h3 id="titolo-azione" class="text-lg font-bold text-slate-900">
-                    {{ ['chiudi' => 'Chiudi opportunità', 'annulla' => 'Annulla opportunità', 'riapri' => 'Riapri risposta'][$azione] }}
+                    {{ [
+                        'chiudi' => 'Chiudi opportunità',
+                        'annulla' => 'Annulla opportunità',
+                        'riapri' => 'Riapri risposta',
+                        'elimina' => 'Eliminare definitivamente?',
+                    ][$azione] }}
                 </h3>
-                <p class="mt-1 text-sm text-slate-600">La motivazione è obbligatoria e viene registrata nell'audit log.</p>
+
+                @if ($azione === 'elimina')
+                    <div class="mt-2 space-y-2 text-sm text-slate-700">
+                        <p>
+                            <strong>{{ $opportunity->reference }}</strong> — {{ $opportunity->description }}
+                        </p>
+                        <p class="rounded-lg bg-rose-50 px-3 py-2 text-rose-900">
+                            Spariscono anche <strong>{{ $opportunity->media->count() }}</strong> file,
+                            <strong>{{ $statistiche['inviate'] }}</strong> risposte dei punti vendita e
+                            <strong>{{ $colliTotali }}</strong> colli ordinati.
+                            L'operazione non si annulla: nell'audit log resta la traccia di cosa è stato eliminato.
+                        </p>
+
+                        @if ($opportunity->eliminabileSenzaMotivazione())
+                            <p class="text-slate-600">
+                                Scaduta da {{ $opportunity->giorniDallaScadenza() }} giorni: la motivazione non è richiesta.
+                            </p>
+                        @else
+                            <p class="text-slate-600">
+                                Non è scaduta da almeno un mese: indica il motivo.
+                            </p>
+                        @endif
+                    </div>
+                @else
+                    <p class="mt-1 text-sm text-slate-600">La motivazione è obbligatoria e viene registrata nell'audit log.</p>
+                @endif
 
                 @if ($azione === 'riapri')
                     <div class="mt-3">
@@ -258,14 +291,19 @@
                     </div>
                 @endif
 
-                <div class="mt-3">
-                    <label for="motivazione" class="label">Motivazione *</label>
-                    <textarea id="motivazione" rows="3" wire:model="motivazione" class="input py-2"></textarea>
-                </div>
+                @unless ($azione === 'elimina' && $opportunity->eliminabileSenzaMotivazione())
+                    <div class="mt-3">
+                        <label for="motivazione" class="label">Motivazione *</label>
+                        <textarea id="motivazione" rows="3" wire:model="motivazione" class="input py-2"></textarea>
+                    </div>
+                @endunless
 
                 <div class="mt-5 flex gap-3">
                     <button type="button" wire:click="$set('azione', '')" class="btn-ghost flex-1">Annulla</button>
-                    <button type="button" wire:click="conferma" class="btn-primary flex-1">Conferma</button>
+                    <button type="button" wire:click="conferma"
+                            @class(['flex-1', 'btn-danger' => $azione === 'elimina', 'btn-primary' => $azione !== 'elimina'])>
+                        {{ $azione === 'elimina' ? 'Elimina definitivamente' : 'Conferma' }}
+                    </button>
                 </div>
             </div>
         </div>

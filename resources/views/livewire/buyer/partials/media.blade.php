@@ -74,7 +74,9 @@
             @foreach ($opportunity->media as $file)
                 <li class="card overflow-hidden">
                     <div class="flex h-24 items-center justify-center bg-slate-100">
-                        @if ($file->isVideo())
+                        @if (! $file->esiste())
+                            <span class="px-2 text-center text-[11px] text-rose-700">file mancante</span>
+                        @elseif ($file->isVideo())
                             <span class="text-2xl" aria-hidden="true">▶</span>
                         @else
                             <img src="{{ $file->temporaryUrl() }}" alt="" class="h-24 w-full object-cover">
