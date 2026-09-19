@@ -28,6 +28,12 @@
                 <x-badge-stato :stato="$opportunity->status" />
                 @if ($opportunity->status === \App\Enums\OpportunityStatus::APERTA)
                     <x-countdown :scadenza="$opportunity->closes_at" />
+
+                    @if ($opportunity->isExpired())
+                        <span class="badge bg-amber-50 text-amber-900 ring-amber-300">
+                            <span aria-hidden="true">⚠</span> In attesa di chiusura automatica
+                        </span>
+                    @endif
                 @endif
             </div>
         </div>

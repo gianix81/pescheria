@@ -121,6 +121,19 @@ class Opportunity extends Model
         return $query->where('status', OpportunityStatus::APERTA);
     }
 
+    /**
+     * Aperta davvero: stato APERTA e termine non ancora passato.
+     *
+     * Lo stato viene fatto avanzare dallo scheduler, che può essere fermo o in
+     * ritardo: contare le opportunità per il solo stato produrrebbe numeri che
+     * non corrispondono a ciò su cui si può ancora agire.
+     */
+    public function scopeAncoraAperta(Builder $query): Builder
+    {
+        return $query->where('status', OpportunityStatus::APERTA)
+            ->where('closes_at', '>', now());
+    }
+
     public function scopeForStore(Builder $query, int $storeId): Builder
     {
         return $query->whereHas('stores', fn ($q) => $q->where('stores.id', $storeId));

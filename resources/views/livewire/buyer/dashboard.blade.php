@@ -2,7 +2,8 @@
     $bozze = $conteggi[\App\Enums\OpportunityStatus::BOZZA->value] ?? 0;
     $inVerifica = $conteggi[\App\Enums\OpportunityStatus::IN_VERIFICA->value] ?? 0;
     $daCorreggere = $conteggi[\App\Enums\OpportunityStatus::DA_CORREGGERE->value] ?? 0;
-    $aperte = $conteggi[\App\Enums\OpportunityStatus::APERTA->value] ?? 0;
+    // Aperte davvero: lo stato da solo conterebbe anche quelle già scadute.
+    $aperte = $aperteReali;
 
     // Una sola frase, in ordine di urgenza: prima ciò che blocca.
     [$frase, $urgente] = match (true) {
@@ -22,6 +23,7 @@
     {{-- Conteggi: due per riga su telefono, quattro da tablet in su --}}
     <div class="grid grid-cols-2 gap-2 lg:grid-cols-4">
         <x-riquadro-numero etichetta="Aperte" :valore="$aperte"
+                           :nota="$daChiudere > 0 ? $daChiudere.' con termine passato' : null"
                            :url="route('opportunita.index', ['stato' => 'APERTA'])" />
         <x-riquadro-numero etichetta="In verifica" :valore="$inVerifica"
                            :url="route('opportunita.index', ['stato' => 'IN_VERIFICA'])" />

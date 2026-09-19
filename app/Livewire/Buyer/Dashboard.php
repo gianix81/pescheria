@@ -23,7 +23,14 @@ class Dashboard extends Component
             ->groupBy('status')
             ->pluck('totale', 'status');
 
-        $aperte = Opportunity::where('status', OpportunityStatus::APERTA)->pluck('id');
+        // Solo quelle su cui si può ancora agire: vedi Opportunity::scopeAncoraAperta.
+        $aperte = Opportunity::ancoraAperta()->pluck('id');
+
+        // Aperte a database ma con il termine passato: lo scheduler non le ha
+        // ancora spazzate. Vanno mostrate a parte, non contate fra le aperte.
+        $daChiudere = Opportunity::where('status', OpportunityStatus::APERTA)
+            ->where('closes_at', '<=', now())
+            ->count();
 
         $totali = Response::whereIn('opportunity_id', $aperte)
             ->where('status', ResponseStatus::INVIATA_ACQUISTO)
@@ -43,9 +50,11 @@ class Dashboard extends Component
             'inScadenza' => Opportunity::where('status', OpportunityStatus::APERTA)
                 ->whereBetween('closes_at', [now(), now()->addHours(6)])
                 ->orderBy('closes_at')->get(),
-            'limitate' => Opportunity::where('status', OpportunityStatus::APERTA)
+            'limitate' => Opportunity::ancoraAperta()
                 ->where('availability_type', AvailabilityType::LIMITATA)
                 ->orderBy('closes_at')->get(),
+            'aperteReali' => $aperte->count(),
+            'daChiudere' => $daChiudere,
             'recenti' => Opportunity::with('creator')->latest()->limit(8)->get(),
         ]);
     }
