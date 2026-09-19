@@ -149,26 +149,72 @@ class AssegnazionePortaleTest extends TestCase
     }
 
     #[Test]
-    public function i_codici_mancanti_vengono_segnalati(): void
+    public function senza_codici_portale_si_usano_quelli_interni(): void
     {
-        [$store, $cr] = $this->storeWithCr('PV111');
-        $store->forceFill(['portal_code' => null])->save();
+        // Da noi il codice del punto vendita È il codice cliente e il codice
+        // articolo È il codice prodotto: non va compilato nulla in più.
+        [$store, $cr] = $this->storeWithCr('0002');
+        $store->forceFill(['portal_code' => null, 'name' => 'Test 2'])->save();
 
         $opportunita = $this->openOpportunity([$store], [
             'portal_product_code' => null,
             'product_id' => null,
-            'article_code' => 'ART99999',
-            'description' => 'Senza codice portale',
+            'article_code' => '498021',
+            'description' => 'Gambero rosa di Capuano',
+            'delivery_date' => '2026-09-15',
         ]);
 
         app(ResponseSubmissionService::class)->submitPurchase($opportunita, $store, $cr, 2);
 
         $mancanti = app(ExportService::class)->codiciPortaleMancanti(['opportunity_id' => $opportunita->id]);
 
+        $this->assertSame([], $mancanti['punti_vendita'], 'Nessun codice dovrebbe risultare mancante.');
+        $this->assertSame([], $mancanti['prodotti']);
+
+        $foglio = $this->generato($opportunita->fresh())->getSheetByName('DATI');
+
+        // "0002" conserva gli zeri iniziali, quindi resta testo; "498021" è numerico.
+        $this->assertSame('0002', $foglio->getCell('B2')->getValue());
+        $this->assertSame(498021, $foglio->getCell('C2')->getValue());
+        $this->assertSame(2, $foglio->getCell('D2')->getValue());
+    }
+
+    #[Test]
+    public function un_codice_portale_diverso_ha_la_precedenza(): void
+    {
+        [$store, $cr] = $this->storeWithCr('PV222');
+        $store->forceFill(['portal_code' => '566518'])->save();
+
+        $opportunita = $this->openOpportunity([$store], [
+            'article_code' => 'ART22222',
+            'portal_product_code' => '497109',
+            'delivery_date' => '2026-09-15',
+        ]);
+
+        app(ResponseSubmissionService::class)->submitPurchase($opportunita, $store, $cr, 1);
+
+        $foglio = $this->generato($opportunita->fresh())->getSheetByName('DATI');
+
+        $this->assertSame(566518, $foglio->getCell('B2')->getValue());
+        $this->assertSame(497109, $foglio->getCell('C2')->getValue());
+    }
+
+    #[Test]
+    public function un_codice_davvero_assente_viene_segnalato(): void
+    {
+        [$store, $cr] = $this->storeWithCr('PV333');
+        $opportunita = $this->openOpportunity([$store], ['product_id' => null]);
+
+        app(ResponseSubmissionService::class)->submitPurchase($opportunita, $store, $cr, 1);
+
+        // Caso limite: codici svuotati a mano nel database.
+        $store->forceFill(['code' => '', 'portal_code' => null])->save();
+        $opportunita->forceFill(['article_code' => '', 'portal_product_code' => null])->save();
+
+        $mancanti = app(ExportService::class)->codiciPortaleMancanti(['opportunity_id' => $opportunita->id]);
+
         $this->assertNotEmpty($mancanti['punti_vendita']);
         $this->assertNotEmpty($mancanti['prodotti']);
-        $this->assertStringContainsString('PV111', $mancanti['punti_vendita'][0]);
-        $this->assertStringContainsString('ART99999', $mancanti['prodotti'][0]);
     }
 
     #[Test]

@@ -25,7 +25,7 @@
                                 @if ($pv->portal_code)
                                     {{ $pv->portal_code }}
                                 @else
-                                    <span class="text-xs text-rose-700">manca</span>
+                                    <span class="text-xs text-slate-400">= {{ $pv->code }}</span>
                                 @endif
                             </td>
                             <td class="td">{{ $pv->name }}</td>
@@ -64,9 +64,12 @@
                 @error('form.code') <p class="error"><span aria-hidden="true">⚠</span>{{ $message }}</p> @enderror
             </div>
             <div>
-                <label for="portal_code" class="label">Codice cliente portale</label>
+                <label for="portal_code" class="label">Codice cliente portale (solo se diverso)</label>
                 <input id="portal_code" wire:model="form.portal_code" class="input" inputmode="numeric">
-                <p class="help">Numero cliente usato dal portale del fornitore, es. 566518.</p>
+                <p class="help">
+                    Da lasciare vuoto: nell'export il codice qui sopra vale già come codice cliente.
+                    Compilalo solo se il portale usasse un numero diverso.
+                </p>
                 @error('form.portal_code') <p class="error"><span aria-hidden="true">⚠</span>{{ $message }}</p> @enderror
             </div>
             <div>

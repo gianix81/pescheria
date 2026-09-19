@@ -61,6 +61,7 @@
                         </p>
                         <p class="help">
                             Tracciato del fornitore: foglio «DATI» con DATA CONSEGNA, CLIENTE, PRODOTTO, QUANTITA.
+                            CLIENTE è il codice del punto vendita, PRODOTTO il codice articolo.
                             Una riga per ogni acquisto confermato: {{ $righePortale }}
                             {{ $righePortale === 1 ? 'riga' : 'righe' }} con i filtri attuali.
                         </p>
@@ -75,7 +76,10 @@
                 @if ($codiciMancanti['punti_vendita'] || $codiciMancanti['prodotti'])
                     <div class="mt-3 rounded-lg border border-rose-300 bg-rose-50 px-3 py-2 text-sm text-rose-900" role="alert">
                         <p class="font-semibold"><span aria-hidden="true">⚠</span> Codici portale mancanti</p>
-                        <p class="mt-1">Senza questi codici il portale rifiuta le righe. Compilali nelle anagrafiche.</p>
+                        <p class="mt-1">
+                            Queste voci non hanno né il codice interno né quello portale: senza, il portale
+                            rifiuta le righe. Compila il codice in anagrafica.
+                        </p>
 
                         @if ($codiciMancanti['punti_vendita'])
                             <p class="mt-2 font-medium">Punti vendita:</p>

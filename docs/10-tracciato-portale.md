@@ -28,23 +28,34 @@ espliciti e mancate risposte non producono righe.
 Con i filtri della pagina Export si sceglie cosa esportare: singola opportunità, intervallo di date
 di consegna, punto vendita, stato.
 
-## 10.3 I codici del portale
+## 10.3 I codici
 
-`CLIENTE` e `PRODOTTO` **non** sono i codici interni: nel file reale il punto vendita è `566518` e
-l'articolo `497109`, mentre internamente sono `PV001` e `ART10001`. Sono quindi due campi distinti:
+**`CLIENTE` è il codice del punto vendita e `PRODOTTO` è il codice articolo**: in azienda sono già
+la stessa cosa, quindi l'export li usa direttamente e non c'è nulla da compilare in più.
 
-| Campo | Dove si compila |
-|---|---|
-| `stores.portal_code` | Anagrafiche → Punti vendita → «Codice cliente portale» |
-| `products.portal_code` | Anagrafiche → Prodotti → «Codice prodotto portale» |
+Esiste comunque un campo dedicato per ciascuno, da usare **solo** se un domani il portale adottasse
+numerazioni diverse. L'ordine di precedenza è:
 
-Il codice prodotto viene fotografato sull'opportunità alla creazione
-(`opportunities.portal_product_code`), come gli altri dati articolo: modificare l'anagrafica non
+| Colonna | Primo | Poi | Infine |
+|---|---|---|---|
+| `CLIENTE` | `stores.portal_code` | — | `stores.code` |
+| `PRODOTTO` | `opportunities.portal_product_code` (snapshot) | `products.portal_code` | `opportunities.article_code` |
+
+Lo snapshot sull'opportunità funziona come per gli altri dati articolo: modificare l'anagrafica non
 riscrive gli export storici.
 
-**Senza codice non c'è riga valida.** La pagina Export elenca in rosso i punti vendita e i prodotti
-a cui manca, prima che il file venga generato, così l'errore si scopre qui e non al caricamento sul
-portale. Nelle anagrafiche la colonna «Portale» segnala «manca» a colpo d'occhio.
+Nelle anagrafiche la colonna «Portale» mostra `= PV001` quando il codice coincide con quello
+interno, così si vede a colpo d'occhio che non serve intervenire.
+
+Il messaggio «codici mancanti» nella pagina Export compare quindi solo se una voce non ha
+**nessuno** dei due codici, caso che in pratica si verifica solo se il codice è stato svuotato a
+mano nel database.
+
+### Tipi di cella dei codici
+
+Un codice di sole cifre senza zeri iniziali viene scritto come **numero**, come nel file di
+riferimento (`566518`). Un codice come `0002` verrebbe alterato da una conversione numerica, quindi
+viene scritto come **testo**, conservando gli zeri.
 
 ## 10.4 Nome del file
 

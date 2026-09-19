@@ -26,7 +26,7 @@
                                 @if ($p->portal_code)
                                     {{ $p->portal_code }}
                                 @else
-                                    <span class="text-xs text-rose-700">manca</span>
+                                    <span class="text-xs text-slate-400">= {{ $p->article_code }}</span>
                                 @endif
                             </td>
                             <td class="td">{{ $p->plu }}</td>
@@ -62,9 +62,12 @@
                 @error('form.article_code') <p class="error"><span aria-hidden="true">⚠</span>{{ $message }}</p> @enderror
             </div>
             <div>
-                <label for="portal_code" class="label">Codice prodotto portale</label>
+                <label for="portal_code" class="label">Codice prodotto portale (solo se diverso)</label>
                 <input id="portal_code" wire:model="form.portal_code" class="input" inputmode="numeric">
-                <p class="help">Numero articolo usato dal portale del fornitore, es. 497109.</p>
+                <p class="help">
+                    Da lasciare vuoto: nell'export il codice articolo vale già come codice prodotto.
+                    Compilalo solo se il portale usasse un numero diverso.
+                </p>
                 @error('form.portal_code') <p class="error"><span aria-hidden="true">⚠</span>{{ $message }}</p> @enderror
             </div>
             <div>

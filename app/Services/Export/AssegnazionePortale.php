@@ -4,6 +4,7 @@ namespace App\Services\Export;
 
 use App\Enums\ResponseStatus;
 use App\Models\Opportunity;
+use App\Models\Store;
 use App\Support\Format;
 use Illuminate\Support\Collection;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
@@ -26,8 +27,13 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
  * come è scritta, e una data vera verrebbe riscritta secondo le impostazioni
  * locali di chi apre il file.
  *
- * CLIENTE e PRODOTTO sono i codici del portale, non quelli interni: si
- * prendono da `stores.portal_code` e dallo snapshot `portal_product_code`.
+ * CLIENTE e PRODOTTO sono normalmente gli stessi codici che l'azienda usa
+ * internamente: il codice del punto vendita È il codice cliente, il codice
+ * articolo È il codice prodotto. Si usano quindi quelli.
+ *
+ * I campi `portal_code` restano disponibili per il caso in cui un domani il
+ * portale adotti codici diversi: se valorizzati hanno la precedenza, altrimenti
+ * non vanno compilati.
  */
 final class AssegnazionePortale
 {
@@ -58,8 +64,8 @@ final class AssegnazionePortale
 
                 $righe[] = [
                     'data' => Format::date($o->delivery_date),
-                    'cliente' => $risposta->store?->portal_code,
-                    'prodotto' => $o->portal_product_code ?: $o->product?->portal_code,
+                    'cliente' => self::codiceCliente($risposta->store),
+                    'prodotto' => self::codiceProdotto($o),
                     'quantita' => (int) $risposta->packages,
                 ];
             }
@@ -69,7 +75,37 @@ final class AssegnazionePortale
     }
 
     /**
+     * Codice cliente: quello del portale se diverso, altrimenti il codice
+     * interno del punto vendita, che è la stessa cosa.
+     */
+    public static function codiceCliente(?Store $store): ?string
+    {
+        if (! $store) {
+            return null;
+        }
+
+        return filled($store->portal_code) ? $store->portal_code : $store->code;
+    }
+
+    /** Codice prodotto: stessa logica, con lo snapshot dell'opportunità davanti a tutto. */
+    public static function codiceProdotto(Opportunity $opportunity): ?string
+    {
+        foreach ([
+            $opportunity->portal_product_code,
+            $opportunity->product?->portal_code,
+            $opportunity->article_code,
+        ] as $candidato) {
+            if (filled($candidato)) {
+                return (string) $candidato;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Codici mancanti: senza, il portale non può accettare la riga.
+     * Con il ripiego sui codici interni è un caso raro, ma non impossibile.
      *
      * @return array{punti_vendita: array<int, string>, prodotti: array<int, string>}
      */
@@ -83,7 +119,7 @@ final class AssegnazionePortale
                 fn ($r) => $r->status === ResponseStatus::INVIATA_ACQUISTO && $r->packages > 0
             );
 
-            if ($haOrdini && blank($o->portal_product_code ?: $o->product?->portal_code)) {
+            if ($haOrdini && blank(self::codiceProdotto($o))) {
                 $prodotti[$o->article_code] = $o->article_code.' — '.$o->description;
             }
 
@@ -92,7 +128,7 @@ final class AssegnazionePortale
                     continue;
                 }
 
-                if (blank($risposta->store?->portal_code)) {
+                if (blank(self::codiceCliente($risposta->store))) {
                     $puntiVendita[$risposta->store->code] = $risposta->store->code.' — '.$risposta->store->name;
                 }
             }
