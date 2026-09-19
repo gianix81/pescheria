@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Enums\OpportunityStatus;
 use App\Models\Opportunity;
 use App\Services\OpportunityWorkflowService;
+use App\Support\Sistema;
 use Illuminate\Console\Command;
 
 /** APERTA → SCADUTA. Idempotente. */
@@ -16,6 +17,8 @@ class ExpireOpportunities extends Command
 
     public function handle(OpportunityWorkflowService $workflow): int
     {
+        Sistema::registraEsecuzioneScheduler();
+
         $scadute = 0;
 
         Opportunity::where('status', OpportunityStatus::APERTA)

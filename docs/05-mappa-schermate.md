@@ -33,6 +33,7 @@
 | `/tecnico/anagrafiche/punti-vendita` | `Tecnico\Anagrafiche\PuntiVendita` | CRUD punti vendita |
 | `/tecnico/anagrafiche/prodotti` | `Tecnico\Anagrafiche\Prodotti` | CRUD prodotti |
 | `/tecnico/audit` | `Tecnico\Audit` | log immutabile con filtri |
+| `/tecnico/stato` | `Tecnico\StatoSistema` | **solo Super Admin**: versione pubblicata, stato del database e migrazioni non applicate, persistenza del disco dei media, ultima esecuzione dello scheduler. Risponde senza aprire una shell alle domande che tornano durante la messa in linea |
 
 ## Capo Reparto
 

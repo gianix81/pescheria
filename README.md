@@ -199,7 +199,9 @@ php artisan pescheria:admin --email=tuo@indirizzo.it
 Lo stesso comando **ripristina** un profilo eliminato o disattivato e lo promuove a Super Admin:
 è la via d'accesso garantita quando nessuno riesce più a entrare.
 
-Se l'accesso non funziona, il comando di diagnosi dice perché in trenta secondi:
+Il Super Admin trova la stessa diagnosi in **Stato sistema** (`/tecnico/stato`): versione
+pubblicata, database e migrazioni, persistenza del disco dei media, ultima esecuzione dello
+scheduler. Da console:
 
 ```bash
 php artisan pescheria:stato --email=utente@indirizzo.it

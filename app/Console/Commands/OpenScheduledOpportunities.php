@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Enums\OpportunityStatus;
 use App\Models\Opportunity;
 use App\Services\OpportunityWorkflowService;
+use App\Support\Sistema;
 use Illuminate\Console\Command;
 
 /** PROGRAMMATA → APERTA. Idempotente: può girare ogni minuto senza effetti collaterali. */
@@ -16,6 +17,8 @@ class OpenScheduledOpportunities extends Command
 
     public function handle(OpportunityWorkflowService $workflow): int
     {
+        Sistema::registraEsecuzioneScheduler();
+
         $aperte = 0;
 
         Opportunity::where('status', OpportunityStatus::PROGRAMMATA)

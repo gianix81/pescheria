@@ -42,6 +42,7 @@ final class Navigation
             self::item('Ordini / Risposte', 'buyer.ordini', '✓'),
             self::item('Export', 'export.index', '⤓'),
             self::item('Audit', 'tecnico.audit', '🔒'),
+            self::item('Stato sistema', 'tecnico.stato', '⚙'),
         ];
     }
 

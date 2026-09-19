@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Enums\OpportunityStatus;
 use App\Models\Opportunity;
 use App\Services\NotificationService;
+use App\Support\Sistema;
 use Illuminate\Console\Command;
 
 /**
@@ -21,6 +22,8 @@ class SendResponseReminders extends Command
 
     public function handle(NotificationService $notifiche): int
     {
+        Sistema::registraEsecuzioneScheduler();
+
         $soglie = config('pescheria.notifiche.reminder_minutes', []);
         $inviati = 0;
 

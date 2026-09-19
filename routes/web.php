@@ -82,6 +82,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/verifica/{opportunity}', Livewire\Tecnico\Verifica::class)->name('verifica');
         Route::get('/monitor', Livewire\Tecnico\Monitor::class)->name('monitor');
         Route::get('/audit', Livewire\Tecnico\Audit::class)->name('audit');
+        Route::get('/stato', Livewire\Tecnico\StatoSistema::class)->name('stato');
 
         Route::prefix('anagrafiche')->name('anagrafiche.')->group(function () {
             Route::get('/utenti', Livewire\Tecnico\Anagrafiche\Utenti::class)->name('utenti');
